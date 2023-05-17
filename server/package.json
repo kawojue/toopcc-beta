@@ -4,7 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index.ts",
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add ."
+  },
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ],
+  "engines": {
+    "node": "18.x"
   },
   "repository": {
     "type": "git",
@@ -27,5 +38,24 @@
     "@types/node": "^20.1.7",
     "@types/nodemailer": "^6.4.7",
     "@types/uuid": "^9.0.1"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cloudinary": "^1.37.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "express-rate-limit": "^6.7.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.1.1",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.2",
+    "nodemon": "^2.0.22",
+    "pre-commit": "^1.2.2",
+    "rimraf": "^5.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4",
+    "uuid": "^9.0.0"
   }
 }
