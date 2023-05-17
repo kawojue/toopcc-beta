@@ -20,7 +20,10 @@ const AdvancePtModel: Schema = new Schema({
     body: {
         type: [{
             diagnosis: {
-                images: Array,
+                images: [{
+                    secure_url: String,
+                    public_id: String
+                }],
                 texts: String
             },
             date_visit: {
