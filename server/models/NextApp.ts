@@ -11,5 +11,5 @@ const NextAppModel: Schema = new Schema({
     next_appointment: String
 })
 
-const NextApp = mongoose.model('AdvancePt', NextAppModel) || NextAppModel
+const NextApp = mongoose.model('NextApp', NextAppModel) || NextAppModel
 export default NextApp

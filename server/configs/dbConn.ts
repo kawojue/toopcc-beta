@@ -5,7 +5,7 @@ export default async function connectDB(DB_URI: string) {
         await mongoose.connect(DB_URI, {
             dbName: 'TOOPCC'
         })
-        console.log('Connect to MongoDB!')
+        console.log('Connected to MongoDB!')
     } catch {
         console.error("Connection Failed!")
     }

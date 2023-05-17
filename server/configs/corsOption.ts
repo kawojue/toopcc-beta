@@ -1,7 +1,7 @@
 import { CorsOptions } from "cors"
 
 export const allowedOrigins: string[] =  [
-    "http://localhost:2022"
+    "http://localhost:1002"
 ]
 
 const corsOption: CorsOptions = {
