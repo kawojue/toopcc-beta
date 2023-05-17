@@ -17,7 +17,7 @@ const BasicPtModel: Schema = new Schema({
     },
     date: {
         type: String,
-        default: new Date().toISOString()
+        default: `${new Date().toISOString()}`
     },
     death: {
         type: Boolean,
