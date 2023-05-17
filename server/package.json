@@ -37,6 +37,7 @@
     "@types/morgan": "^1.9.4",
     "@types/node": "^20.1.7",
     "@types/nodemailer": "^6.4.7",
+    "@types/randomstring": "^1.1.8",
     "@types/uuid": "^9.0.1"
   },
   "dependencies": {
@@ -53,6 +54,7 @@
     "nodemailer": "^6.9.2",
     "nodemon": "^2.0.22",
     "pre-commit": "^1.2.2",
+    "randomstring": "^1.2.3",
     "rimraf": "^5.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
