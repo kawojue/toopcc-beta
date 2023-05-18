@@ -15,14 +15,19 @@ const transporter: Transporter = nodemailer.createTransport({
     }
 })
 
-export default async function mailer({ senderName, to, subject, text }: IMailer): Promise<void> {
-    await transporter.sendMail({
-        from: `${senderName} <${process.env.EMAIL}>`,
-        to,
-        subject,
-        text,
-        headers: {
-            'Content-Type': 'application/text',
-        }
-    })
+export default async function mailer({ senderName, to, subject, text }: IMailer): Promise<boolean> {
+    try {
+        await transporter.sendMail({
+            from: `${senderName} <${process.env.EMAIL}>`,
+            to,
+            subject,
+            text,
+            headers: {
+                'Content-Type': 'application/text',
+            }
+        })
+        return true
+    } catch {
+        return false
+    }
 }
