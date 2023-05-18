@@ -3,7 +3,7 @@ import { Router, Request, Response } from 'express'
 
 const root: Router = Router()
 
-auth.use('/auth', auth)
+root.use('/auth', auth)
 
 root.get('/', (req: Request, res: Response) => {
     res.status(200).json({
