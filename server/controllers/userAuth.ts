@@ -8,8 +8,9 @@ import { Request, Response } from 'express'
 import genToken from '../utilities/genToken'
 import full_name from '../utilities/full_name'
 import {
+    CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
     FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
-    PASSWORD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, WARNING,
+    PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, WARNING,
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -25,7 +26,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     if (!email || !pswd || !pswd2 || !fullname) return res.status(400).json(FIELDS_REQUIRED)
 
-    if (pswd !== pswd2) return res.status(400).json(PASSWORD_NOT_MATCH)
+    if (pswd !== pswd2) return res.status(400).json(PSWD_NOT_MATCH)
 
     if (EMAIL_REGEX.test(email) === false) return res.status(400).json(INVALID_EMAIL)
 
@@ -87,12 +88,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
     if (account.resigned) return res.status(401).json(ACCESS_DENIED)
 
     const match: boolean = await bcrypt.compare(pswd, account.password)
-    if (!match) {
-        return res.status(401).json({
-            ...ERROR,
-            msg: "Incorrect password."
-        })
-    }
+    if (!match) return res.status(401).json(INCORRECT_PSWD)
 
     const token = genToken(account.user, account.roles)
 
@@ -194,7 +190,7 @@ const editFullname = asyncHandler(async (req: any, res: Response) => {
     if (!fullname) return res.status(400).json(FIELDS_REQUIRED)
 
     const account: any = await User.findOne({ user: req?.user }).exec()
-    if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
+    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
     account.fullname = fullname
     await account.save()
@@ -268,7 +264,7 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
 
     if (!email || !newPswd) return res.status(400).json(FIELDS_REQUIRED)
 
-    if (newPswd !== newPswd2) return res.status(400).json(PASSWORD_NOT_MATCH)
+    if (newPswd !== newPswd2) return res.status(400).json(PSWD_NOT_MATCH)
 
     const account: any = await User.findOne({ 'mail.email': email }).exec()
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
@@ -276,12 +272,7 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     if (!verified || !account.mail.verified || account.resigned) return res.status(400).json(ACCESS_DENIED)
 
     const compare = await bcrypt.compare(newPswd, account.password)
-    if (compare) {
-        return res.status(400).json({
-            ...WARNING,
-            msg: "You input your current password."
-        })
-    }
+    if (compare) return res.status(400).json(CURRENT_PSWD)
 
     const salt: string = await bcrypt.genSalt(10)
     const hasedPswd: string = await bcrypt.hash(newPswd, salt)
@@ -291,13 +282,41 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     account.mail.verified = false
     await account.save()
 
-    res.status(200).json({
-        ...SUCCESS,
-        msg: "Password updated successfully."
-    })
+    res.status(200).json(PSWD_CHANGED)
 })
 
+const editPassword = asyncHandler(async (req: any, res: Response) => {
+    const { currentPswd, pswd, pswd2 }: any = req.body
+
+    if (!currentPswd) {
+        return res.status(400).json({
+            ...ERROR,
+            msg: 'Old password is required.'
+        })
+    }
+
+    if (pswd !== pswd2) return res.status(400).json(PSWD_NOT_MATCH)
+
+    if (currentPswd === pswd === pswd2) return res.status(400).json(CURRENT_PSWD)
+
+    const account: any = await User.findOne({ user: req?.user }).exec()
+    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
+
+    const isMatch = await bcrypt.compare(currentPswd, account.password)
+    if (!isMatch) return res.status(401).json(INCORRECT_PSWD)
+
+    const salt: string = await bcrypt.genSalt(10)
+    const hashedPswd: string = await bcrypt.hash(pswd, salt)
+
+    account.password = hashedPswd
+    await account.save()
+
+    res.status(200).json(PSWD_CHANGED)
+})
+
+
 export {
-    createUser, logout, verifyOTP, otpHandler,
-    resetpswd, editUsername, editFullname, login,
+    resetpswd, login, otpHandler,
+    createUser, logout, verifyOTP,
+    editPassword, editUsername, editFullname
 }
