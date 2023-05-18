@@ -7,8 +7,8 @@ import genToken from '../configs/genToken'
 import { IMailer, IGenOTP } from '../type'
 import { Request, Response } from 'express'
 import {
-    ACCESS_DENIED, PASSWORD_NOT_MATCH,
     FIELDS_REQUIRED, INVALID_EMAIL,
+    ACCESS_DENIED, PASSWORD_NOT_MATCH,
 } from '../configs/error'
 const asyncHandler = require('express-async-handler')
 
@@ -27,10 +27,10 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     if (EMAIL_REGEX.test(email) === false) return res.status(400).json(INVALID_EMAIL)
 
-    let name: string = ""
-    const names: string[] = fullname.split(" ")
+    let actualName: string = ""
+    const names: any = fullname.split(" ")
     names.forEach((name: string) => {
-        name += name[0].toUpperCase() + name.slice(1).toLowerCase() + " "
+        actualName += name[0].toUpperCase() + name.slice(1).toLowerCase() + " "
     })
 
     user = email.split('@')[0]
@@ -59,7 +59,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     await User.create({
         user,
-        fullname: name,
+        fullname: actualName,
         password: pswd as string,
         'mail.email': email as string
     })
@@ -91,6 +91,8 @@ const login = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
+    if (account.resigned) return res.status(401).json(ACCESS_DENIED)
+
     const match: boolean = await bcrypt.compare(pswd, account.password)
     if (!match) {
         return res.status(401).json({
@@ -108,11 +110,6 @@ const login = asyncHandler(async (req: Request, res: Response) => {
 
     res.status(200).json({
         token,
-        toggles: {
-            disabled: account.disabled,
-            pbMedia: account.pbMedia,
-            pbContent: account.pbContent
-        },
         success: true,
         action: "success",
         msg: "Login successful.",
@@ -136,6 +133,8 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
             msg: "There is no account associated with this email."
         })
     }
+
+    if (account.resigned) return res.status(401).json(ACCESS_DENIED)
 
     account.OTP.totp = totp
     account.OTP.totpDate = totpDate
@@ -279,9 +278,7 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    if (!verified || !account.mail.verified) {
-        return res.status(400).json(ACCESS_DENIED)
-    }
+    if (!verified || !account.mail.verified || account.resigned) return res.status(400).json(ACCESS_DENIED)
 
     const compare = await bcrypt.compare(newPswd, account.password)
     if (compare) {
