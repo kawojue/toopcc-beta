@@ -1,5 +1,5 @@
-import { ACCESS_DENIED } from '../configs/error'
 import { Response, NextFunction } from 'express'
+import { ACCESS_DENIED } from '../utilities/error'
 
 const verifyRoles = (...roles: string[]) => {
     return (req: any, res: Response, next: NextFunction) => {
