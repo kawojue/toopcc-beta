@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import User from '../models/User'
-import { ACCESS_DENIED } from '../configs/error'
 import { Response, NextFunction } from 'express'
+import { ACCESS_DENIED } from '../utilities/error'
 const asyncHandler = require('express-async-handler')
 
 const jwtVerify = asyncHandler(async (req: any, res: Response, next: NextFunction) => {
