@@ -61,8 +61,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
         user,
         fullname: name,
         password: pswd as string,
-        'mail.email': email as string,
-        createdAt: `${new Date()}`
+        'mail.email': email as string
     })
 
     res.status(201).json({
