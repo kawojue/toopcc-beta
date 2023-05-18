@@ -1,15 +1,15 @@
 import bcrypt from 'bcrypt'
 import User from '../models/User'
-import mailer from '../configs/mailer'
-import genOTP from '../configs/genOTP'
 import randomString from 'randomstring'
-import genToken from '../configs/genToken'
+import mailer from '../utilities/mailer'
+import genOTP from '../utilities/genOTP'
 import { IMailer, IGenOTP } from '../type'
 import { Request, Response } from 'express'
+import genToken from '../utilities/genToken'
 import {
     FIELDS_REQUIRED, INVALID_EMAIL,
     ACCESS_DENIED, PASSWORD_NOT_MATCH,
-} from '../configs/error'
+} from '../utilities/error'
 const asyncHandler = require('express-async-handler')
 
 const EMAIL_REGEX: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
