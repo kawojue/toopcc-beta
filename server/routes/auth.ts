@@ -10,7 +10,7 @@ import jwtVerify from '../middlewares/jwtVerify'
 
 const auth: Router = Router()
 
-auth.use('/', otp)
+auth.use('/otp', otp)
 
 const loginLimiter: ILimiter = {
     max: 5,
