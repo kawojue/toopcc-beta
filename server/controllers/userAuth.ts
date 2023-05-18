@@ -158,12 +158,7 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
     }
 
     const account: any = await User.findOne({ user: req?.user }).exec()
-    if (!account) {
-        return res.status(404).json({
-            ...ERROR,
-            msg: "Sorry, something went wrong. Try logging out then login again."
-        })
-    }
+    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
     const userExists: any = await User.findOne({ user: newUser }).exec()
     if (userExists) {
