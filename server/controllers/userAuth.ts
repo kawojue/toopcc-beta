@@ -173,7 +173,7 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
         })
     }
 
-    const account: any = await User.findOne({ user: req.user?.user }).exec()
+    const account: any = await User.findOne({ user: req.user }).exec()
     if (!account) {
         return res.status(404).json({
             success: false,
