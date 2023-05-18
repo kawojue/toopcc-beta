@@ -18,16 +18,22 @@ const USER_REGEX: RegExp = /^[a-zA-Z][a-zA-Z0-9-_]{2,23}$/
 // handle account creation
 const createUser = asyncHandler(async (req: any, res: Response) => {
     let user: any
-    let { email, pswd, pswd2 }: any = req.body
+    let { email, pswd, pswd2, fullname }: any = req.body
     email = email?.toLowerCase()?.trim()
 
-    if (!email || !pswd || !pswd2) return res.status(400).json(FIELDS_REQUIRED)
+    if (!email || !pswd || !pswd2 || !fullname) return res.status(400).json(FIELDS_REQUIRED)
 
     if (pswd !== pswd2) return res.status(400).json(PASSWORD_NOT_MATCH)
 
     if (EMAIL_REGEX.test(email) === false) return res.status(400).json(INVALID_EMAIL)
 
-    user = email?.split('@')[0]?.toLowerCase()
+    let name: string = ""
+    const names: string[] = fullname.split(" ")
+    names.forEach((name: string) => {
+        name += name[0].toUpperCase() + name.slice(1).toLowerCase() + " "
+    })
+
+    user = email.split('@')[0]
     const account: any = await User.findOne({ 'mail.email': email }).exec()
 
     if (account) {
@@ -53,6 +59,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     await User.create({
         user,
+        fullname: name,
         password: pswd as string,
         'mail.email': email as string,
         createdAt: `${new Date()}`
