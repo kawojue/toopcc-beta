@@ -59,7 +59,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     await User.create({
         user,
-        fullname: actualName,
+        fullname: actualName.trim(),
         password: pswd as string,
         'mail.email': email as string
     })
