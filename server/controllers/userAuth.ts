@@ -6,10 +6,11 @@ import genOTP from '../utilities/genOTP'
 import { IMailer, IGenOTP } from '../type'
 import { Request, Response } from 'express'
 import genToken from '../utilities/genToken'
+import full_name from '../utilities/full_name'
 import {
-    FIELDS_REQUIRED, INVALID_EMAIL,
-    ACCESS_DENIED, PASSWORD_NOT_MATCH,
-} from '../utilities/error'
+    FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
+    PASSWORD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, WARNING,
+} from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
 const EMAIL_REGEX: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -20,6 +21,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     let user: any
     let { email, pswd, pswd2, fullname }: any = req.body
     email = email?.toLowerCase()?.trim()
+    fullname = full_name(fullname)
 
     if (!email || !pswd || !pswd2 || !fullname) return res.status(400).json(FIELDS_REQUIRED)
 
@@ -27,19 +29,12 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     if (EMAIL_REGEX.test(email) === false) return res.status(400).json(INVALID_EMAIL)
 
-    let actualName: string = ""
-    const names: any = fullname.split(" ")
-    names.forEach((name: string) => {
-        actualName += name[0].toUpperCase() + name.slice(1).toLowerCase() + " "
-    })
-
     user = email.split('@')[0]
     const account: any = await User.findOne({ 'mail.email': email }).exec()
 
     if (account) {
         return res.status(409).json({
-            success: false,
-            action: "warning",
+            ...WARNING,
             msg: "Account already exists."
         })
     }
@@ -59,14 +54,13 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     await User.create({
         user,
-        fullname: actualName.trim(),
         password: pswd as string,
+        fullname: fullname as string,
         'mail.email': email as string
     })
 
     res.status(201).json({
-        success: true,
-        action: "success",
+        ...SUCCESS,
         msg: "Account creation was successful."
     })
 })
@@ -85,8 +79,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
 
     if (!account) {
         return res.status(400).json({
-            success: false,
-            action: "warning",
+            ...WARNING,
             msg: "Invalid User ID or Password."
         })
     }
@@ -96,8 +89,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
     const match: boolean = await bcrypt.compare(pswd, account.password)
     if (!match) {
         return res.status(401).json({
-            success: false,
-            action: "error",
+            ...ERROR,
             msg: "Incorrect password."
         })
     }
@@ -110,8 +102,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
 
     res.status(200).json({
         token,
-        success: true,
-        action: "success",
+        ...SUCCESS,
         msg: "Login successful.",
     })
 })
@@ -128,8 +119,7 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
     const account: any = await User.findOne({ 'mail.email': email }).exec()
     if (!account) {
         return res.status(400).json({
-            success: false,
-            action: "error",
+            ...ERROR,
             msg: "There is no account associated with this email."
         })
     }
@@ -152,8 +142,7 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
     if (!sendMail) return res.status(400).json(INVALID_EMAIL)
 
     res.status(200).json({
-        success: true,
-        action: "success",
+        ...SUCCESS,
         msg: "OTP has been sent to your email."
     })
 })
@@ -167,17 +156,15 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
 
     if (!USER_REGEX.test(newUser)) {
         return res.status(400).json({
-            success: false,
-            action: "warning",
+            ...WARNING,
             msg: "Username is not allowed."
         })
     }
 
-    const account: any = await User.findOne({ user: req.user }).exec()
+    const account: any = await User.findOne({ user: req?.user }).exec()
     if (!account) {
         return res.status(404).json({
-            success: false,
-            action: "error",
+            ...ERROR,
             msg: "Sorry, something went wrong. Try logging out then login again."
         })
     }
@@ -185,8 +172,7 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
     const userExists: any = await User.findOne({ user: newUser }).exec()
     if (userExists) {
         return res.status(409).json({
-            success: false,
-            action: "warning",
+            ...WARNING,
             msg: "Username has been taken."
         })
     }
@@ -196,9 +182,26 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
     await account.save()
 
     res.status(200).json({
-        success: true,
-        action: "success",
+        ...SUCCESS,
         msg: "You've successfully changed your username."
+    })
+})
+
+const editFullname = asyncHandler(async (req: any, res: Response) => {
+    let { fullname }: any = req.body
+    fullname = full_name(fullname)
+
+    if (!fullname) return res.status(400).json(FIELDS_REQUIRED)
+
+    const account: any = await User.findOne({ user: req?.user }).exec()
+    if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
+
+    account.fullname = fullname
+    await account.save()
+
+    res.status(200).json({
+        ...SUCCESS,
+        msg: "You've successfully changed your full name."
     })
 })
 
@@ -236,16 +239,14 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
         account.OTP = {}
         await account.save()
         return res.status(400).json({
-            success: false,
-            action: "warning",
+            ...WARNING,
             msg: "OTP Expired."
         })
     }
 
     if (totp !== otp) {
         return res.status(401).json({
-            success: false,
-            action: "error",
+            ...ERROR,
             msg: "Incorrect OTP"
         })
     }
@@ -270,21 +271,14 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     if (newPswd !== newPswd2) return res.status(400).json(PASSWORD_NOT_MATCH)
 
     const account: any = await User.findOne({ 'mail.email': email }).exec()
-    if (!account) {
-        return res.status(404).json({
-            success: false,
-            action: "error",
-            msg: "Account does not exist."
-        })
-    }
+    if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
     if (!verified || !account.mail.verified || account.resigned) return res.status(400).json(ACCESS_DENIED)
 
     const compare = await bcrypt.compare(newPswd, account.password)
     if (compare) {
         return res.status(400).json({
-            success: false,
-            action: "warning",
+            ...WARNING,
             msg: "You input your current password."
         })
     }
@@ -298,13 +292,12 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     await account.save()
 
     res.status(200).json({
-        success: true,
-        action: "success",
+        ...SUCCESS,
         msg: "Password updated successfully."
     })
 })
 
 export {
-    createUser, login, logout, verifyOTP,
-    otpHandler, resetpswd, editUsername,
+    createUser, logout, verifyOTP, otpHandler,
+    resetpswd, editUsername, editFullname, login,
 }
