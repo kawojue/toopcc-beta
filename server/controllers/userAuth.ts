@@ -6,6 +6,10 @@ import randomString from 'randomstring'
 import genToken from '../configs/genToken'
 import { IMailer, IGenOTP } from '../type'
 import { Request, Response } from 'express'
+import {
+    ACCESS_DENIED, PASSWORD_NOT_MATCH,
+    FIELDS_REQUIRED
+} from '../configs/error'
 const asyncHandler = require('express-async-handler')
 
 const EMAIL_REGEX: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -17,21 +21,9 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     let { email, pswd, pswd2 }: any = req.body
     email = email?.toLowerCase()?.trim()
 
-    if (!email || !pswd || !pswd2) {
-        return res.status(400).json({
-            success: false,
-            action: "error",
-            msg: "All fields are required."
-        })
-    }
+    if (!email || !pswd || !pswd2) return res.status(400).json(FIELDS_REQUIRED)
 
-    if (pswd !== pswd2) {
-        return res.status(400).json({
-            success: false,
-            action: "warning",
-            msg: "Passwords does not match."
-        })
-    }
+    if (pswd !== pswd2) return res.status(400).json(PASSWORD_NOT_MATCH)
 
     if (EMAIL_REGEX.test(email) === false) {
         return res.status(400).json({
@@ -84,13 +76,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
     let { userId, pswd }: any = req.body
     userId = userId?.toLowerCase()?.trim()
 
-    if (!userId || !pswd) {
-        return res.status(400).json({
-            success: false,
-            action: "error",
-            msg: "All fields are required."
-        })
-    }
+    if (!userId || !pswd) return res.status(400).json(FIELDS_REQUIRED)
 
     const account: any = await User.findOne(
         EMAIL_REGEX.test(userId) ?
@@ -182,13 +168,7 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
     let { newUser }: any = req.body
     newUser = newUser?.trim()?.toLowerCase()
 
-    if (!newUser) {
-        return res.status(400).json({
-            success: false,
-            action: "error",
-            msg: "All fields are required"
-        })
-    }
+    if (!newUser) return res.status(400).json(FIELDS_REQUIRED)
 
     if (!USER_REGEX.test(newUser)) {
         return res.status(400).json({
@@ -250,13 +230,7 @@ const logout = asyncHandler(async (req: any, res: Response) => {
 const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
     const { otp, email }: any = req.body
 
-    if (!otp || !email) {
-        return res.status(400).json({
-            success: false,
-            action: "error",
-            msg: "All fields are required."
-        })
-    }
+    if (!otp || !email) return res.status(400).json(FIELDS_REQUIRED)
 
     const account: any = await User.findOne({ 'mail.email': email }).exec()
     const totp: string = account.OTP.totp
@@ -296,21 +270,9 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
 const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     const { verified, email, newPswd, newPswd2 }: any = req.body
 
-    if (!email || !newPswd) {
-        return res.status(400).json({
-            success: false,
-            action: "error",
-            msg: "All fields are required."
-        })
-    }
+    if (!email || !newPswd) return res.status(400).json(FIELDS_REQUIRED)
 
-    if (newPswd !== newPswd2) {
-        return res.status(400).json({
-            success: false,
-            action: "warning",
-            msg: "Password does not match."
-        })
-    }
+    if (newPswd !== newPswd2) return res.status(400).json(PASSWORD_NOT_MATCH)
 
     const account: any = await User.findOne({ 'mail.email': email }).exec()
     if (!account) {
@@ -322,11 +284,7 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (!verified || !account.mail.verified) {
-        return res.status(400).json({
-            success: false,
-            action: "error",
-            msg: "Access denied."
-        })
+        return res.status(400).json(ACCESS_DENIED)
     }
 
     const compare = await bcrypt.compare(newPswd, account.password)
