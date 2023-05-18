@@ -1,4 +1,4 @@
-import auth from './auth'
+import auth from './auth/auth'
 import patients from './api/patients'
 import jwtVerify from '../middlewares/jwtVerify'
 import { Router, Request, Response } from 'express'
