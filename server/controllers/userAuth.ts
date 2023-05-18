@@ -8,7 +8,7 @@ import { IMailer, IGenOTP } from '../type'
 import { Request, Response } from 'express'
 import {
     ACCESS_DENIED, PASSWORD_NOT_MATCH,
-    FIELDS_REQUIRED
+    FIELDS_REQUIRED, INVALID_EMAIL,
 } from '../configs/error'
 const asyncHandler = require('express-async-handler')
 
@@ -25,13 +25,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     if (pswd !== pswd2) return res.status(400).json(PASSWORD_NOT_MATCH)
 
-    if (EMAIL_REGEX.test(email) === false) {
-        return res.status(400).json({
-            success: false,
-            action: "error",
-            msg: "Invalid Email."
-        })
-    }
+    if (EMAIL_REGEX.test(email) === false) return res.status(400).json(INVALID_EMAIL)
 
     user = email?.split('@')[0]?.toLowerCase()
     const account: any = await User.findOne({ 'mail.email': email }).exec()
@@ -126,13 +120,7 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
 
     const { totp, totpDate }: IGenOTP = genOTP()
 
-    if (!email) {
-        return res.status(400).json({
-            success: false,
-            action: "error",
-            msg: "Invalid email"
-        })
-    }
+    if (!email) return res.status(400).json(INVALID_EMAIL)
 
     const account: any = await User.findOne({ 'mail.email': email }).exec()
     if (!account) {
@@ -149,12 +137,14 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
     await account.save()
 
     const transportMail: IMailer = {
-        senderName: "Muyiwa at MemoMe",
+        senderName: "Admin at TOOPCC",
         to: email,
         subject: "Verification Code",
         text: `Code: ${totp}\nIf you did not request for this OTP. Please, ignore.`
     }
-    await mailer(transportMail)
+
+    const sendMail: boolean = await mailer(transportMail)
+    if (!sendMail) return res.status(400).json(INVALID_EMAIL)
 
     res.status(200).json({
         success: true,
