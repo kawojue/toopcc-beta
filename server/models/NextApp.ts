@@ -8,7 +8,9 @@ const NextAppModel: Schema = new Schema({
         unique: true,
         required: true,
     },
-    next_appointment: String
+    next_appointment: [{
+        date: String
+    }]
 })
 
 const NextApp = mongoose.model('NextApp', NextAppModel) || NextAppModel
