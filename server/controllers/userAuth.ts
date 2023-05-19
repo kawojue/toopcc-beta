@@ -283,6 +283,8 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
 const editPassword = asyncHandler(async (req: any, res: Response) => {
     const { currentPswd, pswd, pswd2 }: any = req.body
 
+    if (!currentPswd || !pswd || !pswd2) return res.status(400).json(FIELDS_REQUIRED)
+
     if (!currentPswd) {
         return res.status(400).json({
             ...ERROR,
@@ -292,7 +294,7 @@ const editPassword = asyncHandler(async (req: any, res: Response) => {
 
     if (pswd !== pswd2) return res.status(400).json(PSWD_NOT_MATCH)
 
-    if (currentPswd === pswd === pswd2) return res.status(400).json(CURRENT_PSWD)
+    if (currentPswd === pswd) return res.status(400).json(CURRENT_PSWD)
 
     const account: any = await User.findOne({ user: req?.user }).exec()
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
@@ -303,6 +305,7 @@ const editPassword = asyncHandler(async (req: any, res: Response) => {
     const salt: string = await bcrypt.genSalt(10)
     const hashedPswd: string = await bcrypt.hash(pswd, salt)
 
+    account.token = ""
     account.password = hashedPswd
     await account.save()
 
