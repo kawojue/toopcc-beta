@@ -4,8 +4,6 @@ const AdvancePtModel: Schema = new Schema({
     patient: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Patient",
-        sparse: true,
-        unique: true,
         required: true,
     },
     recommendation: {
