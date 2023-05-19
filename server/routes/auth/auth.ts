@@ -6,12 +6,12 @@ import {
 } from '../../controllers/userAuth'
 import { ILimiter } from '../../type'
 import limiter from '../../middlewares/limiter'
-import jwtVerify from '../../middlewares/jwtVerify'
+
 
 const auth: Router = Router()
 
 auth.use('/otp', otp)
-auth.use('/edit', jwtVerify, edit)
+auth.use('/edit', edit)
 
 const loginLimiter: ILimiter = {
     max: 5,
