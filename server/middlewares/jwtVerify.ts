@@ -15,8 +15,8 @@ const jwtVerify = asyncHandler(async (req: any, res: Response, next: NextFunctio
         async (err: any, decoded: any) => {
             if (err) return res.status(403).json(ACCESS_DENIED)
 
-            const account: any = await User.findOne({ user: decoded.userData.user }).exec()
-            if (account.resigned)  return res.status(403).json(ACCESS_DENIED)
+            const account: any = await User.findOne({ token }).exec()
+            if (!account || account?.resigned)  return res.status(403).json(ACCESS_DENIED)
             
             req.user = decoded.userData.user
             req.roles = decoded.userData.roles
