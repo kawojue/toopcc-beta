@@ -4,8 +4,6 @@ const NextAppModel: Schema = new Schema({
     patient: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "AdvancePt",
-        sparse: true,
-        unique: true,
         required: true,
     },
     next_appointment: [{
