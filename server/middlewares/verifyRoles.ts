@@ -8,9 +8,8 @@ const verifyRoles = (...roles: string[]) => {
 
         const authRoles: string[] = req.roles
         const allowedRoles: string[] = [...roles]
-
         if (!checkRoles(authRoles, allowedRoles)) return res.status(401).json(ACCESS_DENIED)
-        
+
         next()
     }
 }
