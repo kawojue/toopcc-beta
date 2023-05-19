@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import User from '../models/User'
 import { Response, NextFunction } from 'express'
+import checkRoles from '../utilities/checkRoles'
 import { ACCESS_DENIED } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -16,10 +17,15 @@ const jwtVerify = asyncHandler(async (req: any, res: Response, next: NextFunctio
             if (err) return res.status(403).json(ACCESS_DENIED)
 
             const account: any = await User.findOne({ token }).exec()
-            if (!account || account?.resigned)  return res.status(403).json(ACCESS_DENIED)
+
+            const authRoles: any = account?.roles
+            const user: string = decoded.userData.user
+            const roles: string[] = decoded.userData.roles
+
+            if (!account || account?.resigned || !checkRoles(authRoles, roles))  return res.status(403).json(ACCESS_DENIED)
             
-            req.user = decoded.userData.user
-            req.roles = decoded.userData.roles
+            req.user = user
+            req.roles = roles
             next()
         }
     )
