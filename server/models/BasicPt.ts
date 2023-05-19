@@ -11,6 +11,10 @@ const BasicPtModel: Schema = new Schema({
         type: String,
         required: true
     },
+    age: {
+        type: Number,
+        required: true
+    },
     sex: {
         type: String,
         required: true
@@ -20,12 +24,14 @@ const BasicPtModel: Schema = new Schema({
         default: `${new Date().toISOString()}`
     },
     death: {
-        type: Boolean,
-        default: false
+        dead: {
+            type: Boolean,
+            default: false
+        },
+        date: String,
     },
     phone_no: String,
     address: String,
-    age: Number,
 })
 
 const BasicPt = mongoose.model('Patient', BasicPtModel) || BasicPtModel
