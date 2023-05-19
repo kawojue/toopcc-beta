@@ -85,7 +85,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    if (account.resigned) return res.status(401).json(ACCESS_DENIED)
+    if (account.resigned.resign) return res.status(401).json(ACCESS_DENIED)
 
     const match: boolean = await bcrypt.compare(pswd, account.password)
     if (!match) return res.status(401).json(INCORRECT_PSWD)
@@ -120,7 +120,7 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    if (account.resigned) return res.status(401).json(ACCESS_DENIED)
+    if (account.resigned.resign) return res.status(401).json(ACCESS_DENIED)
 
     account.OTP.totp = totp
     account.OTP.totpDate = totpDate
@@ -264,7 +264,7 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     const account: any = await User.findOne({ 'mail.email': email }).exec()
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
-    if (!verified || !account.mail.verified || account.resigned) return res.status(400).json(ACCESS_DENIED)
+    if (!verified || !account.mail.verified || account.resigned.resign) return res.status(400).json(ACCESS_DENIED)
 
     const compare = await bcrypt.compare(newPswd, account.password)
     if (compare) return res.status(400).json(CURRENT_PSWD)
