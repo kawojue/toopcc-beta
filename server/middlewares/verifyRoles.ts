@@ -1,5 +1,6 @@
+import checkRoles from '../utilities/checkRoles'
 import { Response, NextFunction } from 'express'
-import { ACCESS_DENIED } from '../utilities/error'
+import { ACCESS_DENIED } from '../utilities/modal'
 
 const verifyRoles = (...roles: string[]) => {
     return (req: any, res: Response, next: NextFunction) => {
@@ -8,8 +9,7 @@ const verifyRoles = (...roles: string[]) => {
         const authRoles: string[] = req.roles
         const allowedRoles: string[] = [...roles]
 
-        const result: any = allowedRoles.map((role: string) => authRoles.includes(role)).find((value: boolean) => value === true)
-        if (!result) return res.status(401).json(ACCESS_DENIED)
+        if (!checkRoles(authRoles, allowedRoles)) return res.status(401).json(ACCESS_DENIED)
         
         next()
     }
