@@ -31,8 +31,11 @@ const UserModel: Schema = new Schema({
         default: `${new Date().toISOString()}`
     },
     resigned: {
-        type: Boolean,
-        default: false
+        date: String,
+        resign: {
+            type: Boolean,
+            default: false
+        }
     },
     roles: {
         type: Array,
