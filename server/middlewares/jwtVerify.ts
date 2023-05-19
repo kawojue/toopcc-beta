@@ -23,7 +23,7 @@ const jwtVerify = asyncHandler(async (req: any, res: Response, next: NextFunctio
             const roles: string[] = decoded.roles
             const authRoles: string[] = account.roles
 
-            if (account.resigned || roles.length !== authRoles.length) return res.status(403).json(ACCESS_DENIED)
+            if (account.resigned.resign || roles.length !== authRoles.length) return res.status(403).json(ACCESS_DENIED)
             
             req.user = user
             req.roles = roles
