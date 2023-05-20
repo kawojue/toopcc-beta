@@ -1,5 +1,6 @@
 import otp from './otp'
 import edit from './edit'
+import avatar from './avatar'
 import { Router } from 'express'
 import {
     login, logout, createUser, resetpswd,
@@ -12,6 +13,7 @@ const auth: Router = Router()
 
 auth.use('/otp', otp)
 auth.use('/edit', edit)
+auth.use('/avatar', avatar)
 
 const loginLimiter: ILimiter = {
     max: 5,
