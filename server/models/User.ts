@@ -41,12 +41,15 @@ const UserModel: Schema = new Schema({
         type: Array,
         default: ["staff"]
     },
+    avatar: {
+        secure_url: String,
+        public_id:  String
+    },
     OTP: {
         totp: String,
         totpDate: Number
     },
     token: String,
-    avatar: String,
     lastLogin: String,
 })
 
