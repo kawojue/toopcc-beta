@@ -6,6 +6,7 @@ import genOTP from '../utilities/genOTP'
 import { IMailer, IGenOTP } from '../type'
 import { Request, Response } from 'express'
 import genToken from '../utilities/genToken'
+import cloudinary from '../configs/cloudinary'
 import full_name from '../utilities/full_name'
 import {
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
@@ -312,9 +313,48 @@ const editPassword = asyncHandler(async (req: any, res: Response) => {
     res.status(200).json(PSWD_CHANGED)
 })
 
+const addAvatar = asyncHandler(async (req: any, res: any) => {
+    const { avatar }: any = req.body
+    if (!avatar) return res.status(400).json(SMTH_WENT_WRONG)
+
+    const account: any = await User.findOne({ user: req?.user }).exec()
+    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
+
+    const result = await cloudinary.uploader.upload(avatar, {
+        folder: `Avatars/${account.id}`,
+        resource_type: 'image'
+    })
+    if (!result) return res.status(404).json(SMTH_WENT_WRONG)
+
+    account.avatar = {
+        secure_url: result.secure_url,
+        public_id: result.public_id
+    }
+    await account.save()
+
+    res.status(200).json({
+        ...SUCCESS,
+        msg: "Successful."
+    })
+})
+
+const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
+    const account: any = await User.findOne({ user: req?.user }).exec()
+    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
+
+    const publicId: string = account.avatar.public_id
+    const result = await cloudinary.uploader.destroy(publicId)
+    if (!result) return res.status(404).json(SMTH_WENT_WRONG)
+
+    res.status(200).json({
+        ...SUCCESS,
+        msg: "Successful."
+    })
+})
+
 
 export {
-    resetpswd, login, otpHandler,
-    createUser, logout, verifyOTP,
-    editPassword, editUsername, editFullname
+    resetpswd, login, otpHandler, deleteAvatar,
+    createUser, logout, verifyOTP, addAvatar,
+    editPassword, editUsername, editFullname,
 }
