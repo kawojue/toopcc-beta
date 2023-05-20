@@ -30,6 +30,10 @@ const BasicPtModel: Schema = new Schema({
         },
         date: String,
     },
+    isAdvance: {
+        type: Boolean,
+        default: false
+    },
     phone_no: String,
     address: String,
 })
