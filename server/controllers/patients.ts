@@ -3,7 +3,9 @@ import { Request, Response } from 'express'
 import AltPatient from '../models/AdvancePt'
 import full_name from '../utilities/full_name'
 import {
-    ERROR, FIELDS_REQUIRED, WARNING, SUCCESS
+    ERROR, FIELDS_REQUIRED, WARNING,
+    CARD_NO, INVALID_AGE, SUCCESS,
+    INVALID_PHONE_NO
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -19,19 +21,15 @@ const add = asyncHandler(async (req: Request, res: Response) => {
     fullname = full_name(fullname)
 
     if (!card_no || !fullname || !sex || !age) return res.status(400).json(FIELDS_REQUIRED)
-    
-    if (!phoneRegex.test(phone_no?.trim())) {
-        return res.status(400).json({
-            ...ERROR,
-            msg: "Invalid phone number"
-        })
+
+    if (phone_no?.trim()) {
+        if (!phoneRegex.test(phone_no?.trim())) {
+            return res.status(400).json(INVALID_PHONE_NO)
+        }
     }
 
     if (age > 120) {
-        return res.status(400).json({
-            ...ERROR,
-            msg: "Age is not valid"
-        })
+        return res.status(400).json(INVALID_AGE)
     }
 
     const patient: any = await Patient.findOne({ card_no }).exec()
@@ -65,12 +63,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     }: any = req.body
 
     card_no = card_no?.trim()
-    if (!card_no) {
-        return res.status(400).json({
-            ...ERROR,
-            msg: "Card number is required."
-        })
-    }
+    if (!card_no) return res.status(400).json(CARD_NO)
 
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) {
@@ -111,10 +104,6 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         patient.phone_no = phone_no.trim()
     }
 
-    if (address?.trim()) {
-        patient.address = address
-    }
-
     if (age) {
         age = Number(age)
         if (age > 120) {
@@ -130,7 +119,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         if (!death.date) {
             return res.status(400).json({
                 ...WARNING,
-                msg: "Date is required."
+                msg: "Date of death is required."
             })
         }
         death = {
@@ -139,6 +128,8 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         }
         patient.death = death
     }
+
+    if (address?.trim()) patient.address = address
 
     if (opthalmology) opthalmology = Boolean(opthalmology)
 
