@@ -22,7 +22,9 @@ const CURRENT_PSWD = { ...WARNING, msg: "Not saved! Same password." }
 
 const SEX_REQUIRED = { ...WARNING, msg: "Sex is required." }
 
-const CARD_NO = { ...ERROR, msg: "Card number is required. "}
+const PATIENT_NOT_EXIST = { ...ERROR, msg: "Patient does not exist." }
+
+const CARD_NO_REQUIRED = { ...ERROR, msg: "Card number is required. "}
 
 const INVALID_PHONE_NO = { ...WARNING, msg: "Invalid phone number" }
 
@@ -34,6 +36,6 @@ export {
     FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
     PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, WARNING,
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED,
-    SMTH_WENT_WRONG, SEX_REQUIRED, CARD_NO,
-    INVALID_AGE, INVALID_PHONE_NO
+    SMTH_WENT_WRONG, SEX_REQUIRED, CARD_NO_REQUIRED,
+    INVALID_AGE, INVALID_PHONE_NO, PATIENT_NOT_EXIST
 }
