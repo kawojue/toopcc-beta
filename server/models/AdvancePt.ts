@@ -11,9 +11,18 @@ const AdvancePtModel: Schema = new Schema({
             type: Boolean,
             default: true
         },
-        opthalmology: Boolean,
-        physiotherapy: Boolean,
-        walking_stick: Boolean
+        opthalmology: {
+            type: Boolean,
+            default: false
+        },
+        physiotherapy: {
+            type: Boolean,
+            default: false
+        },
+        walking_stick: {
+            type: Boolean,
+            default: false
+        }
     },
     body: {
         type: [{
