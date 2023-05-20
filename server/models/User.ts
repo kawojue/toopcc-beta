@@ -46,6 +46,7 @@ const UserModel: Schema = new Schema({
         totpDate: Number
     },
     token: String,
+    avatar: String,
     lastLogin: String,
 })
 
