@@ -4,8 +4,8 @@ import AltPatient from '../models/AdvancePt'
 import full_name from '../utilities/full_name'
 import {
     ERROR, FIELDS_REQUIRED, WARNING,
-    CARD_NO, INVALID_AGE, SUCCESS,
-    INVALID_PHONE_NO
+    CARD_NO_REQUIRED, INVALID_AGE, SUCCESS,
+    INVALID_PHONE_NO, PATIENT_NOT_EXIST,
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -63,14 +63,11 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     }: any = req.body
 
     card_no = card_no?.trim()
-    if (!card_no) return res.status(400).json(CARD_NO)
+    if (!card_no) return res.status(400).json(CARD_NO_REQUIRED)
 
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) {
-        return res.status(404).json({
-            ...ERROR,
-            msg: "Patient does not exist."
-        })
+        return res.status(404).json(PATIENT_NOT_EXIST)
     }
 
     if (fullname) {
@@ -115,18 +112,20 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         patient.age = age
     }
 
-    if (Boolean(death?.dead) !== patient.death.dead) {
-        if (!death.date) {
-            return res.status(400).json({
-                ...WARNING,
-                msg: "Date of death is required."
-            })
+    if (death?.dead){
+        if (Boolean(death?.dead) !== patient.death.dead) {
+            if (!death?.date) {
+                return res.status(400).json({
+                    ...WARNING,
+                    msg: "Date of death is required."
+                })
+            }
+            death = {
+                dead: !Boolean(patient.dead),
+                date: death.date
+            }
+            patient.death = death
         }
-        death = {
-            dead: !Boolean(patient.dead),
-            date: death.date
-        }
-        patient.death = death
     }
 
     if (address?.trim()) patient.address = address
@@ -170,4 +169,23 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     })
 })
 
-export { add, edit }
+const remove = asyncHandler(async (req: Request, res: Response) => {
+    let { card_no }: any = req.body
+    if (!card_no || !card_no?.trim()) return res.status(400).json(CARD_NO_REQUIRED)
+
+    const patient: any = await Patient.findOne({ card_no }).exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    if (patient.isAdvance) {
+        await AltPatient.deleteOne({ patient: patient.id }).exec()
+    }
+
+    await Patient.deleteOne({ card_no }).exec()
+
+    res.status(200).json({
+        ...SUCCESS,
+        msg: "Patient data has been deleted."
+    })
+})
+
+export { add, edit, remove }
