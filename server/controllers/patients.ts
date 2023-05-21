@@ -45,12 +45,9 @@ const add = asyncHandler(async (req: Request, res: Response) => {
     if (patient) return res.status(409).json(PATIENT_EXIST)
 
     await Patient.create({
-        sex,
-        card_no,
-        address,
-        fullname,
-        phone_no,
-        age: age as number,
+        sex, card_no,
+        address, fullname,
+        phone_no, age: age as number,
     })
 
     res.status(200).json(SAVED)
@@ -210,11 +207,6 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
     if (!card_no) return res.status(400).json(CARD_NO_REQUIRED)
 
-    if (
-        !date_visit && !images && !texts && 
-        !physiotherapy && !opthalmology && !walking_stick
-    ) return res.status(304).json(NO_CHANGES)
-
     const patient = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
@@ -267,19 +259,19 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         await AltPatient.create({
             patient: patient.id,
             recommendation,
-            body: [{
+            body: (imageArr.length > 0 || texts) ? [{
                 idx: uuid(),
                 diagnosis: {
                     texts,
                     images: imageArr,
                 },
                 date_visit
-            }]
+            }] : []
         })
         patient.isAdvance = true
         await patient.save()
 
-        return res.sendStatus(201)
+        return res.status(201).json(SAVED)
     }
 
     const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
@@ -287,7 +279,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         ...altPatient.recommendation,
         ...recommendation,
     }
-    altPatient.body = [
+    altPatient.body = (imageArr.length > 0 || texts) ? [
         ...altPatient.body,
         {
             idx: uuid(),
@@ -297,9 +289,32 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
             },
             date_visit
         }
-    ]
+    ] : [ ...altPatient.body ]
     await altPatient.save()
-    res.sendStatus(200)
+    res.status(200).json(SAVED)
 })
 
-export { add, edit, remove, addDiagnosis }
+const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
+    const { idx }: any = req.body
+    const { card_no }: any = req.params
+
+    const patient: any = await Patient.findOne({ card_no }).exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
+    if (!altPatient) return res.status(400).json(SMTH_WENT_WRONG)
+
+    const bodies = altPatient.body
+    altPatient.body = bodies.filter((body: any) => body.idx !== idx)
+    await altPatient.save()
+
+    res.status(200).json({
+        ...SUCCESS,
+        msg: "Deleted successfully"
+    })
+})
+
+export {
+    add, edit, addDiagnosis,
+    remove, deleteDianosis
+}
