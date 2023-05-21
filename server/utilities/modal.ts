@@ -32,10 +32,17 @@ const INVALID_AGE = { ...WARNING, msg: "Age is not valid" }
 
 const PSWD_CHANGED = { ...SUCCESS, msg: "Password updated successfully." }
 
+const SAVED = { ...SUCCESS, msg: "Saved!" }
+
+const PATIENT_EXIST = { ...WARNING, msg: "Patient with card number already exists." }
+
+const NO_CHANGES = { ...WARNING, msg: "No changed detected." }
+
 export {
     FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
     PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, WARNING,
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED,
     SMTH_WENT_WRONG, SEX_REQUIRED, CARD_NO_REQUIRED,
-    INVALID_AGE, INVALID_PHONE_NO, PATIENT_NOT_EXIST
+    INVALID_AGE, INVALID_PHONE_NO, PATIENT_NOT_EXIST,
+    PATIENT_EXIST, SAVED, NO_CHANGES
 }
