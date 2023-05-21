@@ -358,9 +358,28 @@ const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
     })
 })
 
+const resigned = asyncHandler(async (req: Request, res: Response) => {
+    const { user, resign, date }: any = req.body
+    const account: any = await User.findOne({ user }).exec()
+
+    if (!resign || date) return res.status(400).json(FIELDS_REQUIRED)
+
+    if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
+
+    account.resigned.date = date
+    account.resigned.resign = Boolean(resign)
+    await account.save()
+
+    res.status(200).json({
+        ...SUCCESS,
+        msg: "Staf has been resigned"
+    })
+})
+
 
 export {
     resetpswd, login, otpHandler, deleteAvatar,
     createUser, logout, verifyOTP, addAvatar,
     editPassword, editUsername, editFullname,
+    resigned
 }
