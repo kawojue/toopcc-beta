@@ -5,10 +5,9 @@ import AltPatient from '../models/AdvancePt'
 import full_name from '../utilities/full_name'
 import cloudinary from '../configs/cloudinary'
 import {
-    ERROR, FIELDS_REQUIRED, WARNING,
-    CARD_NO_REQUIRED, INVALID_AGE, SUCCESS,
-    INVALID_PHONE_NO, PATIENT_NOT_EXIST,
-    SMTH_WENT_WRONG, PATIENT_EXIST,
+    ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
+    INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
+    PATIENT_EXIST, SAVED, NO_CHANGES, WARNING, SUCCESS
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -54,10 +53,7 @@ const add = asyncHandler(async (req: Request, res: Response) => {
         age: age as number,
     })
 
-    res.status(200).json({
-        ...SUCCESS,
-        msg: "Saved!"
-    })
+    res.status(200).json(SAVED)
 })
 
 // edit patient data
@@ -73,6 +69,12 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
 
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    if (
+        !fullname?.trim() && !sex && !phone_no && !address &&
+        !age && (death?.dead === patient.death.dead) && !cardNo
+        && !walking_stick && !opthalmology && !physiotherapy
+    ) return res.status(304).json(NO_CHANGES)
 
     if (cardNo || cardNo?.trim()) {
         cardNo = cardNo.trim()
@@ -160,10 +162,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         })
         patient.isAdvance = true
         await patient.save()
-        return res.status(200).json({
-            ...SUCCESS,
-            msg: "Saved!"
-        })
+        return res.status(201).json(SAVED)
     }
 
     const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
@@ -174,10 +173,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     await patient.save()
     await altPatient.save()
 
-    res.status(200).json({
-        ...SUCCESS,
-        msg: "Saved!"
-    })
+    res.status(200).json(SAVED)
 })
 
 // delete patient data
@@ -213,6 +209,11 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     }: any = req.body
 
     if (!card_no) return res.status(400).json(CARD_NO_REQUIRED)
+
+    if (
+        !date_visit && !images && !texts && 
+        !physiotherapy && !opthalmology && !walking_stick
+    ) return res.status(304).json(NO_CHANGES)
 
     const patient = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
@@ -278,7 +279,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         patient.isAdvance = true
         await patient.save()
 
-        return res.sendStatus(200)
+        return res.sendStatus(201)
     }
 
     const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
