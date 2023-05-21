@@ -10,7 +10,8 @@ const patients: Router = Router()
 patients.use([jwtVerify, verifyRoles("admin")])
 
 patients.post('/add', add)
-patients.put('/edit', edit)
-patients.delete('/remove', remove)
+patients.route('/:card_no')
+    .put(edit)
+    .delete(remove)
 
 export default patients
