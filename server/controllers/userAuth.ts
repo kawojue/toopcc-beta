@@ -344,13 +344,13 @@ const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
 
     // const result: any = await cloudinary.uploader.destroy(account.avatar?.public_id)
     const result: any = await cloudinary.api.delete_resources_by_prefix(account.id)
+    if (!result) return res.status(404).json(SMTH_WENT_WRONG)
+
     account.avatar = {
         secure_url: "",
         public_id: ""
     }
     await account.save()
-
-    if (!result) return res.status(404).json(SMTH_WENT_WRONG)
 
     res.status(200).json({
         ...SUCCESS,
