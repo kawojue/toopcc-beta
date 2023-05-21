@@ -145,7 +145,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
 
     if (walking_stick) walking_stick = Boolean(walking_stick)
 
-    const rec = {
+    const recommendation = {
         opthalmology,
         physiotherapy,
         walking_stick
@@ -154,7 +154,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     if (!patient.isAdvance) {
         await AltPatient.create({
             patient: patient.id,
-            recommendation: { ...rec }
+            recommendation
         })
         patient.isAdvance = true
         await patient.save()
@@ -167,7 +167,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
     altPatient.recommendation = {
         ...altPatient.recommendation,
-        ...rec
+        ...recommendation
     }
     await patient.save()
     await altPatient.save()
@@ -198,6 +198,105 @@ const remove = asyncHandler(async (req: Request, res: Response) => {
     })
 })
 
+const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
+    let imageRes: any;
+    const imageArr: {
+        secure_url: string
+        public_id: string
+    }[] = []
+    const { card_no }: any = req.params
+    let {
+        date_visit, images, texts,
+        physiotherapy, opthalmology, walking_stick
+    }: any = req.body
 
+    if (!card_no) return res.status(400).json(CARD_NO_REQUIRED)
 
-export { add, edit, remove }
+    const patient = await Patient.findOne({ card_no }).exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    if (images) {
+        images = Array(images)
+        if (images.length > 3) {
+            return res.status(400).json(SMTH_WENT_WRONG)
+        }
+
+        if (images.length > 0) {
+            images.forEach(async (image: any) => {
+                imageRes = await cloudinary.uploader.upload(image, {
+                    folder: `TOOPCC/${patient.id}`,
+                    resource_type: 'image'
+                })
+
+                if (!imageRes) {
+                    return res.status(400).json(SMTH_WENT_WRONG)
+                }
+
+                imageArr.push({
+                    secure_url: imageRes.secure_url,
+                    public_id: imageRes.public_id
+                })
+            })
+        }
+    }
+
+    if (texts) {
+        texts = texts.trim()
+    }
+
+    if (!date_visit) {
+        date_visit = `${new Date().toISOString()}`
+    }
+
+    if (opthalmology) opthalmology = Boolean(opthalmology)
+
+    if (physiotherapy) physiotherapy = Boolean(physiotherapy)
+
+    if (walking_stick) walking_stick = Boolean(walking_stick)
+
+    const recommendation = {
+        opthalmology,
+        physiotherapy,
+        walking_stick
+    }
+
+    if (!patient.isAdvance) {
+        await AltPatient.create({
+            patient: patient.id,
+            recommendation,
+            body: [{
+                idx: uuid(),
+                diagnosis: {
+                    texts,
+                    images: imageArr,
+                },
+                date_visit
+            }]
+        })
+        patient.isAdvance = true
+        await patient.save()
+
+        return res.sendStatus(200)
+    }
+
+    const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
+    altPatient.recommendation = {
+        ...altPatient.recommendation,
+        ...recommendation,
+    }
+    altPatient.body = [
+        ...altPatient.body,
+        {
+            idx: uuid(),
+            diagnosis: {
+                texts,
+                images: imageArr,
+            },
+            date_visit
+        }
+    ]
+    await altPatient.save()
+    res.sendStatus(200)
+})
+
+export { add, edit, remove, addDiagnosis }
