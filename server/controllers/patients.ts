@@ -216,23 +216,21 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
             return res.status(400).json(SMTH_WENT_WRONG)
         }
 
-        if (images.length > 0) {
-            images.forEach(async (image: any) => {
-                imageRes = await cloudinary.uploader.upload(image, {
-                    folder: `TOOPCC/${patient.id}`,
-                    resource_type: 'image'
-                })
-
-                if (!imageRes) {
-                    return res.status(400).json(SMTH_WENT_WRONG)
-                }
-
-                imageArr.push({
-                    secure_url: imageRes.secure_url,
-                    public_id: imageRes.public_id
-                })
+        images.forEach(async (image: any) => {
+            imageRes = await cloudinary.uploader.upload(image, {
+                folder: `TOOPCC/${patient.id}`,
+                resource_type: 'image'
             })
-        }
+
+            if (!imageRes) {
+                return res.status(400).json(SMTH_WENT_WRONG)
+            }
+
+            imageArr.push({
+                secure_url: imageRes.secure_url,
+                public_id: imageRes.public_id
+            })
+        })
     }
 
     if (texts) {
@@ -304,7 +302,20 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
     const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
     if (!altPatient) return res.status(400).json(SMTH_WENT_WRONG)
 
-    const bodies = altPatient.body
+    const bodies: any[] = altPatient.body
+    const body: any = bodies.find((body: any) => body.idx === idx)
+    if (body.diagnosis.images.length > 0) {
+        const images: any[] = body.diagnosis.images
+        images.forEach(async (image: any) => {
+            const result: any = await cloudinary.uploader.destroy(image.public_id)
+            if (!result) {
+                return res.status(400).json({
+                    ...ERROR,
+                    msg: "Failed to delete!"
+                })
+            }
+        })
+    }
     altPatient.body = bodies.filter((body: any) => body.idx !== idx)
     await altPatient.save()
 
