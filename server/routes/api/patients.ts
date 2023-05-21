@@ -8,7 +8,7 @@ import verifyRoles from '../../middlewares/verifyRoles'
 
 const patients: Router = Router()
 
-patients.use([jwtVerify, verifyRoles("admin")])
+patients.use([jwtVerify, verifyRoles("admin", "hr")])
 
 patients.post('/add', add)
 patients.route('/:card_no')
