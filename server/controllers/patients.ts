@@ -7,7 +7,8 @@ import cloudinary from '../configs/cloudinary'
 import {
     ERROR, FIELDS_REQUIRED, WARNING,
     CARD_NO_REQUIRED, INVALID_AGE, SUCCESS,
-    INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
+    INVALID_PHONE_NO, PATIENT_NOT_EXIST,
+    SMTH_WENT_WRONG, PATIENT_EXIST,
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -42,12 +43,7 @@ const add = asyncHandler(async (req: Request, res: Response) => {
     }
 
     const patient: any = await Patient.findOne({ card_no }).exec()
-    if (patient) {
-        return res.status(409).json({
-            ...WARNING,
-            msg: "Patient already exists."
-        })
-    }
+    if (patient) return res.status(409).json(PATIENT_EXIST)
 
     await Patient.create({
         sex,
@@ -68,15 +64,21 @@ const add = asyncHandler(async (req: Request, res: Response) => {
 const edit = asyncHandler(async (req: Request, res: Response) => {
     const { card_no } = req.params
     let {
-        fullname, sex, phone_no, address, age, death,
-        opthalmology, physiotherapy, walking_stick,
+        fullname, sex, phone_no, address,
+        age, death, cardNo, walking_stick,
+        opthalmology, physiotherapy,
     }: any = req.body
 
     if (!card_no) return res.status(400).json(CARD_NO_REQUIRED)
 
     const patient: any = await Patient.findOne({ card_no }).exec()
-    if (!patient) {
-        return res.status(404).json(PATIENT_NOT_EXIST)
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    if (cardNo || cardNo?.trim()) {
+        cardNo = cardNo.trim()
+        const cardNoExists: any = await Patient.findOne({ card_no: cardNo }).exec()
+        if (cardNoExists) return res.status(409).json(PATIENT_EXIST)
+        patient.card_no = cardNo
     }
 
     if (fullname) {
@@ -199,7 +201,7 @@ const remove = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
-    let imageRes: any;
+    let imageRes: any
     const imageArr: {
         secure_url: string
         public_id: string
