@@ -304,8 +304,8 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
 
     const bodies: any[] = altPatient.body
     const body: any = bodies.find((body: any) => body.idx === idx)
-    if (body.diagnosis.images.length > 0) {
-        const images: any[] = body.diagnosis.images
+    const images: any[] = body.diagnosis.images
+    if (images.length > 0) {
         images.forEach(async (image: any) => {
             const result: any = await cloudinary.uploader.destroy(image.public_id)
             if (!result) {
