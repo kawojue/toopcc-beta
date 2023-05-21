@@ -26,6 +26,7 @@ const AdvancePtModel: Schema = new Schema({
     },
     body: {
         type: [{
+            idx: String,
             diagnosis: {
                 images: [{
                     secure_url: String,
