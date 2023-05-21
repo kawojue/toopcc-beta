@@ -1,11 +1,13 @@
+import { v4 as uuid } from 'uuid'
 import Patient from '../models/BasicPt'
 import { Request, Response } from 'express'
 import AltPatient from '../models/AdvancePt'
 import full_name from '../utilities/full_name'
+import cloudinary from '../configs/cloudinary'
 import {
     ERROR, FIELDS_REQUIRED, WARNING,
     CARD_NO_REQUIRED, INVALID_AGE, SUCCESS,
-    INVALID_PHONE_NO, PATIENT_NOT_EXIST,
+    INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -16,11 +18,18 @@ const add = asyncHandler(async (req: Request, res: Response) => {
     let { card_no, fullname, sex, phone_no, address, age }: any = req.body
 
     age = Number(age)
-    card_no = card_no?.trim()
+    card_no = card_no.trim()
     address = address?.trim()
     fullname = full_name(fullname)
 
     if (!card_no || !fullname || !sex || !age) return res.status(400).json(FIELDS_REQUIRED)
+
+    if (card_no.includes('/')) {
+        return res.status(400).json({
+            ...WARNING,
+            msg: "Invalid card number."
+        })
+    }
 
     if (phone_no?.trim()) {
         if (!phoneRegex.test(phone_no?.trim())) {
@@ -57,12 +66,12 @@ const add = asyncHandler(async (req: Request, res: Response) => {
 
 // edit patient data
 const edit = asyncHandler(async (req: Request, res: Response) => {
+    const { card_no } = req.params
     let {
-        card_no, fullname, sex, phone_no, address, age,
-        death, opthalmology, physiotherapy, walking_stick,
+        fullname, sex, phone_no, address, age, death,
+        opthalmology, physiotherapy, walking_stick,
     }: any = req.body
 
-    card_no = card_no?.trim()
     if (!card_no) return res.status(400).json(CARD_NO_REQUIRED)
 
     const patient: any = await Patient.findOne({ card_no }).exec()
@@ -136,14 +145,16 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
 
     if (walking_stick) walking_stick = Boolean(walking_stick)
 
+    const rec = {
+        opthalmology,
+        physiotherapy,
+        walking_stick
+    }
+
     if (!patient.isAdvance) {
         await AltPatient.create({
             patient: patient.id,
-            recommendation: {
-                opthalmology,
-                physiotherapy,
-                walking_stick
-            }
+            recommendation: { ...rec }
         })
         patient.isAdvance = true
         await patient.save()
@@ -156,9 +167,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
     altPatient.recommendation = {
         ...altPatient.recommendation,
-        opthalmology,
-        physiotherapy,
-        walking_stick
+        ...rec
     }
     await patient.save()
     await altPatient.save()
@@ -169,8 +178,9 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     })
 })
 
+// delete patient data
 const remove = asyncHandler(async (req: Request, res: Response) => {
-    let { card_no }: any = req.body
+    let { card_no }: any = req.params
     if (!card_no || !card_no?.trim()) return res.status(400).json(CARD_NO_REQUIRED)
 
     const patient: any = await Patient.findOne({ card_no }).exec()
@@ -187,5 +197,7 @@ const remove = asyncHandler(async (req: Request, res: Response) => {
         msg: "Patient data has been deleted."
     })
 })
+
+
 
 export { add, edit, remove }
