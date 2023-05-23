@@ -373,7 +373,7 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
 
     res.status(200).json({
         ...SUCCESS,
-        msg: "Staf has been resigned"
+        msg: "Staff has been resigned"
     })
 })
 
