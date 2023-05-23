@@ -37,7 +37,8 @@ const AdvancePtModel: Schema = new Schema({
             date_visit: {
                 type: String,
                 required: true
-            }
+            },
+            next_app: String
         }],
         default: []
     }
