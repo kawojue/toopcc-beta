@@ -11,7 +11,8 @@ import full_name from '../utilities/full_name'
 import {
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
     FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
-    PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, WARNING,
+    PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, WARNING, CANCELED,
+    ROLES_UPDATED,
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -378,13 +379,9 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
 
 const changeRoles = asyncHandler(async (req: Request, res: Response) => {
     const { user, role }: any = req.body
-    const account: any = await User.findOne({ user })
+    if (!role) return res.status(400).json(CANCELED)
 
-    if (!role) return res.status(400).json({
-        ...WARNING,
-        msg: "Canceled."
-    })
-
+    const account: any = await User.findOne({ user }).exec()
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
     const roles: string[] = account.roles
@@ -397,12 +394,37 @@ const changeRoles = asyncHandler(async (req: Request, res: Response) => {
 
     roles.push(role)
     account.roles = roles
+    if (account.roles.length === 0) {
+        return res.status(400).json({
+            ...WARNING,
+            msg: "Empty roles! Cannot remove role."
+        })
+    }
     await account.save()
 
-    res.status(200).json({
-        ...SUCCESS,
-        msg: "Roles has been updated."
-    })
+    res.status(200).json(ROLES_UPDATED)
+})
+
+const removeRole = asyncHandler(async (req: Request, res: Response) => {
+    const { user, role }: any = req.body
+    if (!role) return res.status(400).json(CANCELED)
+
+    const account: any = await User.findOne({ user }).exec()
+    if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
+
+    let roles: string[] = account.roles
+    if (!roles.includes(role)) {
+        return res.status(400).json({
+            ...WARNING,
+            msg: "Role does not exist."
+        })
+    }
+
+    roles = roles.filter((role: string) => role !== role)
+    account.roles = roles
+    await account.save()
+
+    res.status(200).json(ROLES_UPDATED)
 })
 
 
@@ -410,5 +432,5 @@ export {
     resetpswd, login, otpHandler, deleteAvatar,
     createUser, logout, verifyOTP, addAvatar,
     editPassword, editUsername, editFullname,
-    resigned, changeRoles
+    resigned, changeRoles, removeRole
 }
