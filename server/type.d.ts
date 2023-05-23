@@ -23,11 +23,12 @@ interface ICloud {
 
 interface IBody {
     idx: string
-    diagnosis: {
-        images?: ICloud
-        texts?: string
+    diagnosis?: {
+        images: ICloud[]
+        texts: string
     }
-    date_visit: string
+    date_visit: string,
+    next_app?: string
 }
 
 export {
