@@ -209,30 +209,23 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     }[] = []
     const { card_no }: any = req.params
     let {
-        date_visit, images, texts,
+        date_visit, images, texts, next_app,
         physiotherapy, opthalmology, walking_stick
     }: any = req.body
-
-    if (!card_no) return res.status(400).json(CARD_NO_REQUIRED)
 
     const patient = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     if (images) {
         images = Array(images)
-        if (images.length > 3) {
-            return res.status(400).json(SMTH_WENT_WRONG)
-        }
+        if (images.length > 3) return res.status(400).json(SMTH_WENT_WRONG)
 
         images.forEach(async (image: any) => {
             imageRes = await cloudinary.uploader.upload(image, {
                 folder: `TOOPCC/${patient.id}`,
                 resource_type: 'image'
             })
-
-            if (!imageRes) {
-                return res.status(400).json(SMTH_WENT_WRONG)
-            }
+            if (!imageRes) return res.status(400).json(SMTH_WENT_WRONG)
 
             imageArr.push({
                 secure_url: imageRes.secure_url,
@@ -241,13 +234,9 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    if (texts) {
-        texts = texts.trim()
-    }
+    if (texts) texts = texts.trim()
 
-    if (!date_visit) {
-        date_visit = `${new Date().toISOString()}`
-    }
+    if (!date_visit) date_visit = `${new Date().toISOString()}`
 
     if (opthalmology) opthalmology = Boolean(opthalmology)
 
@@ -271,7 +260,8 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
                     texts,
                     images: imageArr,
                 },
-                date_visit
+                date_visit,
+                next_app
             }] : []
         })
         patient.isAdvance = true
@@ -293,10 +283,45 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
                 texts,
                 images: imageArr,
             },
-            date_visit
+            date_visit,
+            next_app
         }
     ] : [ ...altPatient.body ]
     await altPatient.save()
+
+    res.status(200).json(SAVED)
+})
+
+const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
+    const { card_no, idx }: any = req.params
+    let {
+        date_visit, texts, physiotherapy,
+        next_app, opthalmology, walking_stick
+    }: any = req.body
+
+    const patient: any = await Patient.findOne({ card_no }).exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
+    if (!altPatient) return res.status(400).json({
+        ...ERROR,
+        msg: "Not saved! Add before you edit."
+    })
+
+    const body: any = altPatient.body.find((body: IBody) => body.idx === idx)
+    const recommendation = altPatient.recommendation
+
+    if (texts) texts = body.diagnosis.texts = texts.trim()
+
+    if (!date_visit) body.date_visit = `${new Date().toISOString()}`
+
+    if (next_app) body.next_app = next_app
+
+    if (opthalmology) recommendation.opthalmoloy = Boolean(opthalmology)
+
+    if (physiotherapy) recommendation.physiotherapy = Boolean(physiotherapy)
+
+    if (walking_stick) recommendation.walking_stick = Boolean(walking_stick)
 
     res.status(200).json(SAVED)
 })
@@ -330,6 +355,6 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
 })
 
 export {
-    add, edit, addDiagnosis,
-    remove, deleteDianosis
+    add, edit, addDiagnosis, remove,
+    deleteDianosis, editDiagnosis,
 }
