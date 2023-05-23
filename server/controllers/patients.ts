@@ -1,5 +1,7 @@
 import { v4 as uuid } from 'uuid'
+import { IBody, ICloud } from '../type'
 import Patient from '../models/BasicPt'
+import delDiag from '../utilities/delDiag'
 import { Request, Response } from 'express'
 import AltPatient from '../models/AdvancePt'
 import full_name from '../utilities/full_name'
@@ -7,7 +9,8 @@ import cloudinary from '../configs/cloudinary'
 import {
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
     INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
-    PATIENT_EXIST, SAVED, NO_CHANGES, WARNING, SUCCESS
+    PATIENT_EXIST, SAVED, NO_CHANGES, WARNING, SUCCESS,
+    DELETION_FAILED
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -182,6 +185,11 @@ const remove = asyncHandler(async (req: Request, res: Response) => {
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     if (patient.isAdvance) {
+        const tempAltPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
+        const bodies: any[] = tempAltPatient.body
+        console.log(bodies)
+        const del: boolean = await delDiag(bodies)
+        if (!del) return res.status(400).json(DELETION_FAILED)
         await AltPatient.deleteOne({ patient: patient.id }).exec()
     }
 
@@ -289,6 +297,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         }
     ] : [ ...altPatient.body ]
     await altPatient.save()
+
     res.status(200).json(SAVED)
 })
 
@@ -302,18 +311,13 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
     const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
     if (!altPatient) return res.status(400).json(SMTH_WENT_WRONG)
 
-    const bodies: any[] = altPatient.body
-    const body: any = bodies.find((body: any) => body.idx === idx)
-    const images: any[] = body.diagnosis.images
+    const bodies: IBody[] = altPatient.body
+    const body: any = bodies.find((body: IBody) => body.idx === idx)
+    const images: ICloud[] = body.diagnosis.images
     if (images.length > 0) {
         images.forEach(async (image: any) => {
             const result: any = await cloudinary.uploader.destroy(image.public_id)
-            if (!result) {
-                return res.status(400).json({
-                    ...ERROR,
-                    msg: "Failed to delete!"
-                })
-            }
+            if (!result) return res.status(400).json(DELETION_FAILED)
         })
     }
     altPatient.body = bodies.filter((body: any) => body.idx !== idx)
