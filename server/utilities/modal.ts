@@ -38,11 +38,18 @@ const PATIENT_EXIST = { ...WARNING, msg: "Patient with card number already exist
 
 const NO_CHANGES = { ...WARNING, msg: "No changed detected." }
 
+const DELETION_FAILED = {...ERROR, msg: "Failed to delete!" }
+
+const CANCELED = { ...WARNING, msg: "Canceled." }
+
+const ROLES_UPDATED = { ...SUCCESS, msg: "Roles has been updated." }
+
 export {
     FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
     PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, WARNING,
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED,
     SMTH_WENT_WRONG, SEX_REQUIRED, CARD_NO_REQUIRED,
     INVALID_AGE, INVALID_PHONE_NO, PATIENT_NOT_EXIST,
-    PATIENT_EXIST, SAVED, NO_CHANGES
+    PATIENT_EXIST, SAVED, NO_CHANGES, DELETION_FAILED,
+    CANCELED, ROLES_UPDATED
 }
