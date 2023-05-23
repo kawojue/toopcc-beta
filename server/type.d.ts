@@ -16,4 +16,22 @@ interface ILimiter {
     msg?: string
 }
 
-export { IMailer, IGenOTP, ILimiter }
+interface ICloud {
+    secure_url: string
+    public_id: string
+}
+
+interface IBody {
+    idx: string
+    diagnosis: {
+        images?: ICloud
+        texts?: string
+    }
+    date_visit: string
+}
+
+export {
+    IMailer, IGenOTP,
+    ILimiter, ICloud,
+    IBody
+}
