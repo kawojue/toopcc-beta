@@ -187,7 +187,6 @@ const remove = asyncHandler(async (req: Request, res: Response) => {
     if (patient.isAdvance) {
         const tempAltPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
         const bodies: any[] = tempAltPatient.body
-        console.log(bodies)
         const del: boolean = await delDiag(bodies)
         if (!del) return res.status(400).json(DELETION_FAILED)
         await AltPatient.deleteOne({ patient: patient.id }).exec()
@@ -309,19 +308,27 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     })
 
     const body: any = altPatient.body.find((body: IBody) => body.idx === idx)
+    if (!body) {
+        return res.status(404).json({
+            ...ERROR,
+            msg: "Complaint does not exist."
+        })
+    }
     const recommendation = altPatient.recommendation
-
-    if (texts) texts = body.diagnosis.texts = texts.trim()
-
-    if (!date_visit) body.date_visit = `${new Date().toISOString()}`
 
     if (next_app) body.next_app = next_app
 
+    if (texts) body.diagnosis.texts = texts.trim()
+
+    if (!date_visit) body.date_visit = `${new Date().toISOString()}`
+
     if (opthalmology) recommendation.opthalmoloy = Boolean(opthalmology)
+
+    if (walking_stick) recommendation.walking_stick = Boolean(walking_stick)
 
     if (physiotherapy) recommendation.physiotherapy = Boolean(physiotherapy)
 
-    if (walking_stick) recommendation.walking_stick = Boolean(walking_stick)
+    await altPatient.save()
 
     res.status(200).json(SAVED)
 })
