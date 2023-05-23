@@ -376,10 +376,14 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
     })
 })
 
+const changeRoles = asyncHandler(async (req: Request, res: Response) => {
+
+})
+
 
 export {
     resetpswd, login, otpHandler, deleteAvatar,
     createUser, logout, verifyOTP, addAvatar,
     editPassword, editUsername, editFullname,
-    resigned
+    resigned, changeRoles
 }
