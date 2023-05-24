@@ -347,7 +347,7 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
     const body: any = bodies.find((body: IBody) => body.idx === idx)
     const images: ICloud[] = body.diagnosis.images
     if (images.length > 0) {
-        images.forEach(async (image: any) => {
+        images.forEach(async (image: ICloud) => {
             const result: any = await cloudinary.uploader.destroy(image.public_id)
             if (!result) return res.status(400).json(DELETION_FAILED)
         })
