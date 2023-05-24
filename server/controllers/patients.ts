@@ -349,7 +349,7 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
             if (!result) return res.status(400).json(DELETION_FAILED)
         })
     }
-    altPatient.body = bodies.filter((body: any) => body.idx !== idx)
+    altPatient.body = bodies.filter((body: IBody) => body.idx !== idx)
     await altPatient.save()
 
     res.status(200).json({
