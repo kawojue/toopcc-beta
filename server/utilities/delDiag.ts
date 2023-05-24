@@ -6,7 +6,7 @@ export default async function delDiag(bodies: any[]): Promise<boolean> {
         bodies.forEach((body: any) => {
             const images: ICloud[] = body.images
             if (images.length > 0) {
-                images.forEach(async (image: any) => {
+                images.forEach(async (image: ICloud) => {
                     const result = await cloudinary.uploader.destroy(image.public_id)
                     if (!result) return false
                 })
