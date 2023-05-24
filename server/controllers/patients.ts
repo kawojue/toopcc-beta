@@ -202,10 +202,7 @@ const remove = asyncHandler(async (req: Request, res: Response) => {
 
 const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     let imageRes: any
-    const imageArr: {
-        secure_url: string
-        public_id: string
-    }[] = []
+    const imageArr: ICloud[] = []
     const { card_no }: any = req.params
     let {
         date_visit, images, texts, next_app,
