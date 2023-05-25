@@ -27,8 +27,7 @@ interface IBody {
         images: ICloud[]
         texts: string
     }
-    date_visit: string,
-    next_app?: string
+    date_visit: string
 }
 
 export {
