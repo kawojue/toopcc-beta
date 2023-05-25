@@ -45,9 +45,51 @@ const PatientModel: Schema = new Schema({
             date_visit: {
                 type: String,
                 required: true
-            }
+            },
+            next_app: String
         }],
         default: []
+    },
+    recommendation: {
+        opthal: {
+            medication: {
+                type: [{
+                    idx: String,
+                    date: String,
+                    next_app: String
+                }],
+                default: []
+            },
+            extension: {
+                cataract_sugery: {
+                    eligibility: Boolean,
+                    done: Boolean,
+                    date: String
+                },
+                glasses: {
+                    eligibility: Boolean,
+                    given: Boolean,
+                    date: String,
+                }
+            }
+        },
+        physio: {
+            medication: {
+                type: [{
+                    idx: String,
+                    date: String,
+                    next_app: String
+                }],
+                default: []
+            },
+            extension: {
+                walking_stick: {
+                    eligibility: Boolean,
+                    given: Boolean,
+                    date: String
+                },
+            }
+        }
     }
 })
 
