@@ -5,6 +5,7 @@ import delDiag from '../utilities/delDiag'
 import { Request, Response } from 'express'
 import full_name from '../utilities/full_name'
 import cloudinary from '../configs/cloudinary'
+import lastNextApp from '../utilities/genNextApp'
 import {
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
     INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
@@ -164,7 +165,9 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const imageArr: ICloud[] = []
     const { card_no }: any = req.params
     let {
-        date_visit, images, texts,
+        date_visit, images, texts, cataract_sugery,
+        walking_stick, glasses, opthal, physio,
+        next_app
     }: any = req.body
 
     const patient = await Patient.findOne({ card_no }).exec()
@@ -192,6 +195,40 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
     if (!date_visit) date_visit = `${new Date().toISOString()}`
 
+    if (opthal) {
+        let opthalMedic: any[] = patient.recommendation.opthal.medication
+        if (opthal.date) {
+            opthalMedic = [
+                ...opthalMedic,
+                {
+                    idx: uuid(),
+                    next_app: lastNextApp(opthal.date),
+                    date: opthal.date
+                }
+            ]
+        }
+    }
+
+    if (physio) {
+        let physioMedic: any[] = patient.recommendation.physio.medication
+        if (physio.date) {
+            physioMedic = [
+                ...physioMedic,
+                {
+                    idx: uuid(),
+                    next_app: lastNextApp(physio.date),
+                    date: physio.date
+                }
+            ]
+        }
+    }
+
+    if (walking_stick) {}
+
+    if (glasses) {}
+
+    if (cataract_sugery) {}
+
     patient.body = (imageArr.length > 0 || texts) ? [
         ...patient.body,
         {
@@ -201,6 +238,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
                 images: imageArr,
             },
             date_visit,
+            next_app
         }
     ] : [ ...patient.body ]
     await patient.save()
@@ -210,7 +248,9 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
 const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
-    let { date_visit, texts }: any = req.body
+    let {
+        date_visit, texts, next_app
+    }: any = req.body
 
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
@@ -226,6 +266,52 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     if (texts) body.diagnosis.texts = texts.trim()
 
     if (date_visit) body.date_visit = date_visit
+
+    if (next_app) body.next_app = next_app
+
+    await patient.save()
+
+    res.status(200).json(SAVED)
+})
+
+const recommendation = asyncHandler(async (req: Request, res: Response) => {
+    const  { card_no }: any = req.params
+    const {
+        opthal, physio
+    } : any = req.body
+
+    const patient: any = await Patient.findOne({ card_no }).exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+if (opthal) {
+        let opthalMedic: any[] = patient.recommendation.opthal.medication
+        if (opthal.date) {
+            opthalMedic = [
+                ...opthalMedic,
+                {
+                    idx: uuid(),
+                    next_app: opthal?.next_app ? opthal.next_app : lastNextApp(opthal.date),
+                    date: opthal.date
+                }
+            ]
+        }
+        patient.recommendation.opthal.medication = opthalMedic
+    }
+
+    if (physio) {
+        let physioMedic: any[] = patient.recommendation.physio.medication
+        if (physio.date) {
+            physioMedic = [
+                ...physioMedic,
+                {
+                    idx: uuid(),
+                    next_app: physio?.next_app ? physio.next_app : lastNextApp(physio.date),
+                    date: physio.date
+                }
+            ]
+        }
+        patient.recommendation.physio.medication = physioMedic
+    }
 
     await patient.save()
 
@@ -261,4 +347,5 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
 export {
     add, edit, addDiagnosis, remove,
     deleteDianosis, editDiagnosis,
+    recommendation
 }
