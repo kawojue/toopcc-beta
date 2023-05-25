@@ -9,8 +9,8 @@ const role: Router = Router()
 
 role.use([jwtVerify, verifyRoles("hr")])
 
-role.post('/resign', resigned)
-role.post('/asign', changeRoles)
-role.post('/remove', removeRole)
+role.post('/resign/:user', resigned)
+role.post('/assign/:user', changeRoles)
+role.post('/remove/:user', removeRole)
 
 export default role
