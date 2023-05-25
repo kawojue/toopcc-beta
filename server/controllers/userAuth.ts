@@ -361,11 +361,11 @@ const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
 })
 
 const resigned = asyncHandler(async (req: Request, res: Response) => {
-    const { user, resign, date }: any = req.body
+    const { user }: any = req.params
+    const { resign, date }: any = req.body
+    if (!resign) return res.status(400).json(FIELDS_REQUIRED)
+    
     const account: any = await User.findOne({ user }).exec()
-
-    if (!resign || date) return res.status(400).json(FIELDS_REQUIRED)
-
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
     account.resigned.date = date
@@ -379,7 +379,8 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const changeRoles = asyncHandler(async (req: Request, res: Response) => {
-    const { user, role }: any = req.body
+    const { role }: any = req.body
+    const { user }: any = req.params
     if (!role) return res.status(400).json(CANCELED)
 
     const account: any = await User.findOne({ user }).exec()
@@ -389,25 +390,27 @@ const changeRoles = asyncHandler(async (req: Request, res: Response) => {
     if (roles.includes(role)) {
         return res.status(200).json({
             ...SUCCESS,
-            msg: "Existing roles."
+            msg: "Existing roles"
         })
     }
 
     roles.push(role)
     account.roles = roles
+    account.token = ""
     await account.save()
 
     res.status(200).json(ROLES_UPDATED)
 })
 
 const removeRole = asyncHandler(async (req: Request, res: Response) => {
-    const { user, role }: any = req.body
+    const { role }: any = req.body
+    const { user }: any = req.params
     if (!role) return res.status(400).json(CANCELED)
 
     const account: any = await User.findOne({ user }).exec()
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
-    let roles: string[] = account.roles
+    const roles: string[] = account.roles
     if (!roles.includes(role)) {
         return res.status(400).json({
             ...WARNING,
@@ -415,15 +418,16 @@ const removeRole = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    roles = roles.filter((role: string) => role !== role)
-    if (roles.length === 0) {
+    const newRoles: string[] = roles.filter((authRole: string) => authRole !== role)
+    if (newRoles.length === 0) {
         return res.status(400).json({
             ...WARNING,
             msg: "Empty roles! Cannot remove role."
         })
     }
 
-    account.roles = roles
+    account.token = ""
+    account.roles = newRoles
     await account.save()
 
     res.status(200).json(ROLES_UPDATED)
