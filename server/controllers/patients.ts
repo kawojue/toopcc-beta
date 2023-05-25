@@ -1,16 +1,14 @@
 import { v4 as uuid } from 'uuid'
 import { IBody, ICloud } from '../type'
-import Patient from '../models/BasicPt'
+import Patient from '../models/Patient'
 import delDiag from '../utilities/delDiag'
 import { Request, Response } from 'express'
-import AltPatient from '../models/AdvancePt'
 import full_name from '../utilities/full_name'
 import cloudinary from '../configs/cloudinary'
 import {
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
     INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
-    PATIENT_EXIST, SAVED, NO_CHANGES, WARNING, SUCCESS,
-    DELETION_FAILED
+    PATIENT_EXIST, SAVED, WARNING, SUCCESS, DELETION_FAILED
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -61,20 +59,13 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     const { card_no } = req.params
     let {
         fullname, sex, phone_no, address,
-        age, death, cardNo, walking_stick,
-        opthalmology, physiotherapy,
+        age, death, cardNo
     }: any = req.body
 
     if (!card_no) return res.status(400).json(CARD_NO_REQUIRED)
 
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
-
-    if (
-        !fullname?.trim() && !sex && !phone_no && !address &&
-        !age && (death?.dead === patient.death.dead) && !cardNo
-        && !walking_stick && !opthalmology && !physiotherapy
-    ) return res.status(304).json(NO_CHANGES)
 
     if (cardNo || cardNo?.trim()) {
         cardNo = cardNo.trim()
@@ -143,35 +134,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
 
     if (address?.trim()) patient.address = address
 
-    if (opthalmology) opthalmology = Boolean(opthalmology)
-
-    if (physiotherapy) physiotherapy = Boolean(physiotherapy)
-
-    if (walking_stick) walking_stick = Boolean(walking_stick)
-
-    const recommendation = {
-        opthalmology,
-        physiotherapy,
-        walking_stick
-    }
-
-    if (!patient.isAdvance) {
-        await AltPatient.create({
-            patient: patient.id,
-            recommendation
-        })
-        patient.isAdvance = true
-        await patient.save()
-        return res.status(201).json(SAVED)
-    }
-
-    const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
-    altPatient.recommendation = {
-        ...altPatient.recommendation,
-        ...recommendation
-    }
     await patient.save()
-    await altPatient.save()
 
     res.status(200).json(SAVED)
 })
@@ -184,13 +147,9 @@ const remove = asyncHandler(async (req: Request, res: Response) => {
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
-    if (patient.isAdvance) {
-        const tempAltPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
-        const bodies: any[] = tempAltPatient.body
-        const del: boolean = await delDiag(bodies)
-        if (!del) return res.status(400).json(DELETION_FAILED)
-        await AltPatient.deleteOne({ patient: patient.id }).exec()
-    }
+    const bodies: any[] = patient.body
+    const del: boolean = await delDiag(bodies)
+    if (!del) return res.status(400).json(DELETION_FAILED)
 
     await Patient.deleteOne({ card_no }).exec()
 
@@ -205,8 +164,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const imageArr: ICloud[] = []
     const { card_no }: any = req.params
     let {
-        date_visit, images, texts, next_app,
-        physiotherapy, opthalmology, walking_stick
+        date_visit, images, texts,
     }: any = req.body
 
     const patient = await Patient.findOne({ card_no }).exec()
@@ -234,45 +192,8 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
     if (!date_visit) date_visit = `${new Date().toISOString()}`
 
-    if (opthalmology) opthalmology = Boolean(opthalmology)
-
-    if (physiotherapy) physiotherapy = Boolean(physiotherapy)
-
-    if (walking_stick) walking_stick = Boolean(walking_stick)
-
-    const recommendation = {
-        opthalmology,
-        physiotherapy,
-        walking_stick
-    }
-
-    if (!patient.isAdvance) {
-        await AltPatient.create({
-            patient: patient.id,
-            recommendation,
-            body: (imageArr.length > 0 || texts) ? [{
-                idx: uuid(),
-                diagnosis: {
-                    texts,
-                    images: imageArr,
-                },
-                date_visit,
-                next_app
-            }] : []
-        })
-        patient.isAdvance = true
-        await patient.save()
-
-        return res.status(201).json(SAVED)
-    }
-
-    const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
-    altPatient.recommendation = {
-        ...altPatient.recommendation,
-        ...recommendation,
-    }
-    altPatient.body = (imageArr.length > 0 || texts) ? [
-        ...altPatient.body,
+    patient.body = (imageArr.length > 0 || texts) ? [
+        ...patient.body,
         {
             idx: uuid(),
             diagnosis: {
@@ -280,52 +201,33 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
                 images: imageArr,
             },
             date_visit,
-            next_app
         }
-    ] : [ ...altPatient.body ]
-    await altPatient.save()
+    ] : [ ...patient.body ]
+    await patient.save()
 
     res.status(200).json(SAVED)
 })
 
 const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
-    let {
-        date_visit, texts, physiotherapy,
-        next_app, opthalmology, walking_stick
-    }: any = req.body
+    let { date_visit, texts }: any = req.body
 
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
-    const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
-    if (!altPatient) return res.status(400).json({
-        ...ERROR,
-        msg: "Not saved! Add before you edit."
-    })
-
-    const body: any = altPatient.body.find((body: IBody) => body.idx === idx)
+    const body: any = patient.body.find((body: IBody) => body.idx === idx)
     if (!body) {
         return res.status(404).json({
             ...ERROR,
             msg: "Complaint does not exist."
         })
     }
-    const recommendation = altPatient.recommendation
-
-    if (next_app) body.next_app = next_app
 
     if (texts) body.diagnosis.texts = texts.trim()
 
-    if (!date_visit) body.date_visit = `${new Date().toISOString()}`
+    if (date_visit) body.date_visit = date_visit
 
-    if (opthalmology) recommendation.opthalmoloy = Boolean(opthalmology)
-
-    if (walking_stick) recommendation.walking_stick = Boolean(walking_stick)
-
-    if (physiotherapy) recommendation.physiotherapy = Boolean(physiotherapy)
-
-    await altPatient.save()
+    await patient.save()
 
     res.status(200).json(SAVED)
 })
@@ -337,10 +239,7 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
-    const altPatient: any = await AltPatient.findOne({ patient: patient.id }).exec()
-    if (!altPatient) return res.status(400).json(SMTH_WENT_WRONG)
-
-    const bodies: IBody[] = altPatient.body
+    const bodies: IBody[] = patient.body
     const body: any = bodies.find((body: IBody) => body.idx === idx)
     const images: ICloud[] = body.diagnosis.images
     if (images.length > 0) {
@@ -349,8 +248,8 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
             if (!result) return res.status(400).json(DELETION_FAILED)
         })
     }
-    altPatient.body = bodies.filter((body: IBody) => body.idx !== idx)
-    await altPatient.save()
+    patient.body = bodies.filter((body: IBody) => body.idx !== idx)
+    await patient.save()
 
     res.status(200).json({
         ...SUCCESS,
