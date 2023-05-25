@@ -15,10 +15,10 @@ patients.route('/:card_no')
     .put(edit)
     .delete(remove)
 
-patients.route('/diagnosis/:card_no')
-    .post(addDiagnosis)
-    .delete(deleteDianosis)
+patients.post('/diagnosis/:card_no', addDiagnosis)
 
-patients.put('/diagnosis/:card_no/:idx', editDiagnosis)
+patients.route('/diagnosis/:card_no/:idx')
+    .put(editDiagnosis)
+    .delete(deleteDianosis)
 
 export default patients
