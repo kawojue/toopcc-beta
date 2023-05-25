@@ -415,7 +415,7 @@ const removeRole = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    roles: string[] = roles.filter((role: string) => role !== role)
+    roles = roles.filter((role: string) => role !== role)
     if (roles.length === 0) {
         return res.status(400).json({
             ...WARNING,
