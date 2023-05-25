@@ -14,8 +14,8 @@ const auth: Router = Router()
 
 auth.use('/otp', otp)
 auth.use('/edit', edit)
-auth.use('/avatar', avatar)
 auth.use('/role', role)
+auth.use('/avatar', avatar)
 
 const loginLimiter: ILimiter = {
     max: 5,
