@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import {
     add, edit, addDiagnosis, remove,
-    deleteDianosis, editDiagnosis
+    deleteDianosis, editDiagnosis,
+    recommendation
 } from '../../controllers/patients'
 import jwtVerify from '../../middlewares/jwtVerify'
 import verifyRoles from '../../middlewares/verifyRoles'
@@ -20,5 +21,8 @@ patients.post('/diagnosis/:card_no', addDiagnosis)
 patients.route('/diagnosis/:card_no/:idx')
     .put(editDiagnosis)
     .delete(deleteDianosis)
+
+patients.route('/recommendation/:card_no')
+    .put(recommendation)
 
 export default patients
