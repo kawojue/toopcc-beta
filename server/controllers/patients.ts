@@ -233,14 +233,15 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
-    const { idx }: any = req.body
-    const { card_no }: any = req.params
+    const { card_no, idx }: any = req.params
 
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const bodies: IBody[] = patient.body
     const body: any = bodies.find((body: IBody) => body.idx === idx)
+    if (!body) return res.status(404).json({ ...ERROR, msg: "Diagnosis does not exist." })
+    
     const images: ICloud[] = body.diagnosis.images
     if (images.length > 0) {
         images.forEach(async (image: ICloud) => {
