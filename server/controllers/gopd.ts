@@ -1,5 +1,4 @@
-import Patient from '../models/BasicPt'
-import AltPatient from '../models/AdvancePt'
+import Patient from '../models/Patient'
 import { Request, Response } from 'express'
 const asyncHandler = require('express-async-handler')
 
@@ -9,3 +8,5 @@ const all = asyncHandler(async (req: Request, res: Response) => {
         patients
     })
 })
+
+export { all }
