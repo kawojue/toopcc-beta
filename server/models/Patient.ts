@@ -52,43 +52,31 @@ const PatientModel: Schema = new Schema({
     },
     recommendation: {
         opthal: {
-            medication: {
-                type: [{
-                    idx: String,
-                    date: String,
-                    next_app: String
-                }],
-                default: []
-            },
-            extensions: {
-                type: [{
-                    idx: String,
-                    name: String,
-                    date: String,
-                    given: Boolean,
-                }],
-                default: []
-            }
+            type: [{
+                idx: String,
+                date: String,
+                next_app: String
+            }],
+            default: []
         },
         physio: {
-            medication: {
-                type: [{
-                    idx: String,
-                    date: String,
-                    next_app: String
-                }],
-                default: []
-            },
-            extensions: {
-                type: [{
-                    idx: String,
-                    name: String,
-                    date: String,
-                    given: Boolean,
-                }],
-                default: []
-            }
-        }
+            type: [{
+                idx: String,
+                date: String,
+                next_app: String
+            }],
+            default: []
+        },
+        extensions: {
+            type: [{
+                idx: String,
+                date: String,
+                name: String,
+                given: Boolean,
+                occurence: Number,
+            }],
+            default: []
+        },
     }
 })
 
