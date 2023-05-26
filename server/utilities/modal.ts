@@ -40,6 +40,8 @@ const DELETION_FAILED = {...ERROR, msg: "Failed to delete!" }
 
 const CANCELED = { ...WARNING, msg: "Canceled." }
 
+const EXT_NOT_EXIST = { ...ERROR, msg: "Extension does not exist. "}
+
 const ROLES_UPDATED = { ...SUCCESS, msg: "Roles has been updated." }
 
 export {
@@ -49,5 +51,5 @@ export {
     SMTH_WENT_WRONG, SEX_REQUIRED, CARD_NO_REQUIRED,
     INVALID_AGE, INVALID_PHONE_NO, PATIENT_NOT_EXIST,
     PATIENT_EXIST, SAVED, DELETION_FAILED,
-    CANCELED, ROLES_UPDATED
+    CANCELED, ROLES_UPDATED, EXT_NOT_EXIST
 }
