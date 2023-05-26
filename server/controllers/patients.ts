@@ -10,8 +10,9 @@ import addExtension from '../utilities/addExtension'
 import {
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
     INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
-    PATIENT_EXIST, SAVED, WARNING, SUCCESS, DELETION_FAILED
+    PATIENT_EXIST, SAVED, WARNING, SUCCESS, DELETION_FAILED, EXT_NOT_EXIST
 } from '../utilities/modal'
+import addMedic from '../utilities/addMedic'
 const asyncHandler = require('express-async-handler')
 
 const phoneRegex: RegExp = /^\d{11}$/
@@ -118,7 +119,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         patient.age = age
     }
 
-    if (death?.dead){
+    if (death?.dead) {
         if (Boolean(death?.dead) !== patient.death.dead) {
             if (!death?.date) {
                 return res.status(400).json({
@@ -245,40 +246,36 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
-    if (opthal) {
-        let opthalMedic: any[] = patient.recommendation.opthal
-        if (opthal?.date) {
-            opthalMedic = [
-                ...opthalMedic,
-                {
-                    idx: uuid(),
-                    next_app: opthal?.next_app ? opthal.next_app : lastNextApp(opthal.date),
-                    date: opthal.date
-                }
-            ]
+    const rec: any = patient.recommendation
+    const opthalmology: any = rec.opthalmology
+    const physiotherapy: any = rec.physiotherapy
+
+    if (opthal && opthal?.date) {
+        const opthalMedic: any[] = opthalmology.medication
+        const newMedics: any[] = addMedic(opthal, opthalMedic)
+        if (newMedics.length > 0) {
+            opthalmology.eligible = true
+        } else {
+            opthalmology.eligible = false
         }
-        patient.recommendation.opthal = opthalMedic
+        opthalmology.medication = newMedics
     }
 
-    if (physio) {
-        let physioMedic: any[] = patient.recommendation.physio
-        if (physio?.date) {
-            physioMedic = [
-                ...physioMedic,
-                {
-                    idx: uuid(),
-                    next_app: physio?.next_app ? physio.next_app : lastNextApp(physio.date),
-                    date: physio.date
-                }
-            ]
+    if (physio && physio?.date) {
+        const physioMedic: any[] = physiotherapy.medicaion
+        const newMedics: any[] = addMedic(physio, physioMedic)
+        if (newMedics.length > 0) {
+            physiotherapy.eligible = true
+        } else {
+            physiotherapy.eligible = false
         }
-        patient.recommendation.physio = physioMedic
+        physiotherapy.medication = newMedics
     }
 
     if (extension && extension?.name?.trim()) {
-        const ext: any[] = patient.recommendation.extensions
+        const ext: any[] = rec.extensions
         const newExtensions: any[] = addExtension(ext, extension)
-        patient.recommendation.extensions = newExtensions
+        rec.extensions = newExtensions
     }
 
     await patient.save()
@@ -297,9 +294,9 @@ const deletExtension = asyncHandler(async (req: Request, res: Response) => {
 
     const extensions: any[] = patient.recommendation.extensions
     const ext: any = extensions.find((element: any) => element.idx === idx)
-    if (!ext) return res.status(404).json({ ...ERROR, msg: "Extension does not exist. "})
+    if (!ext) return res.status(404).json(EXT_NOT_EXIST)
 
-    patient.recommendation.extensions = extensions.filter((element: any) => element.idx === idx)
+    patient.recommendation.extensions = extensions.filter((element: any) => element.idx !== idx)
     await patient.save()
 
     return res.status(200).json(SAVED)
@@ -312,12 +309,12 @@ const editExtension = asyncHandler(async (req: Request, res: Response) => {
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const extensions: any[] = patient.recommendation.extensions
-    const ext: any = extensions.find((element: any) => element.idx === idx)
-    if (!ext) return res.status(404).json({ ...ERROR, msg: "Extension does not exist. "})
+    const extt: any = extensions.find((element: any) => element.idx === idx)
+    if (!extt) return res.status(404).json(EXT_NOT_EXIST)
 
-    if (extension) {
-        patient.recommendation.extensions = extensions.map((ext: any) => ext.idx === idx ? { ...ext, extension } : ext)
-    }
+    patient.recommendation.extensions = extensions.map((ext: any) => ext.idx === idx ? {
+        ...ext, ...extension
+    } : ext)
     await patient.save()
 
     return res.status(200).json(SAVED)
