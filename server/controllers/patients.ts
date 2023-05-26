@@ -5,7 +5,6 @@ import delDiag from '../utilities/delDiag'
 import { Request, Response } from 'express'
 import full_name from '../utilities/full_name'
 import cloudinary from '../configs/cloudinary'
-import lastNextApp from '../utilities/genNextApp'
 import addExtension from '../utilities/addExtension'
 import {
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
@@ -284,7 +283,28 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const deleteRecommendation = asyncHandler(async (req: Request, res: Response) => {
+    const { card_no, idx, type }: any = req.params
+    const patient: any = await Patient.findOne({ card_no: card_no }).exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
+    if (type !== "physio" && type !== "opthal") {
+        return res.status(400).json({
+            ...ERROR,
+            msg: "Type is not defined."
+        })
+    }
+
+    const rec: any = patient.recommendation
+    const originalRec: any[] = type === "opthal" ? rec.opthalmology.medication : rec.physiotherapy.medication
+    const newRec: any[] = originalRec.filter((medic: any) => medic.idx !== idx)
+
+    if (newRec.length === 0) {
+        type === "opthal" ? rec.opthalmology.eligible = false : rec.physiotherapy.eligible = false
+    }
+    type === "opthal" ? rec.opthalmology.medication = newRec : rec.physiotherapy.medication = newRec
+    await patient.save()
+
+    res.status(200).json(SAVED)
 })
 
 const deletExtension = asyncHandler(async (req: Request, res: Response) => {
