@@ -1,5 +1,5 @@
 import auth from './auth/auth'
-import patients from './api/patients'
+import patients from './api/setPatient'
 import { Router, Request, Response } from 'express'
 
 const root: Router = Router()
