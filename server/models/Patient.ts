@@ -60,17 +60,14 @@ const PatientModel: Schema = new Schema({
                 }],
                 default: []
             },
-            extension: {
-                cataract_sugery: {
-                    eligibility: Boolean,
-                    done: Boolean,
-                    date: String
-                },
-                glasses: {
-                    eligibility: Boolean,
-                    given: Boolean,
+            extensions: {
+                type: [{
+                    idx: String,
+                    name: String,
                     date: String,
-                }
+                    given: Boolean,
+                }],
+                default: []
             }
         },
         physio: {
@@ -82,12 +79,14 @@ const PatientModel: Schema = new Schema({
                 }],
                 default: []
             },
-            extension: {
-                walking_stick: {
-                    eligibility: Boolean,
+            extensions: {
+                type: [{
+                    idx: String,
+                    name: String,
+                    date: String,
                     given: Boolean,
-                    date: String
-                },
+                }],
+                default: []
             }
         }
     }
