@@ -6,6 +6,7 @@ import { Request, Response } from 'express'
 import full_name from '../utilities/full_name'
 import cloudinary from '../configs/cloudinary'
 import lastNextApp from '../utilities/genNextApp'
+import addExtension from '../utilities/addExtension'
 import {
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
     INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
@@ -165,9 +166,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const imageArr: ICloud[] = []
     const { card_no }: any = req.params
     let {
-        date_visit, images, texts, cataract_sugery,
-        walking_stick, glasses, opthal, physio,
-        next_app
+        date_visit, images, texts, next_app
     }: any = req.body
 
     const patient = await Patient.findOne({ card_no }).exec()
@@ -192,42 +191,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (texts) texts = texts.trim()
-
     if (!date_visit) date_visit = `${new Date().toISOString()}`
-
-    if (opthal) {
-        let opthalMedic: any[] = patient.recommendation.opthal.medication
-        if (opthal.date) {
-            opthalMedic = [
-                ...opthalMedic,
-                {
-                    idx: uuid(),
-                    next_app: lastNextApp(opthal.date),
-                    date: opthal.date
-                }
-            ]
-        }
-    }
-
-    if (physio) {
-        let physioMedic: any[] = patient.recommendation.physio.medication
-        if (physio.date) {
-            physioMedic = [
-                ...physioMedic,
-                {
-                    idx: uuid(),
-                    next_app: lastNextApp(physio.date),
-                    date: physio.date
-                }
-            ]
-        }
-    }
-
-    if (walking_stick) {}
-
-    if (glasses) {}
-
-    if (cataract_sugery) {}
 
     patient.body = (imageArr.length > 0 || texts) ? [
         ...patient.body,
@@ -264,9 +228,7 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (texts) body.diagnosis.texts = texts.trim()
-
     if (date_visit) body.date_visit = date_visit
-
     if (next_app) body.next_app = next_app
 
     await patient.save()
@@ -274,18 +236,18 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json(SAVED)
 })
 
-const recommendation = asyncHandler(async (req: Request, res: Response) => {
+const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
     const  { card_no }: any = req.params
     const {
-        opthal, physio
+        opthal, extension, physio,
     } : any = req.body
 
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
-if (opthal) {
-        let opthalMedic: any[] = patient.recommendation.opthal.medication
-        if (opthal.date) {
+    if (opthal) {
+        let opthalMedic: any[] = patient.recommendation.opthal
+        if (opthal?.date) {
             opthalMedic = [
                 ...opthalMedic,
                 {
@@ -295,12 +257,12 @@ if (opthal) {
                 }
             ]
         }
-        patient.recommendation.opthal.medication = opthalMedic
+        patient.recommendation.opthal = opthalMedic
     }
 
     if (physio) {
-        let physioMedic: any[] = patient.recommendation.physio.medication
-        if (physio.date) {
+        let physioMedic: any[] = patient.recommendation.physio
+        if (physio?.date) {
             physioMedic = [
                 ...physioMedic,
                 {
@@ -310,12 +272,55 @@ if (opthal) {
                 }
             ]
         }
-        patient.recommendation.physio.medication = physioMedic
+        patient.recommendation.physio = physioMedic
+    }
+
+    if (extension && extension?.name?.trim()) {
+        const ext: any[] = patient.recommendation.extensions
+        const newExtensions: any[] = addExtension(ext, extension)
+        patient.recommendation.extensions = newExtensions
     }
 
     await patient.save()
 
     res.status(200).json(SAVED)
+})
+
+const deleteRecommendation = asyncHandler(async (req: Request, res: Response) => {
+
+})
+
+const deletExtension = asyncHandler(async (req: Request, res: Response) => {
+    const { card_no, idx }: any = req.params
+    const patient: any = await Patient.findOne({ card_no: card_no }).exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    const extensions: any[] = patient.recommendation.extensions
+    const ext: any = extensions.find((element: any) => element.idx === idx)
+    if (!ext) return res.status(404).json({ ...ERROR, msg: "Extension does not exist. "})
+
+    patient.recommendation.extensions = extensions.filter((element: any) => element.idx === idx)
+    await patient.save()
+
+    return res.status(200).json(SAVED)
+})
+
+const editExtension = asyncHandler(async (req: Request, res: Response) => {
+    const { card_no, idx }: any = req.params
+    const { extension }: any = req.body
+    const patient: any = await Patient.findOne({ card_no: card_no }).exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    const extensions: any[] = patient.recommendation.extensions
+    const ext: any = extensions.find((element: any) => element.idx === idx)
+    if (!ext) return res.status(404).json({ ...ERROR, msg: "Extension does not exist. "})
+
+    if (extension) {
+        patient.recommendation.extensions = extensions.map((ext: any) => ext.idx === idx ? { ...ext, extension } : ext)
+    }
+    await patient.save()
+
+    return res.status(200).json(SAVED)
 })
 
 const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
@@ -347,5 +352,6 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
 export {
     add, edit, addDiagnosis, remove,
     deleteDianosis, editDiagnosis,
-    recommendation
+    addRecommendation, editExtension,
+    deletExtension, deleteRecommendation
 }
