@@ -23,7 +23,7 @@ interface ICloud {
 
 interface IBody {
     idx: string
-    diagnosis?: {
+    diagnosis: {
         images: ICloud[]
         texts: string
     }
