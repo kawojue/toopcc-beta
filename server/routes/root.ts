@@ -6,8 +6,8 @@ import { Router, Request, Response } from 'express'
 const root: Router = Router()
 
 root.use('/auth', auth)
-root.use('/api/patients', patients)
-root.use('/api/getpts', getPatients)
+root.use('/patients', patients)
+root.use('/api/patients', getPatients)
 
 root.get('/', (req: Request, res: Response) => {
     res.status(200).json({
