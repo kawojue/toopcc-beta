@@ -9,7 +9,8 @@ import addExtension from '../utilities/addExtension'
 import {
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
     INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
-    PATIENT_EXIST, SAVED, WARNING, SUCCESS, DELETION_FAILED, EXT_NOT_EXIST
+    PATIENT_EXIST, SAVED, WARNING, SUCCESS, DELETION_FAILED,
+    EXT_NOT_EXIST, DIAG_NOT_EXIST
 } from '../utilities/modal'
 import addMedic from '../utilities/addMedic'
 const asyncHandler = require('express-async-handler')
@@ -220,12 +221,7 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const body: any = patient.body.find((body: IBody) => body.idx === idx)
-    if (!body) {
-        return res.status(404).json({
-            ...ERROR,
-            msg: "Complaint does not exist."
-        })
-    }
+    if (!body) return res.status(404).json(DIAG_NOT_EXIST)
 
     if (texts) body.diagnosis.texts = texts.trim()
     if (date_visit) body.date_visit = date_visit
@@ -348,7 +344,7 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
 
     const bodies: IBody[] = patient.body
     const body: any = bodies.find((body: IBody) => body.idx === idx)
-    if (!body) return res.status(404).json({ ...ERROR, msg: "Diagnosis does not exist." })
+    if (!body) return res.status(404).json(DIAG_NOT_EXIST)
     
     const images: ICloud[] = body.diagnosis.images
     if (images.length > 0) {
