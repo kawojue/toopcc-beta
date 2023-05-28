@@ -236,6 +236,7 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
     const  { card_no }: any = req.params
     const {
         opthal, extension, physio,
+        eligOpthal, eligPhysio
     } : any = req.body
 
     const patient: any = await Patient.findOne({ card_no }).exec()
@@ -248,22 +249,12 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
     if (opthal && opthal?.date) {
         const opthalMedic: any[] = opthalmology.medication
         const newMedics: any[] = addMedic(opthal, opthalMedic)
-        if (newMedics.length > 0) {
-            opthalmology.eligible = true
-        } else {
-            opthalmology.eligible = false
-        }
         opthalmology.medication = newMedics
     }
 
     if (physio && physio?.date) {
         const physioMedic: any[] = physiotherapy.medication
         const newMedics: any[] = addMedic(physio, physioMedic)
-        if (newMedics.length > 0) {
-            physiotherapy.eligible = true
-        } else {
-            physiotherapy.eligible = false
-        }
         physiotherapy.medication = newMedics
     }
 
@@ -272,6 +263,9 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
         const newExtensions: any[] = addExtension(ext, extension)
         rec.extensions = newExtensions
     }
+
+    if (eligOpthal) opthalmology.eligible = Boolean(eligOpthal)
+    if (eligPhysio) physiotherapy.eligible = Boolean(eligPhysio)
 
     await patient.save()
 
