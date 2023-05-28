@@ -86,7 +86,19 @@ const getAllPhysioPatients = asyncHandler(async (req: Request, res: Response) =>
 const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients: any = await Patient.find()
     .select('-body -recommendation').exec()
-    const deads: any[] = patients.filter((dead: any) => dead.death.dead === true)
+    const deads: any[] = patients.filter((dead: any) => {
+        let obj: any
+        if (dead.death.dead === true) {
+            obj = {
+                fullname: dead.fullname,
+                age: dead.age,
+                date_vist: dead.date,
+                date: dead.death.date,
+                card_no: dead.card_no
+            }
+        }
+        return obj
+    })
 
     res.status(200).json({
         ...SUCCESS,
@@ -98,7 +110,24 @@ const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
 const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
     const patients: any = await Patient.find()
     .select('-body').exec()
-    const all: any[] = patients.filter((ext: any) => ext.recommendation.extensions.length > 0)
+    const all: any[] = patients.filter((ext: any) => {
+        let obj: any
+        const extensions: any[] = ext.recommendation.extensions
+        if (extensions.length > 0) {
+            obj = {
+                fullname: ext.fullname,
+                extensions: extensions,
+                date: extensions[extensions.length - 1].date,
+                card_no: ext.card_no
+            }
+        }
+        return obj
+    })
+
+    res.status(200).json({
+        ...SUCCESS,
+        extensions: sortByDates(all)
+    })
 })
 
 export {
