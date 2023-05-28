@@ -86,15 +86,16 @@ const getAllPhysioPatients = asyncHandler(async (req: Request, res: Response) =>
 const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients: any = await Patient.find()
     .select('-body -recommendation').exec()
+
     const deads: any[] = patients.filter((dead: any) => {
         let obj: any
         if (dead.death.dead === true) {
+            const { fullname, age, card_no, address, phone_no }: any = dead
             obj = {
-                fullname: dead.fullname,
-                age: dead.age,
+                fullname, age, card_no,
+                phone_no, address,
                 date_vist: dead.date,
-                date: dead.death.date,
-                card_no: dead.card_no
+                date: dead.death.date
             }
         }
         return obj
@@ -118,7 +119,8 @@ const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
                 fullname: ext.fullname,
                 extensions: extensions,
                 date: extensions[extensions.length - 1].date,
-                card_no: ext.card_no
+                card_no: ext.card_no,
+                phone_no: ext.phone_no,
             }
         }
         return obj
@@ -126,12 +128,34 @@ const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
 
     res.status(200).json({
         ...SUCCESS,
+        length: all.length,
         extensions: sortByDates(all)
     })
 })
 
+const getExtension = asyncHandler(async (req: Request, res: Response) => {
+    const { card_no }: any = req.params
+    const patient: any = await Patient.findOne({ card_no })
+    .select('-body').exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    const extensions: any[] = patient.recommendation.extensions
+
+    res.status(200).json({
+        ...SUCCESS,
+        patient: {
+            fullname: patient.fullname,
+            card_no: patient.card_no,
+            phone_no: patient.phone_no,
+            address: patient.address
+        },
+        length: extensions.length,
+        extensions: sortByDates(extensions)
+    })
+})
+
 export {
-    allPatients, getAllDiagnosis,
+    allPatients, getAllDiagnosis, getExtension,
     getDiagnosis, getPatient, getAllExtensions,
     getDeadPatients, getAllOpthalPatients, getAllPhysioPatients
 }
