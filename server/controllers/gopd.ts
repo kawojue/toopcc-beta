@@ -5,6 +5,9 @@ import {
     PATIENT_NOT_EXIST, SUCCESS,
     DIAG_NOT_EXIST
 } from '../utilities/modal'
+import {
+    sortByCardNumbers, sortByDates
+} from '../utilities/sorting'
 const asyncHandler = require('express-async-handler')
 
 const allPatients = asyncHandler(async (req: Request, res: Response) => {
@@ -13,7 +16,7 @@ const allPatients = asyncHandler(async (req: Request, res: Response) => {
 
     res.status(200).json({
         ...SUCCESS,
-        patients: patients.reverse()
+        patients: sortByCardNumbers(patients)
     })
 })
 
@@ -38,7 +41,7 @@ const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json({
         ...SUCCESS,
         length: patient.body.length,
-        diagnosis: patient.body.reverse()
+        diagnosis: sortByDates(patient.body)
     })
 })
 
@@ -65,7 +68,7 @@ const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) =>
     res.status(200).json({
         ...SUCCESS,
         length: opthals.length,
-        patients: opthals.reverse()
+        patients: sortByCardNumbers(opthals)
     })
 })
 
@@ -76,7 +79,7 @@ const getAllPhysioPatients = asyncHandler(async (req: Request, res: Response) =>
     res.status(200).json({
         ...SUCCESS,
         length: physios.length,
-        patients: physios.reverse()
+        patients: sortByCardNumbers(physios)
     })
 })
 
@@ -88,12 +91,18 @@ const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json({
         ...SUCCESS,
         length: deads.length,
-        deaths: deads
+        deaths: sortByDates(deads)
     })
+})
+
+const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
+    const patients: any = await Patient.find()
+    .select('-body').exec()
+    const all: any[] = patients.filter((ext: any) => ext.recommendation.extensions.length > 0)
 })
 
 export {
     allPatients, getAllDiagnosis,
-    getDiagnosis, getPatient,
+    getDiagnosis, getPatient, getAllExtensions,
     getDeadPatients, getAllOpthalPatients, getAllPhysioPatients
 }
