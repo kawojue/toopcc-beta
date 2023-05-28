@@ -264,8 +264,8 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
         rec.extensions = newExtensions
     }
 
-    if (eligOpthal) opthalmology.eligibility = Boolean(eligOpthal)
-    if (eligPhysio) physiotherapy.eligibility = Boolean(eligPhysio)
+    if (eligOpthal) opthalmology.eligible = Boolean(eligOpthal)
+    if (eligPhysio) physiotherapy.eligible = Boolean(eligPhysio)
 
     await patient.save()
 
