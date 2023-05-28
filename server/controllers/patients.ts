@@ -19,7 +19,10 @@ const phoneRegex: RegExp = /^\d{11}$/
 
 // add patient data
 const add = asyncHandler(async (req: Request, res: Response) => {
-    let { card_no, fullname, sex, phone_no, address, age }: any = req.body
+    let {
+        card_no, fullname, sex, phone_no,
+        address, age, date
+    }: any = req.body
 
     age = Number(age)
     card_no = card_no.trim()
@@ -36,20 +39,17 @@ const add = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (phone_no?.trim()) {
-        if (!phoneRegex.test(phone_no?.trim())) {
-            return res.status(400).json(INVALID_PHONE_NO)
-        }
+        if (!phoneRegex.test(phone_no?.trim())) return res.status(400).json(INVALID_PHONE_NO)
     }
 
-    if (age > 120) {
-        return res.status(400).json(INVALID_AGE)
-    }
+    if (age > 120) return res.status(400).json(INVALID_AGE)
+    if (date) date = date
 
     const patient: any = await Patient.findOne({ card_no }).exec()
     if (patient) return res.status(409).json(PATIENT_EXIST)
 
     await Patient.create({
-        sex, card_no,
+        sex, card_no, date,
         address, fullname,
         phone_no, age: age as number,
     })
@@ -167,7 +167,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const imageArr: ICloud[] = []
     const { card_no }: any = req.params
     let {
-        date_visit, images, texts, next_app
+        date, images, texts, next_app
     }: any = req.body
 
     const patient = await Patient.findOne({ card_no }).exec()
@@ -192,7 +192,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (texts) texts = texts.trim()
-    if (!date_visit) date_visit = `${new Date().toISOString()}`
+    if (!date) date = `${new Date().toISOString()}`
 
     patient.body = (imageArr.length > 0 || texts) ? [
         ...patient.body,
@@ -202,7 +202,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
                 texts,
                 images: imageArr,
             },
-            date_visit,
+            date,
             next_app
         }
     ] : [ ...patient.body ]
@@ -214,7 +214,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
     let {
-        date_visit, texts, next_app
+        date, texts, next_app
     }: any = req.body
 
     const patient: any = await Patient.findOne({ card_no }).exec()
@@ -224,7 +224,7 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     if (!body) return res.status(404).json(DIAG_NOT_EXIST)
 
     if (texts) body.diagnosis.texts = texts.trim()
-    if (date_visit) body.date_visit = date_visit
+    if (date) body.date = date
     if (next_app) body.next_app = next_app
 
     await patient.save()
