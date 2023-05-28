@@ -257,7 +257,7 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (physio && physio?.date) {
-        const physioMedic: any[] = physiotherapy.medicaion
+        const physioMedic: any[] = physiotherapy.medication
         const newMedics: any[] = addMedic(physio, physioMedic)
         if (newMedics.length > 0) {
             physiotherapy.eligible = true
