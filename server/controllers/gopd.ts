@@ -108,7 +108,8 @@ const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
 
 const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
     const patients: any = await fetchPatients('-body')
-    const all: any[] = patients.filter((ext: any) => {
+
+    const all: any[] = patients.map((ext: any) => {
         let obj: any
         const extensions: any[] = ext.recommendation.extensions
         if (extensions.length > 0) {
@@ -155,7 +156,13 @@ const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => 
     const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
-    //
+    const medications: any[] = patient.recommendation.physiotherapy.medication
+
+    res.status(200).json({
+        ...SUCCESS,
+        length: medications.length,
+        medications: sortByDates(medications)
+    })
 })
 
 const getOpthalMedication = asyncHandler(async (req: Request, res: Response) => {
@@ -163,7 +170,13 @@ const getOpthalMedication = asyncHandler(async (req: Request, res: Response) => 
     const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
-    //
+    const medications: any[] = patient.recommendation.opthalmology.medication
+
+    res.status(200).json({
+        ...SUCCESS,
+        length: medications.length,
+        medications: sortByDates(medications)
+    })
 })
 
 export {
