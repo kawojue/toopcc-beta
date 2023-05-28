@@ -1,9 +1,8 @@
 import { IBody } from '../type'
-import Patient from '../models/Patient'
 import { Request, Response } from 'express'
 import {
-    PATIENT_NOT_EXIST, SUCCESS,
-    DIAG_NOT_EXIST
+    PATIENT_NOT_EXIST,
+    DIAG_NOT_EXIST, SUCCESS,
 } from '../utilities/modal'
 import {
     sortByCardNumbers, sortByDates
@@ -35,7 +34,7 @@ const getPatient = asyncHandler(async (req: Request, res: Response) => {
 
 const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
-    const patient: any = await await fetchByCardNumber(card_no, '-recommendation')
+    const patient: any = await fetchByCardNumber(card_no, '-recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     res.status(200).json({
@@ -47,7 +46,7 @@ const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
 const getDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
-    const patient: any = await await fetchByCardNumber(card_no, '-recommendation')
+    const patient: any = await fetchByCardNumber(card_no, '-recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const bodies: any[] = patient.body
@@ -61,7 +60,7 @@ const getDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) => {
-    const patients: any = await Patient.find().select('-body').exec()
+    const patients: any = await fetchPatients('-body')
     const opthals: any[] = patients.filter((opthal: any) => opthal.recommendation.opthalmology.eligible === true)
 
     res.status(200).json({
