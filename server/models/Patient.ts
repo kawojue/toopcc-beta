@@ -42,7 +42,7 @@ const PatientModel: Schema = new Schema({
                 }],
                 texts: String
             },
-            date_visit: {
+            date: {
                 type: String,
                 required: true
             },
