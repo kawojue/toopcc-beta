@@ -1,0 +1,23 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const gopd_1 = require("../../controllers/gopd");
+const jwtVerify_1 = __importDefault(require("../../middlewares/jwtVerify"));
+const verifyRoles_1 = __importDefault(require("../../middlewares/verifyRoles"));
+const getPatients = (0, express_1.Router)();
+getPatients.use([jwtVerify_1.default, (0, verifyRoles_1.default)("staff", "admin", "hr")]);
+getPatients.get('/', gopd_1.allPatients);
+getPatients.get('/dead', gopd_1.getDeadPatients);
+getPatients.get('/patient/:card_no', gopd_1.getPatient);
+getPatients.get('/diagnosis/:card_no', gopd_1.getAllDiagnosis);
+getPatients.get('/diagnosis/:card_no/:idx', gopd_1.getDiagnosis);
+getPatients.get('/recommendation/opthal', gopd_1.getAllOpthalPatients);
+getPatients.get('/recommendation/physio', gopd_1.getAllPhysioPatients);
+getPatients.get('/recommendation/extensions', gopd_1.getAllExtensions);
+getPatients.get('/recommendation/extensions/:card_no', gopd_1.getExtension);
+getPatients.get('/recommendation/opthal/medications/:card_no', gopd_1.getOpthalMedication);
+getPatients.get('/recommendation/physio/medications/:card_no', gopd_1.getPhysioMedication);
+exports.default = getPatients;

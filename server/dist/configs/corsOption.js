@@ -1,0 +1,19 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.allowedOrigins = void 0;
+exports.allowedOrigins = [
+    "http://localhost:1002"
+];
+const corsOption = {
+    origin: (origin, callback) => {
+        if (exports.allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error("Not allowed by CORS!"));
+        }
+    },
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+exports.default = corsOption;
