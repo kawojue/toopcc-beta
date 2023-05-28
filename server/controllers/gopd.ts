@@ -8,11 +8,13 @@ import {
 import {
     sortByCardNumbers, sortByDates
 } from '../utilities/sorting'
+import {
+    fetchByCardNumber, fetchPatients
+} from '../utilities/pts'
 const asyncHandler = require('express-async-handler')
 
 const allPatients = asyncHandler(async (req: Request, res: Response) => {
-    const patients: any = await Patient.find()
-    .select('-body -recommendation').exec()
+    const patients: any[] = await fetchPatients('-body -recommendation')
 
     res.status(200).json({
         ...SUCCESS,
@@ -22,8 +24,7 @@ const allPatients = asyncHandler(async (req: Request, res: Response) => {
 
 const getPatient = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
-    const patient: any = await Patient.findOne({ card_no })
-    .select('-body -recommendation').exec()
+    const patient: any = await fetchByCardNumber(card_no, '-body -recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     res.status(200).json({
@@ -34,8 +35,7 @@ const getPatient = asyncHandler(async (req: Request, res: Response) => {
 
 const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
-    const patient: any = await Patient.findOne({ card_no })
-    .select('-recommendation').exec()
+    const patient: any = await await fetchByCardNumber(card_no, '-recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     res.status(200).json({
@@ -47,8 +47,7 @@ const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
 const getDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
-    const patient: any = await Patient.findOne({ card_no })
-    .select('-recommendation').exec()
+    const patient: any = await await fetchByCardNumber(card_no, '-recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const bodies: any[] = patient.body
@@ -73,7 +72,7 @@ const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) =>
 })
 
 const getAllPhysioPatients = asyncHandler(async (req: Request, res: Response) => {
-    const patients: any = await Patient.find().select('-body').exec()
+    const patients: any = await fetchPatients('-body')
     const physios: any[] = patients.filter((physio: any) => physio.recommendation.physiotherapy.eligible === true)
 
     res.status(200).json({
@@ -84,8 +83,7 @@ const getAllPhysioPatients = asyncHandler(async (req: Request, res: Response) =>
 })
 
 const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
-    const patients: any = await Patient.find()
-    .select('-body -recommendation').exec()
+    const patients: any = await fetchPatients('-body')
 
     const deads: any[] = patients.filter((dead: any) => {
         let obj: any
@@ -109,8 +107,7 @@ const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
-    const patients: any = await Patient.find()
-    .select('-body').exec()
+    const patients: any = await fetchPatients('-body')
     const all: any[] = patients.filter((ext: any) => {
         let obj: any
         const extensions: any[] = ext.recommendation.extensions
@@ -135,8 +132,7 @@ const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
 
 const getExtension = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
-    const patient: any = await Patient.findOne({ card_no })
-    .select('-body').exec()
+    const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const extensions: any[] = patient.recommendation.extensions
@@ -156,8 +152,7 @@ const getExtension = asyncHandler(async (req: Request, res: Response) => {
 
 const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
-    const patient: any = await Patient.findOne({ card_no })
-    .select('-body').exec()
+    const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     //
@@ -165,8 +160,7 @@ const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => 
 
 const getOpthalMedication = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
-    const patient: any = await Patient.findOne({ card_no })
-    .select('-body').exec()
+    const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     //
