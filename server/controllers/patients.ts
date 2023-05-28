@@ -3,16 +3,17 @@ import { IBody, ICloud } from '../type'
 import Patient from '../models/Patient'
 import delDiag from '../utilities/delDiag'
 import { Request, Response } from 'express'
+import addMedic from '../utilities/addMedic'
 import full_name from '../utilities/full_name'
 import cloudinary from '../configs/cloudinary'
 import addExtension from '../utilities/addExtension'
+import { fetchByCardNumber } from '../utilities/pts'
 import {
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
     INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
     PATIENT_EXIST, SAVED, WARNING, SUCCESS, DELETION_FAILED,
     EXT_NOT_EXIST, DIAG_NOT_EXIST
 } from '../utilities/modal'
-import addMedic from '../utilities/addMedic'
 const asyncHandler = require('express-async-handler')
 
 const phoneRegex: RegExp = /^\d{11}$/
@@ -65,9 +66,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         age, death, cardNo
     }: any = req.body
 
-    if (!card_no) return res.status(400).json(CARD_NO_REQUIRED)
-
-    const patient: any = await Patient.findOne({ card_no }).exec()
+    const patient: any = await fetchByCardNumber(card_no, '-body -recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     if (cardNo || cardNo?.trim()) {
@@ -147,7 +146,7 @@ const remove = asyncHandler(async (req: Request, res: Response) => {
     let { card_no }: any = req.params
     if (!card_no || !card_no?.trim()) return res.status(400).json(CARD_NO_REQUIRED)
 
-    const patient: any = await Patient.findOne({ card_no }).exec()
+    const patient: any = await fetchByCardNumber(card_no, '-body -recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const bodies: any[] = patient.body
@@ -170,7 +169,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         date, images, texts, next_app
     }: any = req.body
 
-    const patient = await Patient.findOne({ card_no }).exec()
+    const patient = await fetchByCardNumber(card_no, '-recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     if (images) {
@@ -217,7 +216,7 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         date, texts, next_app
     }: any = req.body
 
-    const patient: any = await Patient.findOne({ card_no }).exec()
+    const patient: any = await fetchByCardNumber(card_no, '-recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const body: any = patient.body.find((body: IBody) => body.idx === idx)
@@ -239,7 +238,7 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
         eligOpthal, eligPhysio
     } : any = req.body
 
-    const patient: any = await Patient.findOne({ card_no }).exec()
+    const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const rec: any = patient.recommendation
@@ -274,7 +273,7 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
 
 const deleteRecommendation = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx, type }: any = req.params
-    const patient: any = await Patient.findOne({ card_no: card_no }).exec()
+    const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     if (type !== "physio" && type !== "opthal") {
@@ -299,7 +298,7 @@ const deleteRecommendation = asyncHandler(async (req: Request, res: Response) =>
 
 const deletExtension = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
-    const patient: any = await Patient.findOne({ card_no: card_no }).exec()
+    const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const extensions: any[] = patient.recommendation.extensions
@@ -315,7 +314,7 @@ const deletExtension = asyncHandler(async (req: Request, res: Response) => {
 const editExtension = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
     const { extension }: any = req.body
-    const patient: any = await Patient.findOne({ card_no: card_no }).exec()
+    const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const extensions: any[] = patient.recommendation.extensions
@@ -333,7 +332,7 @@ const editExtension = asyncHandler(async (req: Request, res: Response) => {
 const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
 
-    const patient: any = await Patient.findOne({ card_no }).exec()
+    const patient: any = await fetchByCardNumber(card_no, '-recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const bodies: IBody[] = patient.body
