@@ -154,8 +154,26 @@ const getExtension = asyncHandler(async (req: Request, res: Response) => {
     })
 })
 
+const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => {
+    const { card_no }: any = req.params
+    const patient: any = await Patient.findOne({ card_no })
+    .select('-body').exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    //
+})
+
+const getOpthalMedication = asyncHandler(async (req: Request, res: Response) => {
+    const { card_no }: any = req.params
+    const patient: any = await Patient.findOne({ card_no })
+    .select('-body').exec()
+    if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
+
+    //
+})
+
 export {
-    allPatients, getAllDiagnosis, getExtension,
-    getDiagnosis, getPatient, getAllExtensions,
+    allPatients, getAllDiagnosis, getExtension, getPhysioMedication,
+    getDiagnosis, getPatient, getAllExtensions, getOpthalMedication,
     getDeadPatients, getAllOpthalPatients, getAllPhysioPatients
 }
