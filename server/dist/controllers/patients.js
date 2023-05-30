@@ -34,7 +34,7 @@ const add = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, functio
     if (!card_no || !fullname || !sex || !age)
         return res.status(400).json(modal_1.FIELDS_REQUIRED);
     if (card_no.includes('/')) {
-        return res.status(400).json(Object.assign(Object.assign({}, modal_1.WARNING), { msg: "Invalid card number." }));
+        return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Invalid card number." }));
     }
     if (phone_no === null || phone_no === void 0 ? void 0 : phone_no.trim()) {
         if (!phoneRegex.test(phone_no === null || phone_no === void 0 ? void 0 : phone_no.trim()))
@@ -78,7 +78,7 @@ const edit = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, functi
     }
     if (sex) {
         if (sex !== "Male" && sex !== "Female") {
-            return res.status(400).json(Object.assign(Object.assign({}, modal_1.WARNING), { msg: "Sex is required." }));
+            return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Sex is required." }));
         }
         patient.sex = sex;
     }
@@ -98,7 +98,7 @@ const edit = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, functi
     if (death === null || death === void 0 ? void 0 : death.dead) {
         if (Boolean(death === null || death === void 0 ? void 0 : death.dead) !== patient.death.dead) {
             if (!(death === null || death === void 0 ? void 0 : death.date)) {
-                return res.status(400).json(Object.assign(Object.assign({}, modal_1.WARNING), { msg: "Date of death is required." }));
+                return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Date of death is required." }));
             }
             death = {
                 dead: !Boolean(patient.dead),

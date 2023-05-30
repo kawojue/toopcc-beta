@@ -41,7 +41,7 @@ const createUser = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
     user = email.split('@')[0];
     const account = yield User_1.default.findOne({ 'mail.email': email }).exec();
     if (account) {
-        return res.status(409).json(Object.assign(Object.assign({}, modal_1.WARNING), { msg: "Account already exists." }));
+        return res.status(409).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Account already exists." }));
     }
     const isUserExists = yield User_1.default.findOne({ user }).exec();
     if (!USER_REGEX.test(user) || isUserExists) {
@@ -72,7 +72,7 @@ const login = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, funct
     const account = yield User_1.default.findOne(EMAIL_REGEX.test(userId) ?
         { 'mail.email': userId } : { user: userId }).exec();
     if (!account) {
-        return res.status(400).json(Object.assign(Object.assign({}, modal_1.WARNING), { msg: "Invalid User ID or Password." }));
+        return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Invalid User ID or Password." }));
     }
     if (account.resigned.resign)
         return res.status(401).json(modal_1.ACCESS_DENIED);
@@ -124,14 +124,14 @@ const editUsername = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
     if (!newUser)
         return res.status(400).json(modal_1.FIELDS_REQUIRED);
     if (!USER_REGEX.test(newUser)) {
-        return res.status(400).json(Object.assign(Object.assign({}, modal_1.WARNING), { msg: "Username is not allowed." }));
+        return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Username is not allowed." }));
     }
     const account = yield User_1.default.findOne({ user: req === null || req === void 0 ? void 0 : req.user }).exec();
     if (!account)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
     const userExists = yield User_1.default.findOne({ user: newUser }).exec();
     if (userExists) {
-        return res.status(409).json(Object.assign(Object.assign({}, modal_1.WARNING), { msg: "Username has been taken." }));
+        return res.status(409).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Username has been taken." }));
     }
     account.token = "";
     account.user = newUser;
@@ -180,7 +180,7 @@ const verifyOTP = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, f
     if (expiry < Date.now()) {
         account.OTP = {};
         yield account.save();
-        return res.status(400).json(Object.assign(Object.assign({}, modal_1.WARNING), { msg: "OTP Expired." }));
+        return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "OTP Expired." }));
     }
     if (totp !== otp) {
         return res.status(401).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Incorrect OTP" }));
@@ -320,11 +320,11 @@ const removeRole = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
         return res.status(404).json(modal_1.ACCOUNT_NOT_FOUND);
     const roles = account.roles;
     if (!roles.includes(role)) {
-        return res.status(400).json(Object.assign(Object.assign({}, modal_1.WARNING), { msg: "Role does not exist." }));
+        return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Role does not exist." }));
     }
     const newRoles = roles.filter((authRole) => authRole !== role);
     if (newRoles.length === 0) {
-        return res.status(400).json(Object.assign(Object.assign({}, modal_1.WARNING), { msg: "Empty roles! Cannot remove role." }));
+        return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Empty roles! Cannot remove role." }));
     }
     account.token = "";
     account.roles = newRoles;
