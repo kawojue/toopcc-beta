@@ -2,11 +2,11 @@
 import useAuth from '@/hooks/useAuth'
 import axios from '@/app/api/instance'
 
-const getAllPatients = async () => {
+const getAllPatients = async (token: string) => {
     let data: any[] = []
     await axios.get(`/api/patients`, {
         headers: {
-            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_TOKEN}`
+            'Authorization': `Bearer ${token}`
         }
     })
     .then((res: any) => { data = res.data?.patients })
