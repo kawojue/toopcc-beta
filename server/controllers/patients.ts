@@ -11,7 +11,7 @@ import { fetchByCardNumber } from '../utilities/pts'
 import {
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
     INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
-    PATIENT_EXIST, SAVED, WARNING, SUCCESS, DELETION_FAILED,
+    PATIENT_EXIST, SAVED, SUCCESS, DELETION_FAILED,
     EXT_NOT_EXIST, DIAG_NOT_EXIST
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
@@ -34,7 +34,7 @@ const add = asyncHandler(async (req: Request, res: Response) => {
 
     if (card_no.includes('/')) {
         return res.status(400).json({
-            ...WARNING,
+            ...ERROR,
             msg: "Invalid card number."
         })
     }
@@ -90,7 +90,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     if (sex) {
         if (sex !== "Male" && sex !== "Female") {
             return res.status(400).json({
-                ...WARNING,
+                ...ERROR,
                 msg: "Sex is required."
             })
         }
@@ -122,7 +122,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         if (Boolean(death?.dead) !== patient.death.dead) {
             if (!death?.date) {
                 return res.status(400).json({
-                    ...WARNING,
+                    ...ERROR,
                     msg: "Date of death is required."
                 })
             }
