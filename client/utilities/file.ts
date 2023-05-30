@@ -1,3 +1,5 @@
+import notify from "@/utilities/notify"
+
 const checkFile = (file: any): boolean => {
     if (!file) return false
     const maxSize: number = 3072 // 3MB
@@ -11,12 +13,23 @@ const checkFile = (file: any): boolean => {
     return false
 }
 
-const convertFile = (file: any, set: any): void => {
+const convertFile = (file: any): string => {
     const reader: FileReader = new FileReader()
+    let converted: string = ""
     reader.readAsDataURL(file)
     reader.onload = () => {
-        set(reader.result as string)
+        converted = reader.result as string
+    }
+    return converted
+}
+
+const handleFile = (e: any): void => {
+    const file: any = e.target.files[0]
+    if (checkFile(file)) {
+        convertFile(file)
+    } else {
+        notify('error', "File size or format is not allowed.")
     }
 }
 
-export { convertFile, checkFile }
+export { convertFile, checkFile, handleFile }
