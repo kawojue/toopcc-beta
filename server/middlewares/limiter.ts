@@ -1,4 +1,5 @@
 import { ILimiter } from '../type'
+import { ERROR } from '../utilities/modal'
 import { Request, Response, NextFunction } from 'express'
 import rateLimit,
 { RateLimitRequestHandler, Options } from 'express-rate-limit'
@@ -14,8 +15,7 @@ export default function limiterFunc({
         },
         handler: (req: Request, res: Response, next: NextFunction, options: Options) => {
             res.status(options.statusCode).json({
-                success: false,
-                action: "warning",
+                ...ERROR,
                 msg: options.message?.message
             })
         },
