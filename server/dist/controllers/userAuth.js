@@ -29,7 +29,8 @@ const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{2,23}$/;
 const createUser = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     let user;
-    let { email, pswd, pswd2, fullname } = req.body;
+    let result;
+    let { email, pswd, pswd2, fullname, avatar } = req.body;
     email = (_a = email === null || email === void 0 ? void 0 : email.toLowerCase()) === null || _a === void 0 ? void 0 : _a.trim();
     fullname = (0, full_name_1.default)(fullname);
     if (!email || !pswd || !pswd2 || !fullname)
@@ -40,6 +41,14 @@ const createUser = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
         return res.status(400).json(modal_1.INVALID_EMAIL);
     user = email.split('@')[0];
     const account = yield User_1.default.findOne({ 'mail.email': email }).exec();
+    if (avatar) {
+        result = yield cloudinary_1.default.uploader.upload(avatar, {
+            folder: `Avatars/${account.id}`,
+            resource_type: 'image'
+        });
+        if (!result)
+            return res.status(404).json(modal_1.SMTH_WENT_WRONG);
+    }
     if (account) {
         return res.status(409).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Account already exists." }));
     }
@@ -55,6 +64,10 @@ const createUser = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
     pswd = yield bcrypt_1.default.hash(pswd, salt);
     yield User_1.default.create({
         user,
+        avatar: {
+            secure_url: result.secure_url,
+            public_id: result.public_id
+        },
         password: pswd,
         fullname: fullname,
         'mail.email': email
@@ -253,6 +266,8 @@ const addAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, f
     });
     if (!result)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
+    if (account.avatar.secure_url)
+        return res.status(400).json(modal_1.SMTH_WENT_WRONG);
     account.avatar = {
         secure_url: result.secure_url,
         public_id: result.public_id
