@@ -13,7 +13,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [token, setToken] = useState<string>("")
     const [auth, setAuth] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
-    const [selected, setSelected] = useState<boolean>(false)
 
     const [pswd, setPswd] = useState<string>("")
     const [pswd2, setPswd2] = useState<string>("")
@@ -40,16 +39,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (router.asPath === "/staff/profile") router.push('/staff/login')
         }
     }, [router])
-
-    const handleAvatar = (e: any): void => {
-        const file: any = e.target.files[0]
-        if (checkFile(file)) {
-            convertFile(file, setAvatar)
-            setSelected(true)
-        } else {
-            notify('error', "File size or format is not allowed.")
-        }
-    }
 
     const handleSignup = async (): Promise<void> => {
         setLoading(true)
@@ -85,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return (
         <Auth.Provider value={{
-            auth, handleSignup, pswd, pswd2, handleAvatar, loading, setLoading, selected,
+            auth, handleSignup, pswd, pswd2, loading, setLoading,
             handleLogin, userId, setUserid, token
         }}>
             {children}
