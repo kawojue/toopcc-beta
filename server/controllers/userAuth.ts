@@ -21,7 +21,8 @@ const USER_REGEX: RegExp = /^[a-zA-Z][a-zA-Z0-9-_]{2,23}$/
 // handle account creation
 const createUser = asyncHandler(async (req: any, res: Response) => {
     let user: any
-    let { email, pswd, pswd2, fullname }: any = req.body
+    let result: any
+    let { email, pswd, pswd2, fullname, avatar }: any = req.body
     email = email?.toLowerCase()?.trim()
     fullname = full_name(fullname)
 
@@ -33,6 +34,14 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     user = email.split('@')[0]
     const account: any = await User.findOne({ 'mail.email': email }).exec()
+
+    if (avatar) {
+        result = await cloudinary.uploader.upload(avatar, {
+            folder: `Avatars/${account.id}`,
+            resource_type: 'image'
+        })
+        if (!result) return res.status(404).json(SMTH_WENT_WRONG)
+    }
 
     if (account) {
         return res.status(409).json({
@@ -56,6 +65,10 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     await User.create({
         user,
+        avatar: {
+            secure_url: result.secure_url,
+            public_id: result.public_id
+        },
         password: pswd as string,
         fullname: fullname as string,
         'mail.email': email as string
@@ -326,6 +339,8 @@ const addAvatar = asyncHandler(async (req: any, res: any) => {
         resource_type: 'image'
     })
     if (!result) return res.status(404).json(SMTH_WENT_WRONG)
+
+    if (account.avatar.secure_url) return res.status(400).json(SMTH_WENT_WRONG)
 
     account.avatar = {
         secure_url: result.secure_url,
