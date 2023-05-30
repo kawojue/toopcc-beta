@@ -16,7 +16,7 @@ const pts_1 = require("../utilities/pts");
 const asyncHandler = require('express-async-handler');
 const allPatients = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const patients = yield (0, pts_1.fetchPatients)('-body -recommendation');
-    res.status(200).json(Object.assign(Object.assign({}, modal_1.SUCCESS), { patients: (0, sorting_1.sortByCardNumbers)(patients) }));
+    res.status(200).json({ patients: (0, sorting_1.sortByCardNumbers)(patients) });
 }));
 exports.allPatients = allPatients;
 const getPatient = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -24,7 +24,7 @@ const getPatient = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
     const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body -recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
-    res.status(200).json(Object.assign(Object.assign({}, modal_1.SUCCESS), { patient }));
+    res.status(200).json({ patient: patient });
 }));
 exports.getPatient = getPatient;
 const getAllDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
