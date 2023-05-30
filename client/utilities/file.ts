@@ -13,6 +13,15 @@ const checkFile = (file: any): boolean => {
     return false
 }
 
+const handleFile = (e: any): void => {
+    const file: any = e.target.files[0]
+    if (checkFile(file)) {
+        convertFile(file)
+    } else {
+        notify('error', "File size or format is not allowed.")
+    }
+}
+
 const convertFile = (file: any): string => {
     const reader: FileReader = new FileReader()
     let converted: string = ""
@@ -21,15 +30,6 @@ const convertFile = (file: any): string => {
         converted = reader.result as string
     }
     return converted
-}
-
-const handleFile = (e: any): void => {
-    const file: any = e.target.files[0]
-    if (checkFile(file)) {
-        convertFile(file)
-    } else {
-        notify('error', "File size or format is not allowed.")
-    }
 }
 
 export { convertFile, checkFile, handleFile }
