@@ -15,10 +15,7 @@ const asyncHandler = require('express-async-handler')
 const allPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients: any[] = await fetchPatients('-body -recommendation')
 
-    res.status(200).json({
-        ...SUCCESS,
-        patients: sortByCardNumbers(patients)
-    })
+    res.status(200).json({ patients: sortByCardNumbers(patients) })
 })
 
 const getPatient = asyncHandler(async (req: Request, res: Response) => {
@@ -26,10 +23,7 @@ const getPatient = asyncHandler(async (req: Request, res: Response) => {
     const patient: any = await fetchByCardNumber(card_no, '-body -recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
-    res.status(200).json({
-        ...SUCCESS,
-        patient
-    })
+    res.status(200).json({ patient: patient })
 })
 
 const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
