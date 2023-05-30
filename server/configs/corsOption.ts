@@ -1,7 +1,9 @@
 import { CorsOptions } from "cors"
 
 export const allowedOrigins: string[] =  [
-    "http://localhost:1002"
+    "http://localhost:1002",
+    "http://localhost:3000",
+    "https://toopcc.vercel.app",
 ]
 
 const corsOption: CorsOptions = {
