@@ -11,8 +11,7 @@ import full_name from '../utilities/full_name'
 import {
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
     FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
-    PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, WARNING, CANCELED,
-    ROLES_UPDATED,
+    PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, CANCELED, ROLES_UPDATED,
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -37,7 +36,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     if (account) {
         return res.status(409).json({
-            ...WARNING,
+            ...ERROR,
             msg: "Account already exists."
         })
     }
@@ -82,7 +81,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
 
     if (!account) {
         return res.status(400).json({
-            ...WARNING,
+            ...ERROR,
             msg: "Invalid User ID or Password."
         })
     }
@@ -154,7 +153,7 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
 
     if (!USER_REGEX.test(newUser)) {
         return res.status(400).json({
-            ...WARNING,
+            ...ERROR,
             msg: "Username is not allowed."
         })
     }
@@ -165,7 +164,7 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
     const userExists: any = await User.findOne({ user: newUser }).exec()
     if (userExists) {
         return res.status(409).json({
-            ...WARNING,
+            ...ERROR,
             msg: "Username has been taken."
         })
     }
@@ -232,7 +231,7 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
         account.OTP = {}
         await account.save()
         return res.status(400).json({
-            ...WARNING,
+            ...ERROR,
             msg: "OTP Expired."
         })
     }
@@ -413,7 +412,7 @@ const removeRole = asyncHandler(async (req: Request, res: Response) => {
     const roles: string[] = account.roles
     if (!roles.includes(role)) {
         return res.status(400).json({
-            ...WARNING,
+            ...ERROR,
             msg: "Role does not exist."
         })
     }
@@ -421,7 +420,7 @@ const removeRole = asyncHandler(async (req: Request, res: Response) => {
     const newRoles: string[] = roles.filter((authRole: string) => authRole !== role)
     if (newRoles.length === 0) {
         return res.status(400).json({
-            ...WARNING,
+            ...ERROR,
             msg: "Empty roles! Cannot remove role."
         })
     }
