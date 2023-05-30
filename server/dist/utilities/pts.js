@@ -15,24 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchPatients = exports.fetchByCardNumber = void 0;
 const Patient_1 = __importDefault(require("../models/Patient"));
 const fetchByCardNumber = (card_no, omit = "") => __awaiter(void 0, void 0, void 0, function* () {
-    let patient;
-    if (omit) {
-        patient = yield Patient_1.default.findOne({ card_no }).exec();
+    if (omit === "") {
+        return yield Patient_1.default.findOne({ card_no }).exec();
     }
-    else {
-        patient = yield Patient_1.default.findOne({ card_no }).select(omit).exec();
-    }
-    return patient;
+    return yield Patient_1.default.findOne({ card_no }).select(omit).exec();
 });
 exports.fetchByCardNumber = fetchByCardNumber;
 const fetchPatients = (omit = "") => __awaiter(void 0, void 0, void 0, function* () {
-    let patients;
-    if (omit) {
-        patients = yield Patient_1.default.find().select(omit).exec();
+    if (omit === "") {
+        return yield Patient_1.default.find().exec();
     }
-    else {
-        patients = yield Patient_1.default.find().exec();
-    }
-    return patients;
+    return yield Patient_1.default.find().select(omit).exec();
 });
 exports.fetchPatients = fetchPatients;
