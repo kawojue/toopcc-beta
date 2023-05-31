@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description: "All Patients Data."
 }
 
-const page = async () => {
+const page = () => {
     const { token }: any = useAuth()
     const [patients, setPatients] = useState<any[]>([])
     const [loading, setLoading] = useState<boolean>(false)
