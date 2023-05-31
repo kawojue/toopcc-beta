@@ -1,15 +1,15 @@
 "use client"
 import axios from "@/app/api/instance"
 import notify from "@/utilities/notify"
+import { useRouter } from "next/navigation"
 import throwError from "@/utilities/throwError"
-import { useRouter, NextRouter } from "next/router"
-import { convertFile, checkFile } from '@/utilities/file'
-import { createContext, useState, useEffect, useContext } from 'react'
+import { createContext, useState, useEffect, useContext } from "react"
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context"
 
-const Auth = createContext({})
+const Auth: any = createContext({})
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const router: NextRouter = useRouter()
+    const router: AppRouterInstance = useRouter()
     const [token, setToken] = useState<string>("")
     const [auth, setAuth] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
@@ -17,17 +17,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [pswd, setPswd] = useState<string>("")
     const [pswd2, setPswd2] = useState<string>("")
     const [email, setEmail] = useState<string>("")
-    const [userId, setUserid] = useState<string>("")
+    const [userId, setUserId] = useState<string>("")
     const [avatar, setAvatar] = useState<string>("")
     const [fullname, setFullname] = useState<string>("")
+    const [verified, setVerified] = useState<boolean>(false)
 
     const setStatesToDefault = (): void => {
         setPswd("")
         setPswd2("")
         setEmail("")
         setAvatar("")
-        setUserid("")
+        setUserId("")
         setFullname("")
+        setVerified(false)
     }
 
     useEffect(() => {
@@ -35,14 +37,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (storedToken) {
             setAuth(true)
             setToken(storedToken)
-        } else {
-            if (router.asPath === "/staff/profile") router.push('/staff/login')
         }
-    }, [router])
+    }, [])
 
     const handleSignup = async (): Promise<void> => {
         setLoading(true)
-        await axios.post('', JSON.stringify({
+        await axios.post('/auth/signup', JSON.stringify({
             fullname, avatar, email, pswd, pswd2
         })).then((res: any) => {
             const msg: string = res.data.msg
@@ -51,13 +51,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setStatesToDefault()
             setTimeout(() => {
                 router.push('/staff/login')
-            }, 2000);
+            }, 2000)
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handleLogin = async (): Promise<void> => {
         setLoading(true)
-        await axios.post('', JSON.stringify({
+        await axios.post('/auth/login', JSON.stringify({
             userId, pswd
         })).then((res: any) => {
             const msg: string = res.data.msg
@@ -72,10 +72,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
+    const handleLogout = async (): Promise<void> => {
+        await axios.get('/auth/logout')
+        .then((res: any) => {
+            setAuth(false)
+            setStatesToDefault()
+            localStorage.clear()
+        }).catch((err) => throwError(err))
+    }
+
     return (
         <Auth.Provider value={{
             auth, handleSignup, pswd, pswd2, loading, setLoading,
-            handleLogin, userId, setUserid, token
+            handleLogin, userId, setUserId, token, handleLogout,
+            setPswd, setPswd2, setEmail, email, fullname, setFullname,
+            avatar, setAvatar,
         }}>
             {children}
         </Auth.Provider>
