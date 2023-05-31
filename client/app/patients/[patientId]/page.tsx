@@ -15,7 +15,7 @@ interface Patient {
     }
 }
 
-export const generateMetadata = async ({ params: { patientId } }: { params: { patientId: string } }): Promise<Metadata> => {
+export const generateMetadata = async ({ params: { patientId } }: Patient): Promise<Metadata> => {
     const { token }: any = useAuth()
     let patient: any = {}
 
@@ -28,8 +28,6 @@ export const generateMetadata = async ({ params: { patientId } }: { params: { pa
     ).catch(
         (err: any) => console.error(err)
     )
-
-    console.log(patient)
 
     if (!patient?.fullname) {
         return {
