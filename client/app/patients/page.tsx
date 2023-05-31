@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import useAuth from '@/hooks/useAuth'
 import axios from '@/app/api/instance'
-import { useEffect, useState } from 'react'
 import Patients from '@/components/Patients'
 import { SpinnerTwo } from "@/components/Spinner"
 import throwError from '@/utilities/throwError'
+import { useEffect, useState, Suspense } from 'react'
 
 export const metadata: Metadata = {
     title: "Patients",
