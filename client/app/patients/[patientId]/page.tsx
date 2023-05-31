@@ -9,28 +9,46 @@ import throwError from '@/utilities/throwError'
 import { SpinnerTwo } from "@/components/Spinner"
 import { useState, useEffect, Suspense } from 'react'
 
-// export const generateMetadata = async (): Promise<Metadata> => {
-//     const { token }: any = useAuth()
-//     const searchParams = usePathname()
-//     const patientId = searchParams.match('/:patientId')
-//     const patient = await getPatient(patientId, token)
+interface Patient {
+    params: {
+        patientId: string
+    }
+}
 
-//     if (!patient) {
-//         return {
-//             title: 'Patient not found.'
-//         }
-//     }
+export const generateMetadata = async ({ params: { patientId } }: { params: { patientId: string } }): Promise<Metadata> => {
+    const { token }: any = useAuth()
+    let patient: any = {}
 
-//     return {
-//         title: patient.fullname
-//     }
-// }
+    await axios.get(`/api/patients/${patientId}`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(
+        (res: any) => patient = res.data?.patient
+    ).catch(
+        (err: any) => console.error(err)
+    )
 
-const page = ({ params: { patientId } }: { params: { patientId: string } }) => {
+    console.log(patient)
+
+    if (!patient?.fullname) {
+        return {
+            title: 'Patient not found.'
+        }
+    }
+
+    return {
+        title: patient.fullname
+    }
+}
+
+const page = ({ params: { patientId } }: Patient) => {
     const { token }: any = useAuth()
     const [patient, setPatient] = useState<any>({})
+    const [loading, setLoading] = useState<boolean>(false)
 
     const getPatient = async (card_no: string, token: string) => {
+        setLoading(true)
         await axios.get(`/api/patients/${card_no}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -39,7 +57,7 @@ const page = ({ params: { patientId } }: { params: { patientId: string } }) => {
             (res: any) => setPatient(res.data?.patient)
         ).catch(
             (err: any) => throwError(err)
-        )
+        ).finally(() => setLoading(false))
     }
     
     useEffect(() => {
@@ -47,6 +65,8 @@ const page = ({ params: { patientId } }: { params: { patientId: string } }) => {
             (async () => await getPatient(patientId, token))()
         }
     }, [token, patientId])
+
+    if (loading) return <SpinnerTwo />
 
     return (
         <Suspense fallback={<SpinnerTwo />}>
