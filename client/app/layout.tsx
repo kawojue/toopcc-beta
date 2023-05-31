@@ -1,4 +1,6 @@
 import './globals.css'
+import { Toaster } from "react-hot-toast"
+import { AuthProvider } from '@/hooks/useAuth'
 
 export const metadata = {
   title: 'TOOPCC',
@@ -12,7 +14,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Toaster
+        position="top-center"
+        reverseOrder={false} />
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   )
 }
