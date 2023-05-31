@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.trans {
+    @apply duration-200 ease-in-out transition-all;
+}
+
 .lds-roller {
     @apply relative w-[80px] h-[80px];
 }
@@ -100,21 +104,58 @@
 }
 
 .spin-sector-1 {
-    border-top-color: lightblue;
+    border-top-color: green;
     --timing: ease-in-out;
     --duration: 0.75s;
 }
 
 .spin-sector-2 {
-    border-left-color: purple;
+    border-left-color: rgb(252, 126, 0);
     --timing: ease-in-out;
     --duration: 1.25s;
 }
 
 .spin-sector-3 {
-    border-right-color: lightcoral;
+    border-right-color: blueviolet;
     --timing: ease-in-out;
     --duration: 1.5s;
+}
+
+.staff-main {
+    @apply bg-clr-0;
+}
+
+.section-form {
+    @apply mx-auto mt-20 w-[90vw] max-w-[500px] p-5 rounded-lg bg-clr-7;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.form-header {
+    @apply text-3xl text-clr-2 font-semibold tracking-wider;
+}
+
+.form {
+    @apply mt-5 flex flex-col gap-5;
+}
+
+.form-group {
+    @apply flex flex-col gap-1.5
+}
+
+.form-group label {
+    @apply font-medium tracking-wide text-xl trans
+}
+
+.form-group input {
+    @apply text-lg font-medium py-1.5 px-0.5 border-b-clr-8 text-clr-2 tracking-wide outline-none border-b-[1.5px] border-clr-2 bg-clr-5 trans
+}
+
+.submit-btn {
+    @apply flex items-center justify-center px-7 py-2 font-semibold tracking-widest text-2xl bg-clr-1 rounded-lg text-clr-7 trans;
+}
+
+.fgt-pswd {
+    @apply underline text-clr-4 self-end
 }
 
 @keyframes lds-roller {
