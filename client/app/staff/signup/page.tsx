@@ -7,14 +7,14 @@ import { inter } from "@/public/font/font"
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import PswdButton from "@/components/PswdBtn"
-import { SpinnerOne } from "@/components/Spinner"
+import SubmitBtn from "@/components/SubmitBtn"
 
 const page = () => {
     const router = useRouter()
     const {
-        loading, email, setEmail, avatar, setAvatar,
+        email, setEmail, avatar, setAvatar, auth,
         pswd, pswd2, setPswd, setPswd2, handleSignup,
-        fullname, setFullname, auth
+        fullname, setFullname
     }: any = useAuth()
 
     const [pswdBtn, setPswdBtn] = useState<boolean>(false)
@@ -64,10 +64,7 @@ const page = () => {
                     value={pswd2} onChange={(e) => setPswd2(e.target.value)}
                     className={inter.className}/>
                 </article>
-                <button type="submit" onClick={async () => await handleSignup()}
-                className="submit-btn hover:bg-clr-6 hover: text-clr-5">
-                    {loading ? <SpinnerOne /> : <span>Sign Up</span>}
-                </button>
+                <SubmitBtn texts="Sign Up" func={handleSignup} />
             </form>
         </section>
     )
