@@ -3,10 +3,10 @@
 import type { Metadata } from 'next'
 import useAuth from '@/hooks/useAuth'
 import axios from '@/app/api/instance'
+import throwError from '@/utils/throwError'
+import { useEffect, useState } from 'react'
 import Patients from '@/components/Patients'
 import { SpinnerTwo } from "@/components/Spinner"
-import throwError from '@/utilities/throwError'
-import { useEffect, useState, Suspense } from 'react'
 
 export const metadata: Metadata = {
     title: "Patients",
@@ -32,18 +32,12 @@ const page = () => {
     }
 
     useEffect(() => {
-        (async () => await getAllPatients(token))()
+        if (token) (async () => await getAllPatients(token))()
     }, [token])
 
     if (loading) return <SpinnerTwo />
 
-    return (
-        <>
-            <Suspense fallback={<SpinnerTwo />}>
-                <Patients patients={patients}/>
-            </Suspense>
-        </>
-    )
+    return <Patients patients={patients}/>
 }
 
 export default page
