@@ -1,18 +1,25 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import Link from "next/link"
-import { useState } from 'react'
 import useAuth from "@/hooks/useAuth"
 import { inter } from "@/public/font/font"
+import { useState, useEffect } from 'react'
+import { useRouter } from "next/navigation"
 import PswdButton from "@/components/PswdBtn"
 import { SpinnerOne } from "@/components/Spinner"
 
 const page = () => {
+    const router = useRouter()
     const {
         pswd, loading, handleLogin,
-        userId, setUserId, setPswd
+        userId, setUserId, setPswd, auth,
     }: any = useAuth()
+
     const [pswdBtn, setPswdBtn] = useState<boolean>(false)
+
+    useEffect(() => {
+        if (auth) router.push('/staff/profile')
+    }, [auth, router])
 
     return (
         <section className="section-form">
