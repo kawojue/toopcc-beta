@@ -31,10 +31,10 @@ const createUser = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
     let user;
     let result;
     let { email, pswd, pswd2, fullname, avatar } = req.body;
-    email = (_a = email === null || email === void 0 ? void 0 : email.toLowerCase()) === null || _a === void 0 ? void 0 : _a.trim();
-    fullname = (0, full_name_1.default)(fullname);
     if (!email || !pswd || !pswd2 || !fullname)
         return res.status(400).json(modal_1.FIELDS_REQUIRED);
+    fullname = (0, full_name_1.default)(fullname);
+    email = (_a = email === null || email === void 0 ? void 0 : email.toLowerCase()) === null || _a === void 0 ? void 0 : _a.trim();
     if (pswd !== pswd2)
         return res.status(400).json(modal_1.PSWD_NOT_MATCH);
     if (EMAIL_REGEX.test(email) === false)
