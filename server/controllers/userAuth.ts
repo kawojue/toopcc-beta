@@ -38,7 +38,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     if (avatar) {
         result = await cloudinary.uploader.upload(avatar, {
-            folder: `Avatars`,
+            folder: `Staffs/Avatars`,
             resource_type: 'image'
         })
         if (!result) return res.status(404).json(SMTH_WENT_WRONG)
@@ -336,7 +336,7 @@ const addAvatar = asyncHandler(async (req: any, res: any) => {
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
     const result = await cloudinary.uploader.upload(avatar, {
-        folder: `Avatars/${account.id}`,
+        folder: `Staffs/Avatars`,
         resource_type: 'image'
     })
     if (!result) return res.status(404).json(SMTH_WENT_WRONG)
