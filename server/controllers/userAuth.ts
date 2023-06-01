@@ -36,14 +36,6 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     user = email.split('@')[0]
     const account: any = await User.findOne({ 'mail.email': email }).exec()
 
-    if (avatar) {
-        result = await cloudinary.uploader.upload(avatar, {
-            folder: `Staffs/Avatars`,
-            resource_type: 'image'
-        })
-        if (!result) return res.status(404).json(SMTH_WENT_WRONG)
-    }
-
     if (account) {
         return res.status(409).json({
             ...ERROR,
@@ -63,6 +55,14 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     const salt: string = await bcrypt.genSalt(10)
     pswd = await bcrypt.hash(pswd, salt)
+
+    if (avatar) {
+        result = await cloudinary.uploader.upload(avatar, {
+            folder: `TOOPCC/Staffs/Avatars`,
+            resource_type: 'image'
+        })
+        if (!result) return res.status(404).json(SMTH_WENT_WRONG)
+    }
 
     await User.create({
         user,
@@ -336,7 +336,7 @@ const addAvatar = asyncHandler(async (req: any, res: any) => {
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
     const result = await cloudinary.uploader.upload(avatar, {
-        folder: `Staffs/Avatars`,
+        folder: `TOOPCC/Staffs/Avatars`,
         resource_type: 'image'
     })
     if (!result) return res.status(404).json(SMTH_WENT_WRONG)
