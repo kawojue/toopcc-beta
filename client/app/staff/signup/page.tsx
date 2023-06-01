@@ -1,21 +1,27 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { useState } from 'react'
 import useAuth from "@/hooks/useAuth"
 import { handleFile } from "@/utils/file"
 import { inter } from "@/public/font/font"
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import PswdButton from "@/components/PswdBtn"
 import { SpinnerOne } from "@/components/Spinner"
 
 const page = () => {
+    const router = useRouter()
     const {
         loading, email, setEmail, avatar, setAvatar,
         pswd, pswd2, setPswd, setPswd2, handleSignup,
-        fullname, setFullname
+        fullname, setFullname, auth
     }: any = useAuth()
 
     const [pswdBtn, setPswdBtn] = useState<boolean>(false)
+
+    useEffect(() => {
+        if (auth) router.push('/staff/profile')
+    }, [auth, router])
 
     return (
         <section className="section-form">
