@@ -158,6 +158,14 @@
     @apply underline text-clr-4 self-end
 }
 
+.pswd-container {
+    @apply relative;
+}
+
+.eye {
+    @apply absolute top-3 right-3 text-clr-0 text-xl;
+}
+
 @keyframes lds-roller {
     0% {
         transform: rotate(0deg);
