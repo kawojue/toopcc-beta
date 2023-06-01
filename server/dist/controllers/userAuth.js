@@ -65,8 +65,8 @@ const createUser = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
     yield User_1.default.create({
         user,
         avatar: {
-            secure_url: result.secure_url,
-            public_id: result.public_id
+            secure_url: result === null || result === void 0 ? void 0 : result.secure_url,
+            public_id: result === null || result === void 0 ? void 0 : result.public_id
         },
         password: pswd,
         fullname: fullname,
