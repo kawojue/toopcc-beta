@@ -23,10 +23,11 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     let user: any
     let result: any
     let { email, pswd, pswd2, fullname, avatar }: any = req.body
-    email = email?.toLowerCase()?.trim()
-    fullname = full_name(fullname)
 
     if (!email || !pswd || !pswd2 || !fullname) return res.status(400).json(FIELDS_REQUIRED)
+
+    fullname = full_name(fullname)
+    email = email?.toLowerCase()?.trim()
 
     if (pswd !== pswd2) return res.status(400).json(PSWD_NOT_MATCH)
 
