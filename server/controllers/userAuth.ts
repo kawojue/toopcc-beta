@@ -38,7 +38,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
 
     if (avatar) {
         result = await cloudinary.uploader.upload(avatar, {
-            folder: `Avatars/${account.id}`,
+            folder: `Avatars`,
             resource_type: 'image'
         })
         if (!result) return res.status(404).json(SMTH_WENT_WRONG)
@@ -359,8 +359,7 @@ const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
     const account: any = await User.findOne({ user: req?.user }).exec()
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
-    // const result: any = await cloudinary.uploader.destroy(account.avatar?.public_id)
-    const result: any = await cloudinary.api.delete_resources_by_prefix(account.id)
+    const result: any = await cloudinary.uploader.destroy(account.avatar?.public_id)
     if (!result) return res.status(404).json(SMTH_WENT_WRONG)
 
     account.avatar = {
