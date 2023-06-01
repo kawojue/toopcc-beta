@@ -1,8 +1,8 @@
 "use client"
+import notify from "@/utils/notify"
 import axios from "@/app/api/instance"
-import notify from "@/utilities/notify"
 import { useRouter } from "next/navigation"
-import throwError from "@/utilities/throwError"
+import throwError from "@/utils/throwError"
 import { createContext, useState, useEffect, useContext } from "react"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context"
 
