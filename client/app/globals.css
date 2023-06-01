@@ -126,7 +126,7 @@
 }
 
 .section-form {
-    @apply mx-auto mt-20 w-[90vw] max-w-[500px] p-5 rounded-lg bg-clr-7;
+    @apply mx-auto mt-16 mb-10 w-[90vw] max-w-[550px] px-5 py-3 rounded-lg bg-clr-7;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
@@ -147,7 +147,7 @@
 }
 
 .form-group input {
-    @apply text-lg font-medium py-1.5 px-0.5 border-b-clr-8 text-clr-2 tracking-wide outline-none border-b-[1.5px] border-clr-2 bg-clr-5 trans
+    @apply text-lg font-medium py-1 px-0.5 border-b-clr-8 text-clr-2 tracking-wide outline-none border-b-[1.5px] border-clr-2 bg-clr-5 trans
 }
 
 .submit-btn {
@@ -162,8 +162,28 @@
     @apply relative;
 }
 
+.pswd-container input {
+    @apply w-full;
+}
+
 .eye {
-    @apply absolute top-3 right-3 text-clr-0 text-xl;
+    @apply absolute top-3 right-3 text-xl text-clr-8;
+}
+
+.avatar-btn {
+    @apply py-1.5 px-5 tracking-wider bg-clr-0 border-2 border-clr-2 font-medium trans
+}
+
+.avatar {
+    @apply flex flex-col gap-2 items-center
+}
+
+.avatar-container {
+    @apply w-[9rem] h-[9rem] overflow-hidden rounded-full;
+}
+
+.avatar-container img {
+    @apply w-full h-full object-cover;
 }
 
 @keyframes lds-roller {
