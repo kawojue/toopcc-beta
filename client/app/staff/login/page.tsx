@@ -1,16 +1,21 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import {
-    questrial, inter
-} from "@/public/font/font"
-import useAuth from "@/hooks/useAuth"
-import { SpinnerOne } from "@/components/Spinner"
 import Link from "next/link"
+import { useState } from 'react'
+import useAuth from "@/hooks/useAuth"
+import { inter } from "@/public/font/font"
+import PswdButton from "@/components/PswdBtn"
+import { SpinnerOne } from "@/components/Spinner"
 
 const page = () => {
-    const { pswd, loading, handleLogin, userId, setUserId, setPswd }: any = useAuth()
+    const {
+        pswd, loading, handleLogin,
+        userId, setUserId, setPswd
+    }: any = useAuth()
+    const [pswdBtn, setPswdBtn] = useState<boolean>(false)
+
     return (
-        <section className={`section-form ${questrial.className}`}>
+        <section className="section-form">
             <h2 className="form-header">Login</h2>
             <form onSubmit={e => e.preventDefault()}
             className="form">
@@ -21,11 +26,13 @@ const page = () => {
                 </article>
                 <article className="form-group">
                     <label htmlFor="pswd">Password</label>
-                    <input type="text" id="pswd" placeholder="password"
-                    value={pswd} onChange={(e) => setPswd(e.target.value)}
-                    className={inter.className}/>
-                    <Link href="/staff/password/reset"
-                    className="fgt-pswd">
+                    <div className="pswd-container">
+                        <input type={`${pswdBtn ? 'text': 'password'}`} id="pswd" placeholder="password"
+                        value={pswd} onChange={(e) => setPswd(e.target.value)}
+                        className={inter.className}/>
+                        <PswdButton get={pswdBtn} set={setPswdBtn} />
+                    </div>
+                    <Link href="/staff/password/verify" className="fgt-pswd">
                         Forgot Password?
                     </Link>
                 </article>
