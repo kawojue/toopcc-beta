@@ -6,13 +6,13 @@ import { inter } from "@/public/font/font"
 import { useState, useEffect } from 'react'
 import { useRouter } from "next/navigation"
 import PswdButton from "@/components/PswdBtn"
-import { SpinnerOne } from "@/components/Spinner"
+import SubmitBtn from "@/components/SubmitBtn"
 
 const page = () => {
     const router = useRouter()
     const {
-        pswd, loading, handleLogin,
-        userId, setUserId, setPswd, auth,
+        pswd, handleLogin, auth,
+        userId, setUserId, setPswd,
     }: any = useAuth()
 
     const [pswdBtn, setPswdBtn] = useState<boolean>(false)
@@ -43,10 +43,7 @@ const page = () => {
                         Forgot Password?
                     </Link>
                 </article>
-                <button type="submit" onClick={async () => await handleLogin()}
-                className="submit-btn hover:bg-clr-6 hover: text-clr-5">
-                    {loading ? <SpinnerOne /> : <span>Log In</span>}
-                </button>
+                <SubmitBtn texts="Log In" func={handleLogin} />
             </form>
         </section>
     )
