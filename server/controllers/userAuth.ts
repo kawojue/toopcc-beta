@@ -67,8 +67,8 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     await User.create({
         user,
         avatar: {
-            secure_url: result.secure_url,
-            public_id: result.public_id
+            secure_url: result?.secure_url,
+            public_id: result?.public_id
         },
         password: pswd as string,
         fullname: fullname as string,
