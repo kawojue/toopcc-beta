@@ -14,6 +14,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [auth, setAuth] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
 
+    const [otp, setOTP] = useState<string>("")
     const [pswd, setPswd] = useState<string>("")
     const [pswd2, setPswd2] = useState<string>("")
     const [email, setEmail] = useState<string>("")
@@ -23,6 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [verified, setVerified] = useState<boolean>(false)
 
     const setStatesToDefault = (): void => {
+        setOTP("")
         setPswd("")
         setPswd2("")
         setEmail("")
@@ -72,6 +74,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
+    const handleOTPRequest = async (): Promise<void> => {
+        await axios.post('/auth/otp/request', JSON.stringify({ email }))
+        .then((res: any) => notify(res.data?.action, res.data?.msg))
+        .catch((err: any) => throwError(err))
+    }
+
+    const handleIdVerification = async (): Promise<void> => {
+        setLoading(true)
+        await axios.post('/auth/otp/verify', JSON.stringify({ otp, email }))
+        .then((res: any) => {
+            setOTP("")
+            setVerified(res.data?.verified)
+            notify(res.data?.action, res.data?.msg)
+            setTimeout(() => {
+                router.push('/staff/password/reset')
+            }, 2000)
+        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+    }
+
+    const handlePswdReset = async (): Promise<void> => {
+        setLoading(true)
+        await axios.post('/auth/password/reset', JSON.stringify({
+            email, newPswd2: pswd2,
+            verified, newPswd: pswd
+        })).then((res: any) => {
+            setStatesToDefault()
+            notify(res.data?.action, res.data?.msg)
+            setTimeout(() => {
+                router.push('/staff/login')
+            }, 2000)
+        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+    }
+
     const handleLogout = async (): Promise<void> => {
         await axios.get('/auth/logout')
         .then((res: any) => {
@@ -86,7 +121,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             auth, handleSignup, pswd, pswd2, loading, setLoading,
             handleLogin, userId, setUserId, token, handleLogout,
             setPswd, setPswd2, setEmail, email, fullname, setFullname,
-            avatar, setAvatar,
+            avatar, setAvatar, otp, setOTP, handleOTPRequest,
+            handlePswdReset, handleIdVerification
         }}>
             {children}
         </Auth.Provider>
