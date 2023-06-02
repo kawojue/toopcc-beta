@@ -171,7 +171,11 @@
 }
 
 .avatar-btn {
-    @apply py-1.5 px-5 tracking-wider bg-clr-0 border-2 border-clr-2 font-medium trans
+    @apply py-1 px-3 tracking-wider bg-clr-0 border-[0.0875rem] border-clr-2 text-clr-2 font-medium trans cursor-pointer
+}
+
+.avatar-btn label {
+    @apply text-sm cursor-pointer;
 }
 
 .avatar {
