@@ -1,4 +1,5 @@
 import { Toaster } from "react-hot-toast"
+import { PatientProvider } from "@/hooks/usePatient"
 
 export const metadata = {
     title: 'Patients',
@@ -12,10 +13,12 @@ export default function RootLayout({
 }) {
     return (
         <>
-            <Toaster
-            position="top-center"
-            reverseOrder={false} />
-            {children}
+            <PatientProvider>
+                <Toaster
+                position="top-center"
+                reverseOrder={false} />
+                {children}
+            </PatientProvider>
         </>
     )
 }
