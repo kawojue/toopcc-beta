@@ -15,6 +15,13 @@ const fetchUserByUser = async (user: string, omit: string = ""): Promise<any> =>
     return await User.findOne({ user }).select(omit).exec()
 }
 
+const fetchUserByEmail = async (email: string, omit: string = ""): Promise<any> => {
+    if (omit === "") {
+        return await User.findOne({ 'mail.email': email }).exec()
+    }
+    return await User.findOne({ 'mail.email': email }).select(omit).exec()
+}
+
 const fetchPatients = async(omit: string = ""): Promise<any[]> => {
     if (omit === "") {
         return await Patient.find().exec()
@@ -34,4 +41,5 @@ const fetchUsers = async(omit: string = ""): Promise<any[]> => {
 export {
     fetchUserByUser, fetchUsers,
     fetchByCardNumber, fetchPatients,
+    fetchUserByEmail
 }
