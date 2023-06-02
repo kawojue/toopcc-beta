@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import useAuth from '@/hooks/useAuth'
 import axios from '@/app/api/instance'
+import usePatient from '@/hooks/usePatient'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import throwError from '@/utils/throwError'
@@ -11,7 +11,7 @@ import { SpinnerTwo } from '@/components/Spinner'
 
 const page = () => {
     const router = useRouter()
-    const { token, auth }: any = useAuth()
+    const { token, auth }: any = usePatient()
     const [patients, setPatients] = useState<any[]>([])
     const [loading, setLoading] = useState<boolean>(true)
 
