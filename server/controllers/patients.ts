@@ -7,7 +7,7 @@ import addMedic from '../utilities/addMedic'
 import full_name from '../utilities/full_name'
 import cloudinary from '../configs/cloudinary'
 import addExtension from '../utilities/addExtension'
-import { fetchByCardNumber } from '../utilities/pts'
+import { fetchByCardNumber } from '../utilities/getModels'
 import {
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
     INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
