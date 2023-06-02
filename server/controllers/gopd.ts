@@ -9,7 +9,7 @@ import {
 } from '../utilities/sorting'
 import {
     fetchByCardNumber, fetchPatients
-} from '../utilities/pts'
+} from '../utilities/getModels'
 const asyncHandler = require('express-async-handler')
 
 const allPatients = asyncHandler(async (req: Request, res: Response) => {
