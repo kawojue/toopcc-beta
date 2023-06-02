@@ -34,9 +34,9 @@ const page = () => {
                 <article className="form-group">
                     <label htmlFor="pswd">Password</label>
                     <div className="pswd-container">
-                        <input type={`${pswdBtn ? 'text': 'password'}`} id="pswd" placeholder="password"
+                        <input type={`${pswdBtn ? 'text': 'password'}`} id="pswd"
                         value={pswd} onChange={(e) => setPswd(e.target.value)}
-                        className={inter.className}/>
+                        className={inter.className} placeholder="password" />
                         <PswdButton get={pswdBtn} set={setPswdBtn} />
                     </div>
                     <Link href="/staff/password/verify" className="fgt-pswd">
