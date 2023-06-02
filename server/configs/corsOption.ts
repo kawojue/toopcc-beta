@@ -15,7 +15,8 @@ const corsOption: CorsOptions = {
         }
     },
     credentials: true,
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
+    methods: ['POST', 'GET', 'PUT', 'DELETE'],
 }
 
 export default corsOption

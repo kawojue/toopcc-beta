@@ -41,14 +41,6 @@ const createUser = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
         return res.status(400).json(modal_1.INVALID_EMAIL);
     user = email.split('@')[0];
     const account = yield User_1.default.findOne({ 'mail.email': email }).exec();
-    if (avatar) {
-        result = yield cloudinary_1.default.uploader.upload(avatar, {
-            folder: `Avatars/${account.id}`,
-            resource_type: 'image'
-        });
-        if (!result)
-            return res.status(404).json(modal_1.SMTH_WENT_WRONG);
-    }
     if (account) {
         return res.status(409).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Account already exists." }));
     }
@@ -62,6 +54,14 @@ const createUser = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
     }
     const salt = yield bcrypt_1.default.genSalt(10);
     pswd = yield bcrypt_1.default.hash(pswd, salt);
+    if (avatar) {
+        result = yield cloudinary_1.default.uploader.upload(avatar, {
+            folder: `TOOPCC/Staffs/Avatars`,
+            resource_type: 'image'
+        });
+        if (!result)
+            return res.status(404).json(modal_1.SMTH_WENT_WRONG);
+    }
     yield User_1.default.create({
         user,
         avatar: {
@@ -261,7 +261,7 @@ const addAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, f
     if (!account)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
     const result = yield cloudinary_1.default.uploader.upload(avatar, {
-        folder: `Avatars/${account.id}`,
+        folder: `TOOPCC/Staffs/Avatars`,
         resource_type: 'image'
     });
     if (!result)
@@ -277,11 +277,11 @@ const addAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, f
 }));
 exports.addAvatar = addAvatar;
 const deleteAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _g;
     const account = yield User_1.default.findOne({ user: req === null || req === void 0 ? void 0 : req.user }).exec();
     if (!account)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
-    // const result: any = await cloudinary.uploader.destroy(account.avatar?.public_id)
-    const result = yield cloudinary_1.default.api.delete_resources_by_prefix(account.id);
+    const result = yield cloudinary_1.default.uploader.destroy((_g = account.avatar) === null || _g === void 0 ? void 0 : _g.public_id);
     if (!result)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
     account.avatar = {
