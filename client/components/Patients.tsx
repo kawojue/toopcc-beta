@@ -2,9 +2,13 @@
 
 const Patients = ({ patients }: any) => {
     return (
-        <main>
-            {JSON.stringify(patients)}
-        </main>
+        <section>
+            {patients.map((patient: any) => {
+                <article key={patient.card_no} >
+
+                </article>
+            })}
+        </section>
     )
 }
 
