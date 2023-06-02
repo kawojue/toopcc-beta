@@ -86,10 +86,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .then((res: any) => {
             setOTP("")
             setVerified(res.data?.verified)
-            notify(res.data?.action, res.data?.msg)
+            notify(res.data?.action, "Verification successful")
             setTimeout(() => {
                 router.push('/staff/password/reset')
-            }, 2000)
+            }, 500)
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
@@ -98,12 +98,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await axios.post('/auth/password/reset', JSON.stringify({
             email, newPswd2: pswd2,
             verified, newPswd: pswd
-        })).then((res: any) => {
+        })).then(async (res: any) => {
             setStatesToDefault()
             notify(res.data?.action, res.data?.msg)
-            setTimeout(() => {
+            setTimeout(async () => {
+                await handleLogout()
                 router.push('/staff/login')
-            }, 2000)
+            }, 500)
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
