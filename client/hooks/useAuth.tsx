@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setStatesToDefault()
             setTimeout(() => {
                 router.push('/staff/login')
-            }, 2000)
+            }, 500)
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
@@ -69,8 +69,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             notify(action, msg)
             setStatesToDefault()
             setTimeout(() => {
-                router.push('/staff/profile')
-            }, 2000);
+                router.push('/patients')
+            }, 500)
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
