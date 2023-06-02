@@ -1,19 +1,22 @@
 "use client"
 import notify from "@/utils/notify"
 import axios from "@/app/api/instance"
-import { useRouter } from "next/navigation"
 import throwError from "@/utils/throwError"
+import { useRouter, usePathname } from "next/navigation"
 import { createContext, useState, useEffect, useContext } from "react"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context"
 
 const Auth: any = createContext({})
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const pathName: string = usePathname()
     const router: AppRouterInstance = useRouter()
     const [token, setToken] = useState<string>("")
+    const [profile, setProfile] = useState<any>({})
     const [auth, setAuth] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
-
+    const [loadingProfile, setLoadingProfile] = useState<boolean>(true)
+    
     const [otp, setOTP] = useState<string>("")
     const [pswd, setPswd] = useState<string>("")
     const [pswd2, setPswd2] = useState<string>("")
@@ -41,6 +44,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setToken(storedToken)
         }
     }, [])
+
+    useEffect(() => {
+        if (pathName === '/staff/profile' && token) {
+            (async () => await handleProfile(token))()
+        }
+    }, [token, pathName, router])
+
+    const handleProfile = async (token: string): Promise<void> => {
+        await axios.get('/api/user/profile', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((res: any) => setProfile(res.data?.profile))
+        .catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
+    }
 
     const handleSignup = async (): Promise<void> => {
         setLoading(true)
@@ -122,8 +140,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             auth, handleSignup, pswd, pswd2, loading, setLoading,
             handleLogin, userId, setUserId, token, handleLogout,
             setPswd, setPswd2, setEmail, email, fullname, setFullname,
-            avatar, setAvatar, otp, setOTP, handleOTPRequest,
-            handlePswdReset, handleIdVerification
+            avatar, setAvatar, otp, setOTP, handleOTPRequest, profile,
+            handlePswdReset, handleIdVerification, loadingProfile,
         }}>
             {children}
         </Auth.Provider>
