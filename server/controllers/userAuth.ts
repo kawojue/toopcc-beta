@@ -8,6 +8,7 @@ import { Request, Response } from 'express'
 import genToken from '../utilities/genToken'
 import cloudinary from '../configs/cloudinary'
 import full_name from '../utilities/full_name'
+import { fetchUserByUser, fetchUserByEmail } from '../utilities/getModels'
 import {
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
     FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
@@ -34,7 +35,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     if (EMAIL_REGEX.test(email) === false) return res.status(400).json(INVALID_EMAIL)
 
     user = email.split('@')[0]
-    const account: any = await User.findOne({ 'mail.email': email }).exec()
+    const account: any = await fetchUserByEmail(email)
 
     if (account) {
         return res.status(409).json({
@@ -43,7 +44,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
         })
     }
 
-    const isUserExists: any = await User.findOne({ user }).exec()
+    const isUserExists: any = await fetchUserByUser(user)
 
     if (!USER_REGEX.test(user) || isUserExists) {
         const rand: string = randomString.generate({
@@ -127,7 +128,7 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
 
     if (!email) return res.status(400).json(INVALID_EMAIL)
 
-    const account: any = await User.findOne({ 'mail.email': email }).exec()
+    const account: any = await fetchUserByEmail(email)
     if (!account) {
         return res.status(400).json({
             ...ERROR,
@@ -172,10 +173,10 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
         })
     }
 
-    const account: any = await User.findOne({ user: req?.user }).exec()
+    const account: any = await fetchUserByUser(req?.user)
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
-    const userExists: any = await User.findOne({ user: newUser }).exec()
+    const userExists: any = await fetchUserByUser(newUser)
     if (userExists) {
         return res.status(409).json({
             ...ERROR,
@@ -199,7 +200,7 @@ const editFullname = asyncHandler(async (req: any, res: Response) => {
 
     if (!fullname) return res.status(400).json(FIELDS_REQUIRED)
 
-    const account: any = await User.findOne({ user: req?.user }).exec()
+    const account: any = await fetchUserByUser(req?.user)
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
     account.fullname = fullname
@@ -236,7 +237,7 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
 
     if (!otp || !email) return res.status(400).json(FIELDS_REQUIRED)
 
-    const account: any = await User.findOne({ 'mail.email': email }).exec()
+    const account: any = await fetchUserByEmail(email)
     const totp: string = account.OTP.totp
     const totpDate: number = account.OTP.totpDate
     const expiry: number = totpDate + (60 * 60 * 1000) // after 1hr
@@ -277,7 +278,7 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
 
     if (newPswd !== newPswd2) return res.status(400).json(PSWD_NOT_MATCH)
 
-    const account: any = await User.findOne({ 'mail.email': email }).exec()
+    const account: any = await fetchUserByEmail(email)
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
     if (!verified || !account.mail.verified || account.resigned.resign) return res.status(400).json(ACCESS_DENIED)
@@ -312,7 +313,7 @@ const editPassword = asyncHandler(async (req: any, res: Response) => {
 
     if (currentPswd === pswd) return res.status(400).json(CURRENT_PSWD)
 
-    const account: any = await User.findOne({ user: req?.user }).exec()
+    const account: any = await fetchUserByUser(req?.user)
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
     const isMatch = await bcrypt.compare(currentPswd, account.password)
@@ -332,7 +333,7 @@ const addAvatar = asyncHandler(async (req: any, res: any) => {
     const { avatar }: any = req.body
     if (!avatar) return res.status(400).json(SMTH_WENT_WRONG)
 
-    const account: any = await User.findOne({ user: req?.user }).exec()
+    const account: any = await fetchUserByUser(req?.user)
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
     const result = await cloudinary.uploader.upload(avatar, {
@@ -356,7 +357,7 @@ const addAvatar = asyncHandler(async (req: any, res: any) => {
 })
 
 const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
-    const account: any = await User.findOne({ user: req?.user }).exec()
+    const account: any = await fetchUserByUser(req?.user)
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
     const result: any = await cloudinary.uploader.destroy(account.avatar?.public_id)
@@ -379,7 +380,7 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
     const { resign, date }: any = req.body
     if (!resign) return res.status(400).json(FIELDS_REQUIRED)
     
-    const account: any = await User.findOne({ user }).exec()
+    const account: any = await fetchUserByUser(user)
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
     account.resigned.date = date
@@ -397,7 +398,7 @@ const changeRoles = asyncHandler(async (req: Request, res: Response) => {
     const { user }: any = req.params
     if (!role) return res.status(400).json(CANCELED)
 
-    const account: any = await User.findOne({ user }).exec()
+    const account: any = await fetchUserByUser(user)
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
     const roles: string[] = account.roles
@@ -421,7 +422,7 @@ const removeRole = asyncHandler(async (req: Request, res: Response) => {
     const { user }: any = req.params
     if (!role) return res.status(400).json(CANCELED)
 
-    const account: any = await User.findOne({ user }).exec()
+    const account: any = await fetchUserByUser(user)
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
     const roles: string[] = account.roles
