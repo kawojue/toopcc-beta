@@ -10,7 +10,7 @@ const SpinnerOne: React.FC = () => {
 
 const SpinnerTwo: React.FC = () => {
     return (
-        <main className="w-full h-full flex justify-center mt-14">
+        <main className="w-full h-full flex justify-center mt-20">
             <div className="lds-roller">
                 <div></div>
                 <div></div>
