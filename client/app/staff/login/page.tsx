@@ -43,7 +43,7 @@ const page = () => {
                         Forgot Password?
                     </Link>
                 </article>
-                <SubmitBtn texts="Log In" func={handleLogin} />
+                <SubmitBtn texts="Log In" handler={handleLogin} />
             </form>
         </section>
     )
