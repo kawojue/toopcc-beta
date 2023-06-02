@@ -21,6 +21,7 @@ const genOTP_1 = __importDefault(require("../utilities/genOTP"));
 const genToken_1 = __importDefault(require("../utilities/genToken"));
 const cloudinary_1 = __importDefault(require("../configs/cloudinary"));
 const full_name_1 = __importDefault(require("../utilities/full_name"));
+const getModels_1 = require("../utilities/getModels");
 const modal_1 = require("../utilities/modal");
 const asyncHandler = require('express-async-handler');
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -40,11 +41,11 @@ const createUser = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
     if (EMAIL_REGEX.test(email) === false)
         return res.status(400).json(modal_1.INVALID_EMAIL);
     user = email.split('@')[0];
-    const account = yield User_1.default.findOne({ 'mail.email': email }).exec();
+    const account = yield (0, getModels_1.fetchUserByEmail)(email);
     if (account) {
         return res.status(409).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Account already exists." }));
     }
-    const isUserExists = yield User_1.default.findOne({ user }).exec();
+    const isUserExists = yield (0, getModels_1.fetchUserByUser)(user);
     if (!USER_REGEX.test(user) || isUserExists) {
         const rand = randomstring_1.default.generate({
             length: parseInt('657'[Math.floor(Math.random() * 3)]),
@@ -107,7 +108,7 @@ const otpHandler = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
     const { totp, totpDate } = (0, genOTP_1.default)();
     if (!email)
         return res.status(400).json(modal_1.INVALID_EMAIL);
-    const account = yield User_1.default.findOne({ 'mail.email': email }).exec();
+    const account = yield (0, getModels_1.fetchUserByEmail)(email);
     if (!account) {
         return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "There is no account associated with this email." }));
     }
@@ -139,10 +140,10 @@ const editUsername = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
     if (!USER_REGEX.test(newUser)) {
         return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Username is not allowed." }));
     }
-    const account = yield User_1.default.findOne({ user: req === null || req === void 0 ? void 0 : req.user }).exec();
+    const account = yield (0, getModels_1.fetchUserByUser)(req === null || req === void 0 ? void 0 : req.user);
     if (!account)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
-    const userExists = yield User_1.default.findOne({ user: newUser }).exec();
+    const userExists = yield (0, getModels_1.fetchUserByUser)(newUser);
     if (userExists) {
         return res.status(409).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Username has been taken." }));
     }
@@ -157,7 +158,7 @@ const editFullname = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
     fullname = (0, full_name_1.default)(fullname);
     if (!fullname)
         return res.status(400).json(modal_1.FIELDS_REQUIRED);
-    const account = yield User_1.default.findOne({ user: req === null || req === void 0 ? void 0 : req.user }).exec();
+    const account = yield (0, getModels_1.fetchUserByUser)(req === null || req === void 0 ? void 0 : req.user);
     if (!account)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
     account.fullname = fullname;
@@ -186,7 +187,7 @@ const verifyOTP = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, f
     const { otp, email } = req.body;
     if (!otp || !email)
         return res.status(400).json(modal_1.FIELDS_REQUIRED);
-    const account = yield User_1.default.findOne({ 'mail.email': email }).exec();
+    const account = yield (0, getModels_1.fetchUserByEmail)(email);
     const totp = account.OTP.totp;
     const totpDate = account.OTP.totpDate;
     const expiry = totpDate + (60 * 60 * 1000); // after 1hr
@@ -211,7 +212,7 @@ const resetpswd = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, f
         return res.status(400).json(modal_1.FIELDS_REQUIRED);
     if (newPswd !== newPswd2)
         return res.status(400).json(modal_1.PSWD_NOT_MATCH);
-    const account = yield User_1.default.findOne({ 'mail.email': email }).exec();
+    const account = yield (0, getModels_1.fetchUserByEmail)(email);
     if (!account)
         return res.status(404).json(modal_1.ACCOUNT_NOT_FOUND);
     if (!verified || !account.mail.verified || account.resigned.resign)
@@ -239,7 +240,7 @@ const editPassword = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
         return res.status(400).json(modal_1.PSWD_NOT_MATCH);
     if (currentPswd === pswd)
         return res.status(400).json(modal_1.CURRENT_PSWD);
-    const account = yield User_1.default.findOne({ user: req === null || req === void 0 ? void 0 : req.user }).exec();
+    const account = yield (0, getModels_1.fetchUserByUser)(req === null || req === void 0 ? void 0 : req.user);
     if (!account)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
     const isMatch = yield bcrypt_1.default.compare(currentPswd, account.password);
@@ -257,7 +258,7 @@ const addAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, f
     const { avatar } = req.body;
     if (!avatar)
         return res.status(400).json(modal_1.SMTH_WENT_WRONG);
-    const account = yield User_1.default.findOne({ user: req === null || req === void 0 ? void 0 : req.user }).exec();
+    const account = yield (0, getModels_1.fetchUserByUser)(req === null || req === void 0 ? void 0 : req.user);
     if (!account)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
     const result = yield cloudinary_1.default.uploader.upload(avatar, {
@@ -278,7 +279,7 @@ const addAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, f
 exports.addAvatar = addAvatar;
 const deleteAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _g;
-    const account = yield User_1.default.findOne({ user: req === null || req === void 0 ? void 0 : req.user }).exec();
+    const account = yield (0, getModels_1.fetchUserByUser)(req === null || req === void 0 ? void 0 : req.user);
     if (!account)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
     const result = yield cloudinary_1.default.uploader.destroy((_g = account.avatar) === null || _g === void 0 ? void 0 : _g.public_id);
@@ -297,7 +298,7 @@ const resigned = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, fu
     const { resign, date } = req.body;
     if (!resign)
         return res.status(400).json(modal_1.FIELDS_REQUIRED);
-    const account = yield User_1.default.findOne({ user }).exec();
+    const account = yield (0, getModels_1.fetchUserByUser)(user);
     if (!account)
         return res.status(404).json(modal_1.ACCOUNT_NOT_FOUND);
     account.resigned.date = date;
@@ -311,7 +312,7 @@ const changeRoles = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0,
     const { user } = req.params;
     if (!role)
         return res.status(400).json(modal_1.CANCELED);
-    const account = yield User_1.default.findOne({ user }).exec();
+    const account = yield (0, getModels_1.fetchUserByUser)(user);
     if (!account)
         return res.status(404).json(modal_1.ACCOUNT_NOT_FOUND);
     const roles = account.roles;
@@ -330,7 +331,7 @@ const removeRole = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
     const { user } = req.params;
     if (!role)
         return res.status(400).json(modal_1.CANCELED);
-    const account = yield User_1.default.findOne({ user }).exec();
+    const account = yield (0, getModels_1.fetchUserByUser)(user);
     if (!account)
         return res.status(404).json(modal_1.ACCOUNT_NOT_FOUND);
     const roles = account.roles;

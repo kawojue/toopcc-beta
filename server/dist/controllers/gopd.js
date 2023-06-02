@@ -12,16 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllPhysioPatients = exports.getAllOpthalPatients = exports.getDeadPatients = exports.getOpthalMedication = exports.getAllExtensions = exports.getPatient = exports.getDiagnosis = exports.getPhysioMedication = exports.getExtension = exports.getAllDiagnosis = exports.allPatients = void 0;
 const modal_1 = require("../utilities/modal");
 const sorting_1 = require("../utilities/sorting");
-const pts_1 = require("../utilities/pts");
+const getModels_1 = require("../utilities/getModels");
 const asyncHandler = require('express-async-handler');
 const allPatients = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const patients = yield (0, pts_1.fetchPatients)('-body -recommendation');
+    const patients = yield (0, getModels_1.fetchPatients)('-body -recommendation');
     res.status(200).json({ patients: (0, sorting_1.sortByCardNumbers)(patients) });
 }));
 exports.allPatients = allPatients;
 const getPatient = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no } = req.params;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body -recommendation');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body -recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     res.status(200).json({ patient: patient });
@@ -29,7 +29,7 @@ const getPatient = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, 
 exports.getPatient = getPatient;
 const getAllDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no } = req.params;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-recommendation');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     res.status(200).json(Object.assign(Object.assign({}, modal_1.SUCCESS), { length: patient.body.length, diagnosis: (0, sorting_1.sortByDates)(patient.body) }));
@@ -37,7 +37,7 @@ const getAllDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, voi
 exports.getAllDiagnosis = getAllDiagnosis;
 const getDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no, idx } = req.params;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-recommendation');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     const bodies = patient.body;
@@ -48,19 +48,19 @@ const getDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
 }));
 exports.getDiagnosis = getDiagnosis;
 const getAllOpthalPatients = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const patients = yield (0, pts_1.fetchPatients)('-body');
+    const patients = yield (0, getModels_1.fetchPatients)('-body');
     const opthals = patients.filter((opthal) => opthal.recommendation.opthalmology.eligible === true);
     res.status(200).json(Object.assign(Object.assign({}, modal_1.SUCCESS), { length: opthals.length, patients: (0, sorting_1.sortByCardNumbers)(opthals) }));
 }));
 exports.getAllOpthalPatients = getAllOpthalPatients;
 const getAllPhysioPatients = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const patients = yield (0, pts_1.fetchPatients)('-body');
+    const patients = yield (0, getModels_1.fetchPatients)('-body');
     const physios = patients.filter((physio) => physio.recommendation.physiotherapy.eligible === true);
     res.status(200).json(Object.assign(Object.assign({}, modal_1.SUCCESS), { length: physios.length, patients: (0, sorting_1.sortByCardNumbers)(physios) }));
 }));
 exports.getAllPhysioPatients = getAllPhysioPatients;
 const getDeadPatients = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const patients = yield (0, pts_1.fetchPatients)('-body');
+    const patients = yield (0, getModels_1.fetchPatients)('-body');
     const deads = patients.filter((dead) => {
         let obj;
         if (dead.death.dead === true) {
@@ -78,7 +78,7 @@ const getDeadPatients = asyncHandler((req, res) => __awaiter(void 0, void 0, voi
 }));
 exports.getDeadPatients = getDeadPatients;
 const getAllExtensions = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const patients = yield (0, pts_1.fetchPatients)('-body');
+    const patients = yield (0, getModels_1.fetchPatients)('-body');
     const all = patients.map((ext) => {
         let obj;
         const extensions = ext.recommendation.extensions;
@@ -98,7 +98,7 @@ const getAllExtensions = asyncHandler((req, res) => __awaiter(void 0, void 0, vo
 exports.getAllExtensions = getAllExtensions;
 const getExtension = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no } = req.params;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     const extensions = patient.recommendation.extensions;
@@ -112,7 +112,7 @@ const getExtension = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
 exports.getExtension = getExtension;
 const getPhysioMedication = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no } = req.params;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     const medications = patient.recommendation.physiotherapy.medication;
@@ -121,7 +121,7 @@ const getPhysioMedication = asyncHandler((req, res) => __awaiter(void 0, void 0,
 exports.getPhysioMedication = getPhysioMedication;
 const getOpthalMedication = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no } = req.params;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     const medications = patient.recommendation.opthalmology.medication;

@@ -12,7 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchPatients = exports.fetchByCardNumber = void 0;
+exports.fetchUserByEmail = exports.fetchPatients = exports.fetchByCardNumber = exports.fetchUsers = exports.fetchUserByUser = void 0;
+const User_1 = __importDefault(require("../models/User"));
 const Patient_1 = __importDefault(require("../models/Patient"));
 const fetchByCardNumber = (card_no, omit = "") => __awaiter(void 0, void 0, void 0, function* () {
     if (omit === "") {
@@ -21,6 +22,20 @@ const fetchByCardNumber = (card_no, omit = "") => __awaiter(void 0, void 0, void
     return yield Patient_1.default.findOne({ card_no }).select(omit).exec();
 });
 exports.fetchByCardNumber = fetchByCardNumber;
+const fetchUserByUser = (user, omit = "") => __awaiter(void 0, void 0, void 0, function* () {
+    if (omit === "") {
+        return yield User_1.default.findOne({ user }).exec();
+    }
+    return yield User_1.default.findOne({ user }).select(omit).exec();
+});
+exports.fetchUserByUser = fetchUserByUser;
+const fetchUserByEmail = (email, omit = "") => __awaiter(void 0, void 0, void 0, function* () {
+    if (omit === "") {
+        return yield User_1.default.findOne({ 'mail.email': email }).exec();
+    }
+    return yield User_1.default.findOne({ 'mail.email': email }).select(omit).exec();
+});
+exports.fetchUserByEmail = fetchUserByEmail;
 const fetchPatients = (omit = "") => __awaiter(void 0, void 0, void 0, function* () {
     if (omit === "") {
         return yield Patient_1.default.find().exec();
@@ -28,3 +43,10 @@ const fetchPatients = (omit = "") => __awaiter(void 0, void 0, void 0, function*
     return yield Patient_1.default.find().select(omit).exec();
 });
 exports.fetchPatients = fetchPatients;
+const fetchUsers = (omit = "") => __awaiter(void 0, void 0, void 0, function* () {
+    if (omit === "") {
+        return yield User_1.default.find().exec();
+    }
+    return yield User_1.default.find().select(omit).exec();
+});
+exports.fetchUsers = fetchUsers;

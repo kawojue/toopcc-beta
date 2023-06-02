@@ -20,7 +20,7 @@ const addMedic_1 = __importDefault(require("../utilities/addMedic"));
 const full_name_1 = __importDefault(require("../utilities/full_name"));
 const cloudinary_1 = __importDefault(require("../configs/cloudinary"));
 const addExtension_1 = __importDefault(require("../utilities/addExtension"));
-const pts_1 = require("../utilities/pts");
+const getModels_1 = require("../utilities/getModels");
 const modal_1 = require("../utilities/modal");
 const asyncHandler = require('express-async-handler');
 const phoneRegex = /^\d{11}$/;
@@ -59,7 +59,7 @@ exports.add = add;
 const edit = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no } = req.params;
     let { fullname, sex, phone_no, address, age, death, cardNo } = req.body;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body -recommendation');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body -recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     if (cardNo || (cardNo === null || cardNo === void 0 ? void 0 : cardNo.trim())) {
@@ -118,7 +118,7 @@ const remove = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, func
     let { card_no } = req.params;
     if (!card_no || !(card_no === null || card_no === void 0 ? void 0 : card_no.trim()))
         return res.status(400).json(modal_1.CARD_NO_REQUIRED);
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body -recommendation');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body -recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     const bodies = patient.body;
@@ -134,7 +134,7 @@ const addDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
     const imageArr = [];
     const { card_no } = req.params;
     let { date, images, texts, next_app } = req.body;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-recommendation');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     if (images) {
@@ -177,7 +177,7 @@ exports.addDiagnosis = addDiagnosis;
 const editDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no, idx } = req.params;
     let { date, texts, next_app } = req.body;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-recommendation');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     const body = patient.body.find((body) => body.idx === idx);
@@ -197,7 +197,7 @@ const addRecommendation = asyncHandler((req, res) => __awaiter(void 0, void 0, v
     var _a;
     const { card_no } = req.params;
     const { opthal, extension, physio, eligOpthal, eligPhysio } = req.body;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     const rec = patient.recommendation;
@@ -228,7 +228,7 @@ const addRecommendation = asyncHandler((req, res) => __awaiter(void 0, void 0, v
 exports.addRecommendation = addRecommendation;
 const deleteRecommendation = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no, idx, type } = req.params;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     if (type !== "physio" && type !== "opthal") {
@@ -247,7 +247,7 @@ const deleteRecommendation = asyncHandler((req, res) => __awaiter(void 0, void 0
 exports.deleteRecommendation = deleteRecommendation;
 const deletExtension = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no, idx } = req.params;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     const extensions = patient.recommendation.extensions;
@@ -262,7 +262,7 @@ exports.deletExtension = deletExtension;
 const editExtension = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no, idx } = req.params;
     const { extension } = req.body;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-body');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     const extensions = patient.recommendation.extensions;
@@ -276,7 +276,7 @@ const editExtension = asyncHandler((req, res) => __awaiter(void 0, void 0, void 
 exports.editExtension = editExtension;
 const deleteDianosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no, idx } = req.params;
-    const patient = yield (0, pts_1.fetchByCardNumber)(card_no, '-recommendation');
+    const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     const bodies = patient.body;
