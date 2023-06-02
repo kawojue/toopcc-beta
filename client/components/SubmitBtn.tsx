@@ -3,18 +3,19 @@ import useAuth from "@/hooks/useAuth"
 import { SpinnerOne } from "./Spinner"
 
 interface ISubmitBtn {
+    loading?: boolean
     texts: string
-    styles?: string
-    func: () => Promise<void>
+    styles?: string,
+    handler: () => Promise<void>
 }
 
-const SubmitBtn: React.FC<ISubmitBtn> = ({ texts, styles, func }) => {
-    const { loading } = useAuth()
+const SubmitBtn: React.FC<ISubmitBtn> = ({ loading, texts, styles, handler }) => {
+    const { loading: load } = useAuth()
 
     return (
-        <button type="submit" onClick={async () => await func()}
+        <button type="submit" onClick={async () => await handler()}
         className={`${styles || "submit-btn hover:bg-clr-6 hover: text-clr-5"}`}>
-            {loading ? <SpinnerOne /> : <span>{texts}</span>}
+            {(load || loading) ? <SpinnerOne /> : <span>{texts}</span>}
         </button>
     )
 }
