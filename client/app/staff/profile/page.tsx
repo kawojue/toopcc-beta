@@ -1,11 +1,18 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
+import { useEffect } from 'react'
 import useAuth from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
 import { SpinnerTwo } from '@/components/Spinner'
 import UserProfile from '@/components/UserProfile'
 
 const page = () => {
-    const { profile, loadingProfile }: any = useAuth()
+    const router = useRouter()
+    const { profile, loadingProfile, auth, token }: any = useAuth()
+
+    useEffect(() => {
+        if (!token) router.push('/staff/login')
+    }, [token, auth, router])
     
     if (loadingProfile) return <SpinnerTwo />
 
