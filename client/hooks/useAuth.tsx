@@ -39,10 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         const storedToken: string = JSON.parse(localStorage.getItem('token') as string)
-        if (storedToken) {
-            setAuth(true)
-            setToken(storedToken)
-        }
+        if (storedToken) setToken(storedToken)
     }, [])
 
     useEffect(() => {
@@ -56,8 +53,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        }).then((res: any) => setProfile(res.data?.profile))
-        .catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
+        }).then((res: any) => {
+            setAuth(true)
+            setProfile(res.data?.profile)
+        }).catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
     }
 
     const handleSignup = async (): Promise<void> => {
@@ -80,14 +79,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await axios.post('/auth/login', JSON.stringify({
             userId, pswd
         })).then((res: any) => {
-            const msg: string = res.data.msg
             const token: string = res.data.token
-            const action: string = res.data.action
+            setAuth(true)
+            setToken(token)
             localStorage.setItem('token', JSON.stringify(token))
-            notify(action, msg)
+            notify(res.data.action, res.data.msg)
             setStatesToDefault()
             setTimeout(() => {
-                router.push('/patients')
+                router.push('/staff/profile')
             }, 500)
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
