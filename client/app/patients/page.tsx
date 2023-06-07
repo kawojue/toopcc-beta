@@ -11,11 +11,12 @@ import { SpinnerTwo } from '@/components/Spinner'
 
 const page = () => {
     const router = useRouter()
-    const { token, auth }: any = usePatient()
+    const { token }: any = usePatient()
     const [patients, setPatients] = useState<any[]>([])
-    const [loading, setLoading] = useState<boolean>(true)
+    const [loading, setLoading] = useState<boolean>(false)
 
     const getAllPatients = async (token: string) => {
+        setLoading(true)
         await axios.get(`/api/patients`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -25,13 +26,13 @@ const page = () => {
             throwError(err)
             setTimeout(() => {
                 router.push('/staff/login')
-            }, 1500)
+            }, 500)
         }).finally(() => setLoading(false))
     }
 
     useEffect(() => {
-        if (auth) (async () => await getAllPatients(token))()
-    }, [token, auth])
+        if (token) (async () => await getAllPatients(token))()
+    }, [token])
 
     if (loading) return <SpinnerTwo />
 
