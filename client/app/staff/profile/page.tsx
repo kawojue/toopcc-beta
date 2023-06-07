@@ -8,11 +8,11 @@ import UserProfile from '@/components/UserProfile'
 
 const page = () => {
     const router = useRouter()
-    const { profile, loadingProfile, auth, token }: any = useAuth()
+    const { profile, loadingProfile, auth}: any = useAuth()
 
     useEffect(() => {
-        if (!token) router.push('/staff/login')
-    }, [token, auth, router])
+        if (!auth) router.push('/staff/login')
+    }, [auth, router])
     
     if (loadingProfile) return <SpinnerTwo />
 
