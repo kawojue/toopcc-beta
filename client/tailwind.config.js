@@ -19,6 +19,11 @@ module.exports = {
         "clr-8": "rgb(32, 31, 30)",
         "clr-9": "rgb(207, 229, 246)",
         "clr-10": "rgba(0, 0, 0, 0.25)"
+      },
+      screens: {
+        sm: "600px",
+        md: "768px",
+        lg: "900px"
       }
     },
   },
