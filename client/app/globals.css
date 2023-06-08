@@ -122,7 +122,47 @@
 }
 
 .staff-main {
-    @apply bg-clr-0;
+    @apply bg-clr-5 min-h-screen mx-auto w-full px-5;
+}
+
+.profile-main {
+    @apply w-[95vw] max-w-[1200px] mx-auto pt-14;
+}
+
+.profile-header {
+    @apply w-full flex justify-between items-center mb-4
+}
+
+.profile-header-h1 {
+    @apply text-2xl text-clr-8 font-semibold tracking-wide
+}
+
+.change-pswd-btn {
+    @apply flex px-2 py-1 gap-2 items-center;
+}
+
+.key {
+    @apply text-4xl text-clr-1 rounded-full p-2 bg-clr-9;
+}
+
+.key:hover {
+    @apply bg-clr-1 text-clr-0;
+}
+
+.change-pswd-btn div {
+    @apply flex flex-col gap-0.5 text-sm items-start
+}
+
+.change-pswd-btn div span:nth-child(1) {
+    @apply text-clr-8
+}
+
+.change-pswd-btn div span:nth-child(2) {
+    @apply text-clr-3
+}
+
+.change-pswd-btn div:hover {
+    @apply text-clr-1
 }
 
 .section-form {
