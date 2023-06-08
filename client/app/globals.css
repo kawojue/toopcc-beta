@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .trans {
-    @apply duration-200 ease-in-out transition-all;
+    @apply duration-300 ease-linear transition-all;
 }
 
 .lds-roller {
@@ -122,15 +122,15 @@
 }
 
 .staff-main {
-    @apply bg-clr-5 min-h-screen mx-auto w-full px-5;
+    @apply bg-clr-5 min-h-screen mx-auto w-full;
 }
 
 .profile-main {
-    @apply w-[95vw] max-w-[1200px] mx-auto pt-14;
+    @apply w-[95vw] max-w-[1200px] mx-auto pt-14 px-3;
 }
 
 .profile-header {
-    @apply w-full flex justify-between items-center mb-4
+    @apply w-full flex justify-between items-center mb-7
 }
 
 .profile-header-h1 {
@@ -164,6 +164,35 @@
 .change-pswd-btn div:hover {
     @apply text-clr-1
 }
+
+.profile-cards {
+    @apply flex flex-col gap-5
+}
+
+.profile-card {
+    @apply bg-clr-0 px-5 py-3 w-full rounded-lg
+}
+
+.profile-avatar {
+    @apply relative rounded-full overflow-hidden w-[10rem] h-[10rem] object-cover border-[0.3125rem] border-clr-5;
+}
+
+.profile-avatar img {
+    @apply w-full h-full object-cover cursor-pointer
+}
+
+.profile-card-center {
+    @apply w-full flex gap-9 items-center
+}
+/* 
+.profile-ids {
+    @apply 
+} */
+
+.profile-ids p {
+    @apply flex gap-3 items-center text-sm trans cursor-pointer
+}
+
 
 .section-form {
     @apply mx-auto mt-16 mb-10 w-[90vw] max-w-[550px] px-5 py-3 rounded-lg bg-clr-7;
