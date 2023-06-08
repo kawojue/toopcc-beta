@@ -1,17 +1,17 @@
 "use client"
-import { GoKey } from '@/public/icons/ico'
+import { HiOutlineKey } from '@/public/icons/ico'
 
-const UserProfile: React.FC<any> = ({ profile }) => {
+const UserProfile: React.FC<{ profile: any }> = ({ profile }) => {
     return (
         <main className="profile-main">
             <section className="profile-header">
-                <h1>Your Info</h1>
-                <button>
-                    <GoKey />
-                    <p>
+                <h1 className='profile-header-h1'>Your Info</h1>
+                <button className="change-pswd-btn">
+                    <HiOutlineKey className="key" />
+                    <div>
                         <span>Change Password</span>
                         <span>Security</span>
-                    </p>
+                    </div>
                 </button>
             </section>
             <section className="profile-cards">
