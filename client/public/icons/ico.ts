@@ -1,7 +1,10 @@
 import { HiOutlineKey } from 'react-icons/hi'
-import { AiFillEyeInvisible, AiFillEye } from 'react-icons/ai';
+import {
+    AiFillEyeInvisible, AiFillEye,
+    AiOutlineCamera, AiOutlineMail
+} from 'react-icons/ai';
 
 
 export {
-    AiFillEyeInvisible, AiFillEye, HiOutlineKey
+    AiFillEyeInvisible, AiFillEye, HiOutlineKey, AiOutlineCamera, AiOutlineMail,
 }
