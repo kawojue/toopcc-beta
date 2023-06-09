@@ -4,11 +4,11 @@
 import useJWT from "@/hooks/useJWT"
 import useAuth from "@/hooks/useAuth"
 import axios from "@/app/api/instance"
+import Profile from "@/components/Profile"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import throwError from "@/utils/throwError"
 import { SpinnerTwo } from "@/components/Spinner"
-import StaffProfile from "@/components/StaffProfile"
 
 const page = ({ params: { profile } } : IProfile) => {
     const router = useRouter()
@@ -39,7 +39,7 @@ const page = ({ params: { profile } } : IProfile) => {
 
     if (loadingProfile) return <SpinnerTwo />
 
-    return <StaffProfile profile={staff} />
+    return <Profile profile={staff} />
 }
 
 export default page
