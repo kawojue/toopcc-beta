@@ -2,9 +2,9 @@
 import useAuth from "./useAuth"
 import jwtDecode from "jwt-decode"
 
-const useJWT = () => {
+const useJWT = (): JWT => {
     const { token }: any = useAuth()
-    return jwtDecode(token)
+    return jwtDecode(token as string)
 }
 
 export default useJWT
