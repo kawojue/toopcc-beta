@@ -187,7 +187,15 @@
 }
 
 .profile-edit-btn {
-    
+    @apply text-sm text-clr-4 trans
+}
+
+.profile-edit-btn:hover {
+    @apply text-clr-6
+}
+
+.profile-card-info {
+    @apply flex justify-between items-center py-1.5 border-b-[0.08125rem]
 }
 
 .cam-ico {
