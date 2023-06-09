@@ -1,19 +1,22 @@
 "use client"
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import useJWT from '@/hooks/useJWT'
 import {
     HiOutlineKey, AiOutlineCamera, AiOutlineMail
 } from '@/public/icons/ico'
 import { inter } from '@/public/font/font'
-import { format, parseISO } from 'date-fns'
+import convertISODate from '@/utils/shortDate'
 
 const UserProfile: React.FC<{ profile: any }> = ({ profile }) => {
     const { roles }: any = useJWT()
     const [onMouse, setOnMouse] = useState(false)
+    const [shortDate, setShortDate] = useState<string>("")
 
-    const createdAt: Date = parseISO(profile?.createdAt)
-    const shortDate: string = format(createdAt, "dd/MM/yyyy")
+    
+    useEffect(() => {
+        setShortDate(convertISODate(profile?.createdAt))
+    }, [profile])
 
     const authRoles: string[] = profile?.roles || []
 
@@ -60,7 +63,7 @@ const UserProfile: React.FC<{ profile: any }> = ({ profile }) => {
                         </button>
                     </div>
                     <div className="flex flex-col gap-1.5 justify-center">
-                        <div className='flex justify-between items-center py-1.5 border-b-[0.03125rem]'>
+                        <div className='flex justify-between items-center py-1.5 border-b-[0.08125rem]'>
                             <p className="text-clr-3">Email Address</p>
                             <div className={`${inter.className} flex gap-3 items-center text-xs tracking-wide text-clr-2 md:text-sm`}>
                                 <AiOutlineMail />
@@ -69,15 +72,15 @@ const UserProfile: React.FC<{ profile: any }> = ({ profile }) => {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex justify-between items-center py-1.5 border-b-[0.08125rem]">
+                        {roles?.includes("hr") && <div className="flex justify-between items-center py-1.5 border-b-[0.08125rem]">
                             <p className="text-clr-3">Roles</p>
                             <p className="text-clr-2 capitalize">
                                 {authRoles.join(", ")}
                             </p>
-                            {roles?.includes("hr") && <button className="text-sm text-clr-4 hover:text-clr-6">
+                            <button className="text-sm text-clr-4 hover:text-clr-6">
                                 Edit Roles
-                            </button>}
-                        </div>
+                            </button>
+                        </div> }
                         <div className="flex justify-between items-center py-1.5 border-b-[0.08125rem]">
                             <p className="text-clr-3">Resigned</p>
                             <p>{profile?.resigned?.resign ? "Resigned": "Null"}</p>
