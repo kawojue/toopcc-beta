@@ -12,6 +12,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const pathName: string = usePathname()
     const router: AppRouterInstance = useRouter()
     const [token, setToken] = useState<string>("")
+    const [staffs, setStaffs] = useState<any[]>([])
     const [profile, setProfile] = useState<any>({})
     const [auth, setAuth] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
@@ -57,6 +58,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setAuth(true)
             setProfile(res.data?.profile)
         }).catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
+    }
+
+    const handleStaffs = async (token: string): Promise<void> => {
+        await axios.get('/api/user/profile/users', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((res: any) => setStaffs(res.data?.users)).catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
     }
 
     const handleSignup = async (): Promise<void> => {
@@ -141,6 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setPswd, setPswd2, setEmail, email, fullname, setFullname,
             avatar, setAvatar, otp, setOTP, handleOTPRequest, profile,
             handlePswdReset, handleIdVerification, loadingProfile,
+            staffs
         }}>
             {children}
         </Auth.Provider>
