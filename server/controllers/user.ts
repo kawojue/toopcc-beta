@@ -22,7 +22,7 @@ const getUsers = expressAsyncHandler(async (req: any, res: Response) => {
 
 const getUser = expressAsyncHandler(async (req: any, res: Response) => {
     const { user: userParam }: any = req.params
-    const user: any = await fetchUserByUser(userParam)
+    const user: any = await fetchUserByUser(userParam, '-token -password -OTP')
     
     res.status(200).json({ ...SUCCESS, user })
 })
