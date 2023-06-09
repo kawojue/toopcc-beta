@@ -1,18 +1,19 @@
 "use client"
 import Image from 'next/image'
+import useRoles from '@/hooks/useRoles'
+import { inter } from '@/public/font/font'
 import { useState, useEffect } from 'react'
-import useJWT from '@/hooks/useJWT'
+import { usePathname } from 'next/navigation'
+import convertISODate from '@/utils/shortDate'
 import {
     HiOutlineKey, AiOutlineCamera, AiOutlineMail
 } from '@/public/icons/ico'
-import { inter } from '@/public/font/font'
-import convertISODate from '@/utils/shortDate'
 
-const UserProfile: React.FC<{ profile: any }> = ({ profile }) => {
-    const { roles }: any = useJWT()
+const Profile: React.FC<{ profile: any }> = ({ profile }) => {
+    const isRole = useRoles("hr")
+    const pathName: string = usePathname()
     const [onMouse, setOnMouse] = useState(false)
     const [shortDate, setShortDate] = useState<string>("")
-
     
     useEffect(() => {
         setShortDate(convertISODate(profile?.createdAt))
@@ -23,47 +24,55 @@ const UserProfile: React.FC<{ profile: any }> = ({ profile }) => {
     return (
         <main className="profile-main">
             <section className="profile-header">
-                <h1 className='profile-header-h1 md:text-3xl'>Your Info</h1>
-                <button className="change-pswd-btn">
+                <h1 className='profile-header-h1 md:text-3xl'>
+                    {isRole && pathName === "/staff/profile" ? "Your Info": "Staff Info"}
+                </h1>
+                {pathName === "/staff/profile" && <button className="change-pswd-btn">
                     <HiOutlineKey className="key" />
                     <div>
                         <span>Change Password</span>
                         <span>Security</span>
                     </div>
-                </button>
+                </button>}
             </section>
             <section className="profile-cards">
                 <article className="profile-card">
                     <div className="profile-card-center">
+                        {isRole && pathName !== "/staff/profile"  ?
                         <div onMouseLeave={() => setOnMouse(false)} onMouseEnter={() => setOnMouse(true)}
-                        className={`${onMouse &&'before:content-[""] before:bg-clr-10 before:absolute before:top-0 before:right-0 before:w-full before:h-full before:z-[999]'} profile-avatar md:w-[12rem] md:h-[12rem]`}>
+                        className={`profile-avatar md:w-[12rem] md:h-[12rem]`}>
+                            <Image src={profile?.avatar?.secure_url} alt="avatar"
+                            title="avatar" width={300} height={300} priority/>
+                        </div>:
+                        <div onMouseLeave={() => setOnMouse(false)} onMouseEnter={() => setOnMouse(true)}
+                        className={`${onMouse && 'before:content-[""] before:bg-clr-10 before:absolute before:top-0 before:right-0 before:w-full before:h-full before:z-[999] cursor-pointer'} profile-avatar md:w-[12rem] md:h-[12rem]`}>
                             <Image src={profile?.avatar?.secure_url} alt="avatar"
                             title="avatar" width={300} height={300} priority/>
                             <AiOutlineCamera className="cam-ico" />
-                        </div>
+                        </div>}
                         <div>
                             <h3 title="edit fullname" className='leading-tight font-semibold cursor-pointer text-clr-2 text-lg md:text-2xl lg:text-4xl hover:underline tracking-wider trans'>
                                 {profile?.fullname}
                             </h3>
-                            <h6 className='capitalize'>
+                            <h6 className='capitalize mt-2 text-clr-3 text-sm'>
                                 {authRoles.join(", ")}
                             </h6>
                         </div>
                     </div>
                 </article>
                 <article className="profile-card">
-                    <h3 className="border-b-[0.03125rem] mb-3 py-1.5 text-clr-2 font-semibold tracking-wider">
+                    <h3 className="border-b-[0.08125rem] mb-3 py-1.5 text-clr-2 font-semibold tracking-wider">
                         Account Info
                     </h3>
-                    <div className="flex justify-between items-center py-1.5 border-b-[0.08125rem]">
+                    <div className="profile-card-info">
                         <p className="text-clr-3">Username</p>
                         <p className="text-clr-2">{profile?.user}</p>
-                        <button className="text-sm text-clr-4 hover:text-clr-6">
+                        {isRole && pathName === "/staff/profile" && <button className="profile-edit-btn">
                             Edit Username
-                        </button>
+                        </button>}
                     </div>
                     <div className="flex flex-col gap-1.5 justify-center">
-                        <div className='flex justify-between items-center py-1.5 border-b-[0.08125rem]'>
+                        <div className='profile-card-info'>
                             <p className="text-clr-3">Email Address</p>
                             <div className={`${inter.className} flex gap-3 items-center text-xs tracking-wide text-clr-2 md:text-sm`}>
                                 <AiOutlineMail />
@@ -72,19 +81,21 @@ const UserProfile: React.FC<{ profile: any }> = ({ profile }) => {
                                 </p>
                             </div>
                         </div>
-                        {roles?.includes("hr") && <div className="flex justify-between items-center py-1.5 border-b-[0.08125rem]">
+                        {isRole && <div className="profile-card-info">
                             <p className="text-clr-3">Roles</p>
                             <p className="text-clr-2 capitalize">
                                 {authRoles.join(", ")}
                             </p>
-                            <button className="text-sm text-clr-4 hover:text-clr-6">
+                            <button className="profile-edit-btn">
                                 Edit Roles
                             </button>
                         </div> }
-                        <div className="flex justify-between items-center py-1.5 border-b-[0.08125rem]">
+                        <div className="profile-card-info">
                             <p className="text-clr-3">Resigned</p>
-                            <p>{profile?.resigned?.resign ? "Resigned": "Null"}</p>
-                            {roles?.includes("hr") && <button className="text-sm text-clr-4 hover:text-clr-6">
+                            <p title={`${profile?.resigned?.resign ? `Resigned on ${convertISODate(profile?.resigned.date)}` : "Staff hasn't resigned."}`} >
+                                {profile?.resigned?.resign ? "Resigned": "Null"}
+                            </p>
+                            {isRole && <button className="profile-edit-btn">
                                 Edit Resignation
                             </button>}
                         </div>
@@ -99,4 +110,4 @@ const UserProfile: React.FC<{ profile: any }> = ({ profile }) => {
     )
 }
 
-export default UserProfile
+export default Profile
