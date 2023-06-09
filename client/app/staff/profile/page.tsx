@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import useAuth from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { SpinnerTwo } from '@/components/Spinner'
-import UserProfile from '@/components/UserProfile'
+import Profile from '@/components/Profile'
 
 const page = () => {
     const router = useRouter()
@@ -16,7 +16,7 @@ const page = () => {
     
     if (loadingProfile) return <SpinnerTwo />
 
-    return <UserProfile profile={profile} />
+    return <Profile profile={profile} />
 }
 
 export default page
