@@ -179,7 +179,7 @@
 }
 
 .profile-avatar img {
-    @apply w-full h-full object-cover cursor-pointer
+    @apply w-full h-full object-cover
 }
 
 .profile-card-center {
