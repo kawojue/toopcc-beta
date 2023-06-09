@@ -25,9 +25,8 @@ const page = ({ params: { profile } } : IProfile) => {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        }).then((res: any) => {
-            setStaff(res.data?.user)
-        }).catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
+        }).then((res: any) => setStaff(res.data?.user))
+        .catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
     }
 
     useEffect(() => {
