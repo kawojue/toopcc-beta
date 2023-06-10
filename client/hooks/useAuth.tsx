@@ -2,11 +2,20 @@
 import notify from "@/utils/notify"
 import axios from "@/app/api/instance"
 import throwError from "@/utils/throwError"
+import modalReducer from "@/utils/modalReducers"
 import { useRouter, usePathname } from "next/navigation"
-import { createContext, useState, useEffect, useContext } from "react"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context"
+import { createContext, useState, useEffect, useContext, useReducer } from "react"
 
 const Auth: any = createContext({})
+const initialStates: ModalStates = {
+    roles: false,
+    avatar: false,
+    username: false,
+    fullname: false,
+    password: false,
+    resignation: false,
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const pathName: string = usePathname()
@@ -26,6 +35,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [avatar, setAvatar] = useState<string>("")
     const [fullname, setFullname] = useState<string>("")
     const [verified, setVerified] = useState<boolean>(false)
+
+    const [state, dispatch] = useReducer(modalReducer, initialStates)
 
     const setStatesToDefault = (): void => {
         setOTP("")
@@ -150,7 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setPswd, setPswd2, setEmail, email, fullname, setFullname,
             avatar, setAvatar, otp, setOTP, handleOTPRequest, profile,
             handlePswdReset, handleIdVerification, loadingProfile,
-            staffs
+            staffs, state, dispatch
         }}>
             {children}
         </Auth.Provider>
