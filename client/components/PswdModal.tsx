@@ -6,7 +6,7 @@ import { FaTimes } from '@/public/icons/ico'
 import { Dialog, Transition } from '@headlessui/react'
 
 
-const EditPswdModal: React.FC<IModal> = ({ state, dispatch }) => {
+const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
     const {
         pswd, setPswd, handleEditPswd, currentPswd,
         loading, pswd2, setPswd2, setCurrentPswd,
@@ -85,4 +85,4 @@ const EditPswdModal: React.FC<IModal> = ({ state, dispatch }) => {
     )
 }
 
-export default EditPswdModal
+export default PswdModal
