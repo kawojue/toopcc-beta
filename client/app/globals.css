@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .trans {
-    @apply duration-300 ease-linear transition-all;
+    @apply duration-200 ease-linear transition-all;
 }
 
 .lds-roller {
@@ -200,6 +200,62 @@
 
 .cam-ico {
     @apply absolute top-0 right-0 z-[9999] w-full h-full flex items-center justify-center
+}
+
+.modal-header {
+    @apply text-xl font-semibold tracking-wider
+}
+
+.modal-form {
+    @apply w-full my-2
+}
+
+.modal-btn-container {
+    @apply flex gap-3 self-end absolute bottom-4
+}
+
+.save-btn {
+    @apply px-6 trans
+}
+
+.save-btn:disabled {
+    @apply bg-clr-7 text-clr-3
+}
+
+.save-btn:not([disabled]) {
+    @apply text-clr-7 bg-clr-1
+}
+
+.save-btn:hover:not([disabled]) {
+    @apply text-clr-5 bg-clr-6
+}
+
+.cancel-btn {
+    @apply border-[0.08125rem] border-clr-8 px-5 trans
+}
+
+.cancel-btn:hover {
+    @apply text-clr-8 bg-clr-7
+}
+
+.cancel-btn, .save-btn {
+    @apply text-[14px] py-1.5  tracking-wider font-semibold
+}
+
+.modal-form-group {
+    @apply flex flex-col gap-1
+}
+
+.modal-form-group label {
+    @apply text-[14px] text-clr-2 tracking-wider
+}
+
+.modal-form-group input {
+    @apply rounded-none border-[0.08125rem] border-clr-8 p-0.5 tracking-wide text-[15px] text-clr-2
+}
+
+.modal-form-group input:focus {
+    @apply border-[0.125rem] border-clr-1 outline-none
 }
 
 .section-form {
