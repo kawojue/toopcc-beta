@@ -43,18 +43,18 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                     <label htmlFor='username'>Username</label>
                                     <input type="text" id="username" placeholder={profile?.user}
                                     value={user} onChange={e => setUser(e.target.value)} /> 
+                                    <div className="modal-btn-container">
+                                        <button className="save-btn" disabled={!eligible}
+                                        onClick={async () => await handleUsername()}>
+                                            {loading ? <SpinnerOne/> : 'Save'}
+                                        </button>
+                                        <button className="cancel-btn"
+                                        onClick={() => dispatch({ type: "USERNAME", toggle: false })}>
+                                            Cancel
+                                        </button>
+                                    </div>
                                 </article>
                             </form>
-                            <div className="modal-btn-container">
-                                <button className="save-btn" disabled={!eligible}
-                                onClick={async () => await handleUsername()}>
-                                    {loading ? <SpinnerOne/> : 'Save'}
-                                </button>
-                                <button className="cancel-btn"
-                                onClick={() => dispatch({ type: "USERNAME", toggle: false })}>
-                                    Cancel
-                                </button>
-                            </div>
                             <div className="mt-4">
                                 <button
                                 type="button"
