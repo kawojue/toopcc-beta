@@ -28,6 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loadingProfile, setLoadingProfile] = useState<boolean>(true)
     
     const [otp, setOTP] = useState<string>("")
+    const [user, setUser] = useState<string>("")
     const [pswd, setPswd] = useState<string>("")
     const [pswd2, setPswd2] = useState<string>("")
     const [email, setEmail] = useState<string>("")
@@ -40,6 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const setStatesToDefault = (): void => {
         setOTP("")
+        setUser("")
         setPswd("")
         setPswd2("")
         setEmail("")
@@ -146,12 +148,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     const handleLogout = async (): Promise<void> => {
-        await axios.get('/auth/logout')
-        .then((res: any) => {
+        await axios.get(
+            '/auth/logout',
+            { headers: { 'Authorization': `Bearer ${token}` } }
+        ).then((res: any) => {
+            setToken("")
             setAuth(false)
             setStatesToDefault()
             localStorage.clear()
+            router.push('/staff/login')
         }).catch((err) => throwError(err))
+    }
+
+    const handleUsername = async (): Promise<void> => {
+        setLoading(true)
+        await axios.post(
+            '/auth/edit/username',
+            JSON.stringify({ newUser: user }),
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        ).then((res: any) => {
+            notify(res.data?.action, res.data?.msg)
+            dispatch({ type: "USERNAME", toggle: false})
+            setTimeout(() => {
+                (async () => await handleLogout())()
+            }, 500)
+        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
     return (
@@ -161,7 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setPswd, setPswd2, setEmail, email, fullname, setFullname,
             avatar, setAvatar, otp, setOTP, handleOTPRequest, profile,
             handlePswdReset, handleIdVerification, loadingProfile,
-            staffs, state, dispatch
+            staffs, state, dispatch, user, setUser, handleUsername
         }}>
             {children}
         </Auth.Provider>
