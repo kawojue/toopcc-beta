@@ -26,4 +26,4 @@ const handleFile = (e: any, set: any) => {
     }
 }
 
-export { checkFile, handleFile }
+export { handleFile }
