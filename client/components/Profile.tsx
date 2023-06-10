@@ -5,6 +5,7 @@ import useRole from '@/hooks/useRole'
 import { inter } from '@/public/font/font'
 import UsernameModal from './UsernameModal'
 import FullnameModal from './FullnameModal'
+import EditPswdModal from './EditPswdModal'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import convertISODate from '@/utils/shortDate'
@@ -27,6 +28,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
 
     return (
         <main className="profile-main">
+            <EditPswdModal state={state} dispatch={dispatch} />
             <UsernameModal state={state} dispatch={dispatch} profile={profile} />
             <FullnameModal state={state} dispatch={dispatch} profile={profile} />
             <section className="profile-header">
