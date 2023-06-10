@@ -155,9 +155,9 @@ const editUsername = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
 exports.editUsername = editUsername;
 const editFullname = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { fullname } = req.body;
-    fullname = (0, full_name_1.default)(fullname);
     if (!fullname)
         return res.status(400).json(modal_1.FIELDS_REQUIRED);
+    fullname = (0, full_name_1.default)(fullname);
     const account = yield (0, getModels_1.fetchUserByUser)(req === null || req === void 0 ? void 0 : req.user);
     if (!account)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
