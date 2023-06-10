@@ -12,8 +12,9 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
     const eligible: boolean = Boolean(profile?.user !== user ) && Boolean(user)
 
     return (
-        <Transition appear show={state.username} as={Fragment}>
-            <Dialog as="div" className="relative z-[999]" onClose={() => dispatch({ type: "USERNAME", toggle: false })}>
+        <Transition appear show={state?.username} as={Fragment}>
+            <Dialog as="div" className="modal"
+            onClose={() => dispatch({ type: "USERNAME", toggle: false })}>
             <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -25,8 +26,8 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                 <div className="fixed inset-0 bg-black bg-opacity-25" />
             </Transition.Child>
 
-            <div className="fixed inset-0 overflow-y-auto">
-                <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <div className="modal-main">
+                <div className="modal-center">
                     <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -35,7 +36,7 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                     leave="ease-in duration-200"
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95">
-                        <Dialog.Panel className="flex flex-col w-full min-h-[180px] max-w-md transform overflow-hidden rounded-2xl bg-white px-5 pb-0.5 pt-2 text-left align-middle shadow-xl transition-all gap-2">
+                        <Dialog.Panel className="modal-panel">
                             <h3 className="modal-header">Edit Username</h3>
                             <form className="modal-form">
                                 <article className="modal-form-group">
@@ -57,7 +58,7 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                             <div className="mt-4">
                                 <button
                                 type="button"
-                                className="absolute top-2 right-3 text-2xl justify-center rounded-md border border-transparent bg-clr-1 px-3 py-1.5 font-medium text-clr-0 hover:bg-clr-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-clr-4 focus-visible:ring-offset-2"
+                                className="modal-close-btn"
                                 onClick={() => dispatch({ type: "USERNAME", toggle: false })}>
                                     <FaTimes />
                                 </button>
