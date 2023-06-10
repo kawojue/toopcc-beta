@@ -25,3 +25,9 @@ type ModalActions =
 | { type: 'USERNAME'; toggle: boolean }
 | { type: 'FULLNAME'; toggle: boolean }
 | { type: 'AVATAR'; toggle: boolean }
+
+interface IModal {
+    profile?: any
+    state: ModalStates
+    dispatch: (obj: ModalActions) => void
+}
