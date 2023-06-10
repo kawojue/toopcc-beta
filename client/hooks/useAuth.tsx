@@ -160,6 +160,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).catch((err) => throwError(err))
     }
 
+    const handleFullname = async (): Promise<void> => {
+        setLoading(true)
+        await axios.post('/auth/edit/fullname', JSON.stringify({ fullname }), {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((res: any) => {
+            notify(res.data?.action, res.data?.msg)
+            dispatch({ type: "FULLNAME", toggle: false})
+            document.location.reload()
+        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+    }
+
     const handleUsername = async (): Promise<void> => {
         setLoading(true)
         await axios.post(
@@ -186,7 +199,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setPswd, setPswd2, setEmail, email, fullname, setFullname,
             avatar, setAvatar, otp, setOTP, handleOTPRequest, profile,
             handlePswdReset, handleIdVerification, loadingProfile,
-            staffs, state, dispatch, user, setUser, handleUsername
+            staffs, state, dispatch, user, setUser, handleUsername,
+            handleFullname
         }}>
             {children}
         </Auth.Provider>
