@@ -202,6 +202,38 @@
     @apply absolute top-0 right-0 z-[9999] w-full h-full flex items-center justify-center
 }
 
+.modal {
+    @apply relative z-[999]
+}
+
+.modal-main {
+    @apply fixed inset-0 overflow-y-auto
+}
+
+.modal-center {
+    @apply flex min-h-full items-center justify-center p-4 text-center
+}
+
+.modal-panel {
+    @apply flex flex-col w-full min-h-[180px] max-w-md transform overflow-hidden rounded-2xl bg-white px-5 pb-0.5 pt-2 text-left align-middle shadow-xl transition-all gap-2
+}
+
+.modal-close-btn {
+    @apply absolute top-2 right-3 text-2xl justify-center rounded-md border border-transparent bg-clr-1 px-3 py-1.5 font-medium text-clr-0;
+}
+
+.modal-close-btn:focus-visible {
+    @apply ring-2 ring-offset-2 ring-clr-4
+}
+
+.modal-close-btn:hover {
+    @apply bg-clr-4
+}
+
+.modal-close-btn:focus {
+    @apply outline-none;
+}
+
 .modal-header {
     @apply text-xl font-semibold tracking-wider
 }
@@ -223,11 +255,11 @@
 }
 
 .save-btn:not([disabled]) {
-    @apply text-clr-7 bg-clr-1
+    @apply text-clr-0 bg-clr-1
 }
 
 .save-btn:hover:not([disabled]) {
-    @apply text-clr-5 bg-clr-6
+    @apply text-clr-7 bg-clr-6
 }
 
 .cancel-btn {
@@ -239,7 +271,7 @@
 }
 
 .cancel-btn, .save-btn {
-    @apply text-[14px] py-1.5  tracking-wider font-semibold
+    @apply text-[14px] py-1.5  tracking-wider font-medium
 }
 
 .modal-form-group {
@@ -247,7 +279,7 @@
 }
 
 .modal-form-group label {
-    @apply text-[14px] text-clr-2 tracking-wider
+    @apply text-[14px] text-clr-2 tracking-wider font-medium
 }
 
 .modal-form-group input {
