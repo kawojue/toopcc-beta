@@ -122,7 +122,7 @@
 }
 
 .staff-main {
-    @apply bg-clr-5 mx-auto w-full min-h-[115vh] pt-16;
+    @apply bg-clr-5 mx-auto w-full min-h-[115vh] pt-16 relative;
 }
 
 .profile-main {
@@ -199,7 +199,7 @@
 }
 
 .cam-ico {
-    @apply absolute top-0
+    @apply absolute top-0 right-0 z-[9999] w-full h-full flex items-center justify-center
 }
 
 .section-form {
