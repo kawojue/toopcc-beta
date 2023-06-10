@@ -42,8 +42,8 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                         <div onMouseLeave={() => setOnMouse(false)} onMouseEnter={() => setOnMouse(true)}
                         className={`profile-avatar md:w-[12rem] md:h-[12rem]`}>
                             <Image src={profile?.avatar?.secure_url} alt="avatar"
-                            title="avatar" width={300} height={300} priority/>
-                        </div>:
+                            title="change your avatar" width={300} height={300} priority/>
+                        </div> :
                         <div onMouseLeave={() => setOnMouse(false)} onMouseEnter={() => setOnMouse(true)}
                         className={`${onMouse && 'before:content-[""] before:bg-clr-10 before:absolute before:top-0 before:right-0 before:w-full before:h-full before:z-[999] cursor-pointer'} profile-avatar md:w-[12rem] md:h-[12rem]`}>
                             <Image src={profile?.avatar?.secure_url} alt="avatar"
@@ -81,7 +81,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                                 </p>
                             </div>
                         </div>
-                        {isRole && <div className="profile-card-info">
+                        {isRole && pathName !== "/staff/profile" && <div className="profile-card-info">
                             <p className="text-clr-3">Roles</p>
                             <p className="text-clr-2 capitalize">
                                 {authRoles.join(", ")}
@@ -89,7 +89,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                             <button className="profile-edit-btn">
                                 Edit Roles
                             </button>
-                        </div> }
+                        </div>}
                         <div className="profile-card-info">
                             <p className="text-clr-3">Resigned</p>
                             <p title={`${profile?.resigned?.resign ? `Resigned on ${convertISODate(profile?.resigned.date)}` : "Staff hasn't resigned."}`} >
