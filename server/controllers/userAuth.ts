@@ -196,9 +196,10 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
 
 const editFullname = asyncHandler(async (req: any, res: Response) => {
     let { fullname }: any = req.body
-    fullname = full_name(fullname)
 
     if (!fullname) return res.status(400).json(FIELDS_REQUIRED)
+
+    fullname = full_name(fullname)
 
     const account: any = await fetchUserByUser(req?.user)
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
