@@ -239,7 +239,7 @@
 }
 
 .modal-form {
-    @apply w-full my-2
+    @apply w-full my-2 flex flex-col gap-3
 }
 
 .modal-btn-container {
