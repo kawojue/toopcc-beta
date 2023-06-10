@@ -10,10 +10,12 @@ interface IProfile {
 }
 
 interface ModalStates {
-    roles: boolean,
-    username: boolean,
-    password: boolean,
-    resignation: boolean,
+    roles: boolean
+    avatar: boolean
+    username: boolean
+    fullname: boolean
+    password: boolean
+    resignation: boolean
 }
 
 type ModalActions =
@@ -21,3 +23,5 @@ type ModalActions =
 | { type: 'PSWD'; toggle: boolean }
 | { type: 'ROLES'; toggle: boolean }
 | { type: 'USERNAME'; toggle: boolean }
+| { type: 'FULLNAME'; toggle: boolean }
+| { type: 'AVATAR'; toggle: boolean }
