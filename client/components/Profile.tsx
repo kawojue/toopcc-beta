@@ -3,6 +3,7 @@ import Image from 'next/image'
 import useAuth from '@/hooks/useAuth'
 import useRole from '@/hooks/useRole'
 import { inter } from '@/public/font/font'
+import UsernameModal from './UsernameModal'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import convertISODate from '@/utils/shortDate'
@@ -21,12 +22,11 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
         setShortDate(convertISODate(profile?.createdAt))
     }, [profile])
 
-    console.log(state)
-
     const authRoles: string[] = profile?.roles || []
 
     return (
         <main className="profile-main">
+            <UsernameModal state={state} dispatch={dispatch} profile={profile} />
             <section className="profile-header">
                 <h1 className='profile-header-h1 md:text-3xl'>
                     {pathName === "/staff/profile" ? "Your Info": "Staff Info"}
