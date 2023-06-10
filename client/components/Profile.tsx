@@ -67,9 +67,9 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                     <div className="profile-card-info">
                         <p className="text-clr-3">Username</p>
                         <p className="text-clr-2">{profile?.user}</p>
-                        {isRole && pathName === "/staff/profile" && <button className="profile-edit-btn">
+                        {isRole && pathName !== "/staff/profile" ? "" :  <button className="profile-edit-btn">
                             Edit Username
-                        </button>}
+                        </button> }
                     </div>
                     <div className="flex flex-col gap-1.5 justify-center">
                         <div className='profile-card-info'>
