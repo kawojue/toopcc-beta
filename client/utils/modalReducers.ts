@@ -26,3 +26,5 @@ const modalReducer = (state: ModalStates, action: ModalActions) => {
         }
     }
 }
+
+export default modalReducer
