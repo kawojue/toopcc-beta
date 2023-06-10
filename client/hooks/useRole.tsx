@@ -1,7 +1,7 @@
 "use client"
 import useJWT from "./useJWT"
 
-const useRoles = (...roles: string[]): boolean => {
+const useRole = (...roles: string[]): boolean => {
     const { roles: authRoles }: JWT = useJWT()
     const allowedRoles: string[] = [...roles]
 
@@ -14,4 +14,4 @@ const useRoles = (...roles: string[]): boolean => {
     return true
 }
 
-export default useRoles
+export default useRole
