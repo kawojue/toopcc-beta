@@ -5,7 +5,6 @@ import { SpinnerOne } from './Spinner'
 import { FaTimes } from '@/public/icons/ico'
 import { Dialog, Transition } from '@headlessui/react'
 
-
 const FullnameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
     const { fullname, setFullname, handleFullname, loading }: any = useAuth()
 
@@ -44,17 +43,17 @@ const FullnameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                     <input type="text" id="username" placeholder={profile?.fullname}
                                     value={fullname} onChange={e => setFullname(e.target.value)} /> 
                                 </article>
-                            </form>
-                            <div className="modal-btn-container">
+                                <div className="modal-btn-container">
                                 <button className="save-btn" disabled={!eligible}
-                                onClick={async () => await handleFullname()}>
+                                type="submit" onClick={async () => await handleFullname()}>
                                     {loading ? <SpinnerOne/> : 'Save'}
                                 </button>
-                                <button className="cancel-btn"
+                                <button className="cancel-btn" type="reset"
                                 onClick={() => dispatch({ type: "FULLNAME", toggle: false })}>
                                     Cancel
                                 </button>
                             </div>
+                            </form>
                             <div className="mt-4">
                                 <button
                                 type="button"
