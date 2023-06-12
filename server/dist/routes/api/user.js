@@ -10,6 +10,6 @@ const verifyRoles_1 = __importDefault(require("../../middlewares/verifyRoles"));
 const user = (0, express_1.Router)();
 user.use(jwtVerify_1.default);
 user.get('/profile', user_1.getProfile);
-user.get('/profile/:user', (0, verifyRoles_1.default)("hr"), user_1.getUser);
-user.get('/profile/users', (0, verifyRoles_1.default)("admin", "hr"), user_1.getUsers);
+user.get('/profile/:user', (0, verifyRoles_1.default)("hr", "admin"), user_1.getUser);
+user.get('/profile/users', (0, verifyRoles_1.default)("hr", "admin"), user_1.getUsers);
 exports.default = user;
