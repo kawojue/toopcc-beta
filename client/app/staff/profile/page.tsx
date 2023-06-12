@@ -8,7 +8,7 @@ import Profile from '@/components/Profile'
 
 const page = () => {
     const router = useRouter()
-    const { profile, loadingProfile, auth}: any = useAuth()
+    const { profile, loadingProfile, auth }: any = useAuth()
 
     useEffect(() => {
         if (!auth) router.push('/staff/login')
