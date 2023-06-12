@@ -13,13 +13,13 @@ const checkFile = (file: any): boolean => {
     return false
 }
 
-const handleFile = (e: any, set: any) => {
+const handleFile = (e: any, set: (get: string) => void): void => {
     const file: any = e.target.files[0]
     const reader: FileReader = new FileReader()
     if (checkFile(file)) {
         reader.readAsDataURL(file)
         reader.onload = () => {
-            set(reader.result)
+            set(reader.result as string)
         }
     } else {
         notify('error', "File size or format is not allowed.")
