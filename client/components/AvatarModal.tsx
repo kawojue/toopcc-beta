@@ -1,19 +1,32 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"
+import {
+    AiOutlineCloudUpload,
+    FaTimes, RiDeleteBin6Line,
+} from '@/public/icons/ico'
+import Image from 'next/image'
 import { Fragment } from 'react'
 import useAuth from '@/hooks/useAuth'
 import { SpinnerOne } from './Spinner'
 import { handleFile } from '@/utils/file'
-import { FaTimes } from '@/public/icons/ico'
 import { Dialog, Transition } from '@headlessui/react'
 
-const FullnameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
-    const { fullname, setFullname, handleFullname, loading, avatar, setAvatar }: any = useAuth()
 
-    const avatarPbId: string = profile?.avatar?.public_id
-    const eligible: boolean = Boolean(profile?.fullname !== fullname ) && Boolean(fullname)
+const AvatarModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
+    const {
+        loading, avatar, changeAvatar, delAvatar,
+        setAvatar, setStatesToDefault
+    }: any = useAuth()
+
+    const eligible: boolean = Boolean(avatar)
+
+    const cancel = () => {
+        setStatesToDefault()
+        dispatch({ type: "AVATAR", toggle: false })
+    }
 
     return (
-        <Transition appear show={state?.fullname} as={Fragment}>
+        <Transition appear show={state.avatar} as={Fragment}>
             <Dialog as="div" className="modal"
             onClose={() => dispatch({ type: "AVATAR", toggle: false })}>
             <Transition.Child
@@ -38,24 +51,45 @@ const FullnameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95">
                         <Dialog.Panel className="modal-panel">
-                            <h3 className="modal-header">Edit Profile Picture</h3>
+                            <h3 className="modal-header">Change photo</h3>
                             <form className="modal-form">
-                                <article className="modal-form-group">
-                                    <label htmlFor='username'>Fullname</label>
-                                    <input type="text" id="username" placeholder={profile?.fullname}
-                                    value={fullname} onChange={e => setFullname(e.target.value)} /> 
+                                <div className='profile-avatar md:w-[12rem] md:h-[12rem] mx-auto'>
+                                    {avatar ?
+                                    <img src={avatar} alt="avatar" /> :
+                                    <>
+                                        {profile?.avatar?.secure_url ?
+                                            <Image src={profile?.avatar?.secure_url}
+                                            width={300} height={300} alt="avatar" priority /> :
+                                            <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp"
+                                            width={300} height={300} alt="avatar" priority />
+                                        }
+                                    </>
+                                    }
+                                </div>
+                                <input type="file" accept="image/*" id="avatar"
+                                onChange={(e) => handleFile(e, setAvatar)} className="hidden" />
+                                <article className="profile-avatar-btn">
+                                    <label htmlFor='avatar' className="change-avatar">
+                                        <AiOutlineCloudUpload />
+                                        <span>Change photo</span>
+                                    </label>
+                                    <button type='button' className="del-avatar"
+                                    onClick={async () => await delAvatar()}>
+                                        <RiDeleteBin6Line />
+                                        <span>Remove photo</span>
+                                    </button>
                                 </article>
-                                <div className="modal-btn-container">
+                            </form>
+                            <div className="modal-btn-container">
                                 <button className="save-btn" disabled={!eligible}
-                                type="submit" onClick={async () => await handleFullname()}>
-                                    {loading ? <SpinnerOne/> : 'Save'}
+                                type="submit" onClick={async () => await changeAvatar()}>
+                                    {loading ? <SpinnerOne /> : 'Save'}
                                 </button>
-                                <button className="cancel-btn" type="reset"
-                                onClick={() => dispatch({ type: "AVATAR", toggle: false })}>
+                                <button className="cancel-btn"
+                                onClick={() => cancel()}>
                                     Cancel
                                 </button>
                             </div>
-                            </form>
                             <div className="mt-4">
                                 <button
                                 type="button"
@@ -73,4 +107,4 @@ const FullnameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
     )
 }
 
-export default FullnameModal
+export default AvatarModal
