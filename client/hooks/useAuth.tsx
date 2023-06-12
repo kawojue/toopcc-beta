@@ -216,8 +216,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
-    // add avatar
-    // delete avatar
+    const delAvatar = async (): Promise<void> => {
+        await axios.delete('/auth/avatar', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((res: any) => {
+            setStatesToDefault()
+            notify(res.data?.action, res.data?.msg)
+            dispatch({ type: "AVATAR", toggle: false})
+            setTimeout(() => {
+                document.location.reload()
+            }, 300)
+        }).catch((err: any) => throwError(err))
+    }
+
+    const changeAvatar = async (): Promise<void> => {
+        setLoading(true)
+        await axios.post(
+            '/auth/avatar',
+            JSON.stringify({ avatar }),
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        ).then((res: any) => {
+            setStatesToDefault()
+            notify(res.data?.action, res.data?.msg)
+            dispatch({ type: "AVATAR", toggle: false})
+            setTimeout(() => {
+                document.location.reload()
+            }, 300)
+        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+    }
+
     // resignation
     // roles
 
@@ -230,7 +263,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             handlePswdReset, handleIdVerification, loadingProfile,
             staffs, state, dispatch, user, setUser, handleUsername,
             handleFullname, currentPswd, setCurrentPswd, handleEditPswd,
-            setStatesToDefault
+            setStatesToDefault, delAvatar, changeAvatar
         }}>
             {children}
         </Auth.Provider>
