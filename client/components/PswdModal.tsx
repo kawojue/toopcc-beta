@@ -14,8 +14,15 @@ const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
 
     const eligible: boolean = Boolean(currentPswd) && Boolean(pswd) && Boolean(pswd2)
 
+    const cancel = () => {
+        setPswd("")
+        setPswd2("")
+        setCurrentPswd("")
+        dispatch({ type: "PSWD", toggle: false })
+    }
+
     return (
-        <Transition appear show={state?.password} as={Fragment}>
+        <Transition appear show={state.password} as={Fragment}>
             <Dialog as="div" className="modal"
             onClose={() => dispatch({ type: "PSWD", toggle: false })}>
             <Transition.Child
@@ -57,21 +64,19 @@ const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
                                     <input type="password" id="pswd2" value={pswd2}
                                     onChange={e => setPswd2(e.target.value)} /> 
                                 </article>
-                                <div className="modal-btn-container">
+                            </form>
+                            <div className="modal-btn-container">
                                 <button className="save-btn" disabled={!eligible}
                                 type="submit" onClick={async () => await handleEditPswd()}>
                                     {loading ? <SpinnerOne/> : 'Save'}
                                 </button>
                                 <button className="cancel-btn"
-                                onClick={() => dispatch({ type: "PSWD", toggle: false })}>
+                                onClick={() => cancel()}>
                                     Cancel
                                 </button>
                             </div>
-                            </form>
                             <div className="mt-4">
-                                <button
-                                type="button"
-                                className="modal-close-btn"
+                                <button className="modal-close-btn"
                                 onClick={() => dispatch({ type: "PSWD", toggle: false })}>
                                     <FaTimes />
                                 </button>
