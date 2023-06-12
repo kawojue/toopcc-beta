@@ -10,14 +10,13 @@ const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
     const {
         pswd, setPswd, handleEditPswd, currentPswd,
         loading, pswd2, setPswd2, setCurrentPswd,
+        setStatesToDefault
     }: any = useAuth()
 
     const eligible: boolean = Boolean(currentPswd) && Boolean(pswd) && Boolean(pswd2)
 
-    const cancel = () => {
-        setPswd("")
-        setPswd2("")
-        setCurrentPswd("")
+    const cancel = (): void => {
+        setStatesToDefault()
         dispatch({ type: "PSWD", toggle: false })
     }
 
@@ -51,12 +50,12 @@ const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
                             <form className="modal-form">
                                 <article className="modal-form-group">
                                     <label htmlFor='current-pswd'>Current Password</label>
-                                    <input type="text" id="current-pswd" value={currentPswd}
-                                    onChange={e => setCurrentPswd(e.target.value)} /> 
+                                    <input type="password" id="current-pswd" value={currentPswd}
+                                    onChange={e => setCurrentPswd(e.target.value)} />
                                 </article>
                                 <article className="modal-form-group">
                                     <label htmlFor='pswd'>New Password</label>
-                                    <input type="text" id="pswd" value={pswd}
+                                    <input type="password" id="pswd" value={pswd}
                                     onChange={e => setPswd(e.target.value)} /> 
                                 </article>
                                 <article className="modal-form-group">
