@@ -271,7 +271,7 @@
 }
 
 .cancel-btn, .save-btn {
-    @apply text-[14px] py-1.5  tracking-wider font-medium
+    @apply text-[14px] py-1.5 tracking-wider font-medium
 }
 
 .modal-form-group {
@@ -288,6 +288,18 @@
 
 .modal-form-group input:focus {
     @apply border-[0.125rem] border-clr-1 outline-none
+}
+
+.profile-avatar-btn {
+    @apply flex flex-col gap-5 w-fit mt-5 mb-2 text-clr-1 tracking-wider trans
+}
+
+.profile-avatar-btn:hover {
+    @apply text-clr-6
+}
+
+.change-avatar, .del-avatar {
+    @apply flex gap-3 items-center cursor-pointer;
 }
 
 .section-form {
