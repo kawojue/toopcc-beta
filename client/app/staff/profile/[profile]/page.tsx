@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import useJWT from "@/hooks/useJWT"
+import useRole from "@/hooks/useRole"
 import useAuth from "@/hooks/useAuth"
 import axios from "@/app/api/instance"
 import Profile from "@/components/Profile"
@@ -12,14 +12,13 @@ import { SpinnerTwo } from "@/components/Spinner"
 
 const page = ({ params: { profile } } : IProfile) => {
     const router = useRouter()
-
     const { token }: any = useAuth()
-    const { roles } : JWT = useJWT() || { roles: [] }
+    const roles: boolean = useRole("hr", "admin")
 
     const [staff, setStaff] = useState<any>({})
     const [loadingProfile, setLoadingProfile] = useState<boolean>(false)
 
-    const handleStaff = async (token: string): Promise<void> => {
+    const handleStaff = async (): Promise<void> => {
         setLoadingProfile(true)
         await axios.get(`/api/user/profile/${profile}`, {
             headers: {
@@ -29,12 +28,18 @@ const page = ({ params: { profile } } : IProfile) => {
         .catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
     }
 
-    useEffect(() => {
-        if (!roles.includes("hr")) router.push('/staff/profile')
-    }, [roles, router])
+    console.log(roles)
 
     useEffect(() => {
-        (async () => await handleStaff(token))()
+        if (token) {
+            if (!roles) {
+                router.push('/staff/profile')
+            }
+        }
+    }, [router, token, roles])
+
+    useEffect(() => {
+        if (token) (async () => await handleStaff())()
     }, [token])
 
     if (loadingProfile) return <SpinnerTwo />
