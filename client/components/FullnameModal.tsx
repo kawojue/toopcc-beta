@@ -52,7 +52,7 @@ const FullnameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                             <div className="modal-btn-container">
                                 <button className="save-btn" disabled={!eligible}
                                 type="submit" onClick={async () => await handleFullname()}>
-                                    {loading ? <SpinnerOne/> : 'Save'}
+                                    {loading ? <SpinnerOne /> : 'Save'}
                                 </button>
                                 <button className="cancel-btn" type="reset"
                                 onClick={() => cancel()}>
