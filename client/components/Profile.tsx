@@ -13,6 +13,7 @@ import convertISODate from '@/utils/shortDate'
 import {
     HiOutlineKey, AiOutlineCamera, AiOutlineMail
 } from '@/public/icons/ico'
+import ResignationModal from './ResignationModal'
 
 const Profile: React.FC<{ profile: any }> = ({ profile }) => {
     const isRole: boolean = useRole("hr")
@@ -33,6 +34,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
             <AvatarModal state={state} dispatch={dispatch} profile={profile} />
             <UsernameModal state={state} dispatch={dispatch} profile={profile} />
             <FullnameModal state={state} dispatch={dispatch} profile={profile} />
+            <ResignationModal state={state} dispatch={dispatch} profile={profile} />
             <section className="profile-header">
                 <h1 className='profile-header-h1 md:text-3xl'>
                     {pathName === "/staff/profile" ? "Your Info": "Staff Info"}
@@ -122,7 +124,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                             <p title={`${profile?.resigned?.resign ? `Resigned on ${convertISODate(profile?.resigned.date)}` : "Staff hasn't resigned."}`} >
                                 {profile?.resigned?.resign ? "Resigned": "Null"}
                             </p>
-                            {isRole && <button className="profile-edit-btn"
+                            {isRole && pathName !== "/staff/profile" && <button className="profile-edit-btn"
                             onClick={() => dispatch({ type: "RESIG", toggle: true })}>
                                 Edit Resignation
                             </button>}
