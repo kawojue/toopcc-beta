@@ -11,8 +11,13 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
 
     const eligible: boolean = Boolean(profile?.user !== user ) && Boolean(user)
 
+    const cancel = () => {
+        setUser("")
+        dispatch({ type: "USERNAME", toggle: false })
+    }
+
     return (
-        <Transition appear show={state?.username} as={Fragment}>
+        <Transition appear show={state.username} as={Fragment}>
             <Dialog as="div" className="modal"
             onClose={() => dispatch({ type: "USERNAME", toggle: false })}>
             <Transition.Child
@@ -43,22 +48,20 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                     <label htmlFor='username'>Username</label>
                                     <input type="text" id="username" placeholder={profile?.user}
                                     value={user} onChange={e => setUser(e.target.value)} /> 
-                                    <div className="modal-btn-container">
-                                        <button className="save-btn" disabled={!eligible}
-                                        onClick={async () => await handleUsername()}>
-                                            {loading ? <SpinnerOne/> : 'Save'}
-                                        </button>
-                                        <button className="cancel-btn"
-                                        onClick={() => dispatch({ type: "USERNAME", toggle: false })}>
-                                            Cancel
-                                        </button>
-                                    </div>
                                 </article>
                             </form>
+                            <div className="modal-btn-container">
+                                <button className="save-btn" disabled={!eligible}
+                                onClick={async () => await handleUsername()}>
+                                    {loading ? <SpinnerOne /> : 'Save'}
+                                </button>
+                                <button className="cancel-btn"
+                                onClick={() => cancel()}>
+                                    Cancel
+                                </button>
+                            </div>
                             <div className="mt-4">
-                                <button
-                                type="button"
-                                className="modal-close-btn"
+                                <button className="modal-close-btn"
                                 onClick={() => dispatch({ type: "USERNAME", toggle: false })}>
                                     <FaTimes />
                                 </button>
