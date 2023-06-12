@@ -1,10 +1,8 @@
 import { Router } from 'express'
 import {
-    editUsername, resigned,
-    editPassword, editFullname
+    editUsername, editPassword, editFullname
 } from '../../controllers/userAuth'
 import jwtVerify from '../../middlewares/jwtVerify'
-import verifyRoles from '../../middlewares/verifyRoles'
 
 const edit: Router = Router()
 
