@@ -299,11 +299,15 @@ exports.deleteAvatar = deleteAvatar;
 const resigned = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { user } = req.params;
     const { resign, date } = req.body;
-    if (!resign)
-        return res.status(400).json(modal_1.FIELDS_REQUIRED);
     const account = yield (0, getModels_1.fetchUserByUser)(user);
     if (!account)
         return res.status(404).json(modal_1.ACCOUNT_NOT_FOUND);
+    if (Boolean(resign) === false) {
+        account.resigned.date = "";
+        account.resigned.resign = Boolean(resign);
+        yield account.save();
+        return res.status(200).json(Object.assign(Object.assign({}, modal_1.SUCCESS), { msg: "Staff is now active." }));
+    }
     account.resigned.date = date;
     account.resigned.resign = Boolean(resign);
     yield account.save();
