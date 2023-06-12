@@ -13,6 +13,5 @@ edit.use(jwtVerify)
 edit.post('/username', editUsername)
 edit.post('/fullname', editFullname)
 edit.post('/password', editPassword)
-edit.post('/resigned', verifyRoles("hr"), resigned)
 
 export default edit
