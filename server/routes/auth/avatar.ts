@@ -1,12 +1,15 @@
 import { Router } from 'express'
 import {
-    addAvatar, deleteAvatar
+    changeAvatar, deleteAvatar
 } from '../../controllers/userAuth'
+import jwtVerify from '../../middlewares/jwtVerify'
 
 const avatar: Router = Router()
 
+avatar.use(jwtVerify)
+
 avatar.route('/')
-    .post(addAvatar)
-    .get(deleteAvatar)
+    .post(changeAvatar)
+    .delete(deleteAvatar)
 
 export default avatar
