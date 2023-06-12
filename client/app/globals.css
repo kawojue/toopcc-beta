@@ -93,12 +93,12 @@
 }
 
 .loading-spin {
-    @apply w-[30px] h-[30px] relative grid place-items-center overflow-hidden;
+    @apply w-[25px] h-[25px] relative grid place-items-center overflow-hidden;
     animation: dis-appear 2s ease-in-out infinite;
 }
 
 .spin-sector {
-    border: 5px solid transparent;
+    border: 4px solid transparent;
     animation: rotate var(--duration) var(--timing) infinite;
     @apply absolute w-full h-full mix-blend-overlay rounded-[50%] pointer-events-none;
 }
@@ -191,7 +191,7 @@
 }
 
 .profile-edit-btn:hover {
-    @apply text-clr-6
+    @apply text-clr-6 underline
 }
 
 .profile-card-info {
@@ -215,7 +215,7 @@
 }
 
 .modal-panel {
-    @apply flex flex-col w-full min-h-[180px] max-w-md transform overflow-hidden rounded-2xl bg-white px-5 pb-0.5 pt-2 text-left align-middle shadow-xl transition-all gap-2
+    @apply flex flex-col w-full min-h-[180px] max-w-md transform overflow-hidden rounded-2xl bg-white px-5 pt-2 text-left align-middle shadow-xl transition-all gap-2
 }
 
 .modal-close-btn {
@@ -239,11 +239,11 @@
 }
 
 .modal-form {
-    @apply w-full my-2 flex flex-col gap-3
+    @apply w-full flex flex-col gap-5 mt-2 mb-5
 }
 
 .modal-btn-container {
-    @apply flex gap-3 self-end absolute
+    @apply flex gap-3 self-end justify-end
 }
 
 .save-btn {
