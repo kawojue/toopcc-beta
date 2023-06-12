@@ -3,6 +3,7 @@ import Image from 'next/image'
 import PswdModal from './PswdModal'
 import useAuth from '@/hooks/useAuth'
 import useRole from '@/hooks/useRole'
+import AvatarModal from './AvatarModal'
 import { inter } from '@/public/font/font'
 import UsernameModal from './UsernameModal'
 import FullnameModal from './FullnameModal'
@@ -29,6 +30,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
     return (
         <main className="profile-main">
             <PswdModal state={state} dispatch={dispatch} />
+            <AvatarModal state={state} dispatch={dispatch} profile={profile} />
             <UsernameModal state={state} dispatch={dispatch} profile={profile} />
             <FullnameModal state={state} dispatch={dispatch} profile={profile} />
             <section className="profile-header">
@@ -52,15 +54,21 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                         <div onMouseLeave={() => setOnMouse(false)}
                         onMouseEnter={() => setOnMouse(true)}
                         className={`profile-avatar md:w-[12rem] md:h-[12rem]`}>
+                            {profile?.avatar?.secure_url ? 
                             <Image src={profile?.avatar?.secure_url} alt="avatar"
-                            title="change your avatar" width={300} height={300} priority/>
+                            title="change your avatar" width={300} height={300} priority/> :
+                            <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar"
+                            title="change your avatar" width={300} height={300} priority/>}
                         </div> :
                         <div onMouseLeave={() => setOnMouse(false)}
                         onMouseEnter={() => setOnMouse(true)}
                         onClick={() => dispatch({ type: "AVATAR", toggle: true })}
                         className={`${onMouse && 'before:content-[""] before:bg-clr-10 before:absolute before:top-0 before:right-0 before:w-full before:h-full before:z-[999] cursor-pointer'} profile-avatar md:w-[12rem] md:h-[12rem]`}>
+                            {profile?.avatar?.secure_url ? 
                             <Image src={profile?.avatar?.secure_url} alt="avatar"
-                            title="avatar" width={300} height={300} priority/>
+                            title="change your avatar" width={300} height={300} priority/> :
+                            <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar"
+                            title="avatar" width={300} height={300} priority/>}
                             <div className={`${onMouse && 'cam-ico'}`}>
                                 <AiOutlineCamera className="text-clr-0 text-4xl md:text-5xl lg:text-6xl" />
                             </div>
