@@ -382,10 +382,19 @@ const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
 const resigned = asyncHandler(async (req: Request, res: Response) => {
     const { user }: any = req.params
     const { resign, date }: any = req.body
-    if (!resign) return res.status(400).json(FIELDS_REQUIRED)
     
     const account: any = await fetchUserByUser(user)
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
+
+    if (Boolean(resign) === false) {
+        account.resigned.date = ""
+        account.resigned.resign = Boolean(resign)
+        await account.save()
+        return res.status(200).json({
+            ...SUCCESS,
+            msg: "Staff is now active."
+        })
+    }
 
     account.resigned.date = date
     account.resigned.resign = Boolean(resign)
