@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeRole = exports.changeRoles = exports.resigned = exports.editFullname = exports.editUsername = exports.editPassword = exports.addAvatar = exports.verifyOTP = exports.logout = exports.createUser = exports.deleteAvatar = exports.otpHandler = exports.login = exports.resetpswd = void 0;
+exports.removeRole = exports.changeRoles = exports.resigned = exports.editFullname = exports.editUsername = exports.editPassword = exports.changeAvatar = exports.verifyOTP = exports.logout = exports.createUser = exports.deleteAvatar = exports.otpHandler = exports.login = exports.resetpswd = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const User_1 = __importDefault(require("../models/User"));
 const randomstring_1 = __importDefault(require("randomstring"));
@@ -254,20 +254,23 @@ const editPassword = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
     res.status(200).json(modal_1.PSWD_CHANGED);
 }));
 exports.editPassword = editPassword;
-const addAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const changeAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { avatar } = req.body;
     if (!avatar)
         return res.status(400).json(modal_1.SMTH_WENT_WRONG);
     const account = yield (0, getModels_1.fetchUserByUser)(req === null || req === void 0 ? void 0 : req.user);
     if (!account)
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
+    if (account.avatar.secure_url) {
+        const res = yield cloudinary_1.default.uploader.destroy(account.avatar.public_id);
+        if (!res)
+            return res.status(400).json(modal_1.SMTH_WENT_WRONG);
+    }
     const result = yield cloudinary_1.default.uploader.upload(avatar, {
         folder: `TOOPCC/Staffs/Avatars`,
         resource_type: 'image'
     });
     if (!result)
-        return res.status(404).json(modal_1.SMTH_WENT_WRONG);
-    if (account.avatar.secure_url)
         return res.status(400).json(modal_1.SMTH_WENT_WRONG);
     account.avatar = {
         secure_url: result.secure_url,
@@ -276,7 +279,7 @@ const addAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, f
     yield account.save();
     res.status(200).json(Object.assign(Object.assign({}, modal_1.SUCCESS), { msg: "Successful." }));
 }));
-exports.addAvatar = addAvatar;
+exports.changeAvatar = changeAvatar;
 const deleteAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _g;
     const account = yield (0, getModels_1.fetchUserByUser)(req === null || req === void 0 ? void 0 : req.user);
@@ -284,7 +287,7 @@ const deleteAvatar = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
         return res.status(404).json(modal_1.SMTH_WENT_WRONG);
     const result = yield cloudinary_1.default.uploader.destroy((_g = account.avatar) === null || _g === void 0 ? void 0 : _g.public_id);
     if (!result)
-        return res.status(404).json(modal_1.SMTH_WENT_WRONG);
+        return res.status(400).json(modal_1.SMTH_WENT_WRONG);
     account.avatar = {
         secure_url: "",
         public_id: ""
