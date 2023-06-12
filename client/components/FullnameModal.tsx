@@ -8,10 +8,15 @@ import { Dialog, Transition } from '@headlessui/react'
 const FullnameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
     const { fullname, setFullname, handleFullname, loading }: any = useAuth()
 
-    const eligible: boolean = Boolean(profile?.fullname !== fullname ) && Boolean(fullname)
+    const eligible: boolean = Boolean(profile?.fullname?.toLowerCase() !== fullname.toLowerCase()) && Boolean(fullname)
+
+    const cancel = () => {
+        setFullname("")
+        dispatch({ type: "FULLNAME", toggle: false })
+    }
 
     return (
-        <Transition appear show={state?.fullname} as={Fragment}>
+        <Transition appear show={state.fullname} as={Fragment}>
             <Dialog as="div" className="modal"
             onClose={() => dispatch({ type: "FULLNAME", toggle: false })}>
             <Transition.Child
@@ -43,21 +48,19 @@ const FullnameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                     <input type="text" id="username" placeholder={profile?.fullname}
                                     value={fullname} onChange={e => setFullname(e.target.value)} /> 
                                 </article>
-                                <div className="modal-btn-container">
+                            </form>
+                            <div className="modal-btn-container">
                                 <button className="save-btn" disabled={!eligible}
                                 type="submit" onClick={async () => await handleFullname()}>
                                     {loading ? <SpinnerOne/> : 'Save'}
                                 </button>
                                 <button className="cancel-btn" type="reset"
-                                onClick={() => dispatch({ type: "FULLNAME", toggle: false })}>
+                                onClick={() => cancel()}>
                                     Cancel
                                 </button>
                             </div>
-                            </form>
                             <div className="mt-4">
-                                <button
-                                type="button"
-                                className="modal-close-btn"
+                                <button className="modal-close-btn"
                                 onClick={() => dispatch({ type: "FULLNAME", toggle: false })}>
                                     <FaTimes />
                                 </button>
