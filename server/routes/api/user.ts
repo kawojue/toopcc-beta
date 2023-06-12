@@ -10,7 +10,7 @@ const user: Router = Router()
 user.use(jwtVerify)
 
 user.get('/profile', getProfile)
-user.get('/profile/:user', verifyRoles("hr"), getUser)
-user.get('/profile/users', verifyRoles("admin", "hr"), getUsers)
+user.get('/profile/:user', verifyRoles("hr", "admin"), getUser)
+user.get('/profile/users', verifyRoles("hr", "admin"), getUsers)
 
 export default user
