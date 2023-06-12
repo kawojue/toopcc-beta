@@ -192,6 +192,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
+    // add avatar
+    // delete avatar
+
     return (
         <Auth.Provider value={{
             auth, handleSignup, pswd, pswd2, loading, setLoading,
