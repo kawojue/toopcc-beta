@@ -28,8 +28,6 @@ const page = ({ params: { profile } } : IProfile) => {
         .catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
     }
 
-    console.log(roles)
-
     useEffect(() => {
         if (token) {
             if (!roles) {
