@@ -36,6 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [avatar, setAvatar] = useState<string>("")
     const [fullname, setFullname] = useState<string>("")
     const [verified, setVerified] = useState<boolean>(false)
+    const [currentPswd, setCurrentPswd] = useState<string>("")
 
     const [state, dispatch] = useReducer(modalReducer, initialStates)
 
@@ -48,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setAvatar("")
         setUserId("")
         setFullname("")
+        setCurrentPswd("")
         setVerified(false)
     }
 
@@ -167,6 +169,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 'Authorization': `Bearer ${token}`
             }
         }).then((res: any) => {
+            setStatesToDefault()
             notify(res.data?.action, res.data?.msg)
             dispatch({ type: "FULLNAME", toggle: false})
             document.location.reload()
@@ -184,6 +187,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 }
             }
         ).then((res: any) => {
+            setStatesToDefault()
             notify(res.data?.action, res.data?.msg)
             dispatch({ type: "USERNAME", toggle: false})
             setTimeout(() => {
@@ -192,8 +196,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
+    const handleEditPswd = async (): Promise<void> => {
+        setLoading(true)
+        await axios.post(
+            '/auth/edit/password',
+            JSON.stringify({ currentPswd, pswd, pswd2 }),
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        ).then((res: any) => {
+            setStatesToDefault()
+            notify(res.data?.action, res.data?.msg)
+            dispatch({ type: "PSWD", toggle: false})
+            setTimeout(() => {
+                (async () => await handleLogout())()
+            }, 500)
+        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+    }
+
     // add avatar
     // delete avatar
+    // resignation
+    // roles
 
     return (
         <Auth.Provider value={{
@@ -203,7 +229,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             avatar, setAvatar, otp, setOTP, handleOTPRequest, profile,
             handlePswdReset, handleIdVerification, loadingProfile,
             staffs, state, dispatch, user, setUser, handleUsername,
-            handleFullname
+            handleFullname, currentPswd, setCurrentPswd, handleEditPswd,
+            setStatesToDefault
         }}>
             {children}
         </Auth.Provider>
