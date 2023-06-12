@@ -330,20 +330,23 @@ const editPassword = asyncHandler(async (req: any, res: Response) => {
     res.status(200).json(PSWD_CHANGED)
 })
 
-const addAvatar = asyncHandler(async (req: any, res: any) => {
+const changeAvatar = asyncHandler(async (req: any, res: any) => {
     const { avatar }: any = req.body
     if (!avatar) return res.status(400).json(SMTH_WENT_WRONG)
 
     const account: any = await fetchUserByUser(req?.user)
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
+    if (account.avatar.secure_url) {
+        const res = await cloudinary.uploader.destroy(account.avatar.public_id)
+        if (!res) return res.status(400).json(SMTH_WENT_WRONG)
+    }
+
     const result = await cloudinary.uploader.upload(avatar, {
         folder: `TOOPCC/Staffs/Avatars`,
         resource_type: 'image'
     })
-    if (!result) return res.status(404).json(SMTH_WENT_WRONG)
-
-    if (account.avatar.secure_url) return res.status(400).json(SMTH_WENT_WRONG)
+    if (!result) return res.status(400).json(SMTH_WENT_WRONG)
 
     account.avatar = {
         secure_url: result.secure_url,
@@ -362,7 +365,7 @@ const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
     const result: any = await cloudinary.uploader.destroy(account.avatar?.public_id)
-    if (!result) return res.status(404).json(SMTH_WENT_WRONG)
+    if (!result) return res.status(400).json(SMTH_WENT_WRONG)
 
     account.avatar = {
         secure_url: "",
@@ -452,7 +455,7 @@ const removeRole = asyncHandler(async (req: Request, res: Response) => {
 
 export {
     resetpswd, login, otpHandler, deleteAvatar,
-    createUser, logout, verifyOTP, addAvatar,
+    createUser, logout, verifyOTP, changeAvatar,
     editPassword, editUsername, editFullname,
     resigned, changeRoles, removeRole
 }
