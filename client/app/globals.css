@@ -215,7 +215,7 @@
 }
 
 .modal-panel {
-    @apply flex flex-col min-h-[180px] w-full max-w-md transform overflow-hidden rounded-2xl bg-white px-5 pt-2 text-left align-middle shadow-xl transition-all gap-2
+    @apply flex flex-col w-full max-w-md transform overflow-hidden rounded-2xl bg-white px-5 pt-2 text-left align-middle shadow-xl transition-all gap-2
 }
 
 .modal-close-btn {
@@ -243,19 +243,27 @@
 }
 
 .modal-btn-container {
-    @apply flex gap-3 self-end justify-end
+    @apply flex gap-3 absolute bottom-0 mb-2 self-end
 }
 
-.save-btn {
+.save-btn, .del-btn {
     @apply px-6 trans
 }
 
-.save-btn:disabled {
+.save-btn:disabled, .del-btn:disabled {
     @apply bg-clr-7 text-clr-3
 }
 
 .save-btn:not([disabled]) {
     @apply text-clr-0 bg-clr-1
+}
+
+.del-btn:not([disabled]) {
+    @apply text-clr-0 bg-red-400
+}
+
+.del-btn:hover:not([disabled]) {
+    @apply text-clr-7 bg-red-600
 }
 
 .save-btn:hover:not([disabled]) {
@@ -270,7 +278,7 @@
     @apply text-clr-8 bg-clr-7
 }
 
-.cancel-btn, .save-btn {
+.cancel-btn, .save-btn, .del-btn {
     @apply text-[14px] py-1.5 tracking-wider font-medium
 }
 
