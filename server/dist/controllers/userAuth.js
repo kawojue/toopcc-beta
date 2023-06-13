@@ -304,9 +304,9 @@ const resigned = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, fu
         return res.status(404).json(modal_1.ACCOUNT_NOT_FOUND);
     if (Boolean(resign) === false) {
         account.resigned.date = "";
-        account.resigned.resign = Boolean(resign);
-        yield account.save();
-        return res.status(200).json(Object.assign(Object.assign({}, modal_1.SUCCESS), { msg: "Staff is now active." }));
+    }
+    if (Boolean(resign) === true && !date) {
+        account.resigned.date = `${new Date().toISOString()}`;
     }
     account.resigned.date = date;
     account.resigned.resign = Boolean(resign);
