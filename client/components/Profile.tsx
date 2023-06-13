@@ -1,20 +1,23 @@
 "use client"
 import Image from 'next/image'
-import PswdModal from './PswdModal'
 import useAuth from '@/hooks/useAuth'
 import useRole from '@/hooks/useRole'
 import getPeriod from '@/utils/period'
-import AvatarModal from './AvatarModal'
 import { inter } from '@/public/font/font'
-import UsernameModal from './UsernameModal'
-import FullnameModal from './FullnameModal'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import convertISODate from '@/utils/shortDate'
 import {
     HiOutlineKey, AiOutlineCamera, AiOutlineMail
 } from '@/public/icons/ico'
-import ResignationModal from './ResignationModal'
+
+// import modals
+import RoleModal from './Staff Modals/Role'
+import PswdModal from './Staff Modals/Pswd'
+import ResignModal from './Staff Modals/Resign'
+import AvatarModal from './Staff Modals/Avatar'
+import UsernameModal from './Staff Modals/Username'
+import FullnameModal from './Staff Modals/Fullname'
 
 const Profile: React.FC<{ profile: any }> = ({ profile }) => {
     const isRole: boolean = useRole("hr")
@@ -32,10 +35,11 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
     return (
         <main className="profile-main">
             <PswdModal state={state} dispatch={dispatch} />
+            <RoleModal state={state} dispatch={dispatch} profile={profile} />
+            <ResignModal state={state} dispatch={dispatch} profile={profile} />
             <AvatarModal state={state} dispatch={dispatch} profile={profile} />
             <UsernameModal state={state} dispatch={dispatch} profile={profile} />
             <FullnameModal state={state} dispatch={dispatch} profile={profile} />
-            <ResignationModal state={state} dispatch={dispatch} profile={profile} />
             <section className="profile-header">
                 <h1 className='profile-header-h1 md:text-3xl'>
                     {pathName === "/staff/profile" ? "Your Info": "Staff Info"}
