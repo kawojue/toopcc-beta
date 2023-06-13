@@ -33,6 +33,7 @@ interface IModal {
 }
 
 interface IComponent {
-    get: any
+    get?: any
     set: (get: any) => void
+    options?: string[]
 }
