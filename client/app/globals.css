@@ -215,7 +215,7 @@
 }
 
 .modal-panel {
-    @apply flex flex-col w-full min-h-[180px] max-w-md transform overflow-hidden rounded-2xl bg-white px-5 pt-2 text-left align-middle shadow-xl transition-all gap-2
+    @apply flex flex-col min-h-[180px] w-full max-w-md transform overflow-hidden rounded-2xl bg-white px-5 pt-2 text-left align-middle shadow-xl transition-all gap-2
 }
 
 .modal-close-btn {
