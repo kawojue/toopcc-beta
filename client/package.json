@@ -30,5 +30,8 @@
     "tailwindcss": "3.3.2",
     "typescript": "5.0.4",
     "zustand": "^4.3.8"
+  },
+  "devDependencies": {
+    "@types/react-datepicker": "^4.11.2"
   }
 }
