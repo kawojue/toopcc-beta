@@ -31,3 +31,8 @@ interface IModal {
     state: ModalStates
     dispatch: (obj: ModalActions) => void
 }
+
+interface IComponent {
+    get: any,
+    set: (get: any) => void
+}
