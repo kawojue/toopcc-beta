@@ -388,12 +388,10 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
 
     if (Boolean(resign) === false) {
         account.resigned.date = ""
-        account.resigned.resign = Boolean(resign)
-        await account.save()
-        return res.status(200).json({
-            ...SUCCESS,
-            msg: "Staff is now active."
-        })
+    }
+
+    if (Boolean(resign) === true && !date) {
+        account.resigned.date = `${new Date().toISOString()}`
     }
 
     account.resigned.date = date
