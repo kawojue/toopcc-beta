@@ -3,6 +3,7 @@ import Image from 'next/image'
 import PswdModal from './PswdModal'
 import useAuth from '@/hooks/useAuth'
 import useRole from '@/hooks/useRole'
+import getPeriod from '@/utils/period'
 import AvatarModal from './AvatarModal'
 import { inter } from '@/public/font/font'
 import UsernameModal from './UsernameModal'
@@ -76,7 +77,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                             </div>
                         </div>}
                         <div>
-                            <h3 title="edit fullname" onClick={() => dispatch({ type: "FULLNAME", toggle: true })}
+                            <h3 title="edit fullname" onClick={() => isRole && pathName === "/staff/profile" ? dispatch({ type: "FULLNAME", toggle: true }) : ""}
                             className='leading-tight font-semibold cursor-pointer text-clr-2 text-lg md:text-2xl lg:text-4xl hover:underline tracking-wider trans'>
                                 {profile?.fullname}
                             </h3>
@@ -121,8 +122,8 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                         </div>}
                         <div className="profile-card-info">
                             <p className="text-clr-3">Resigned</p>
-                            <p title={`${profile?.resigned?.resign ? `Resigned on ${convertISODate(profile?.resigned.date)}` : "Staff hasn't resigned."}`} >
-                                {profile?.resigned?.resign ? "Resigned": "Null"}
+                            <p title={`${profile?.resigned?.resign ? `Resigned ${getPeriod(profile?.resigned?.date)}` : "Staff hasn't resigned."}`} >
+                                {profile?.resigned?.resign ? `Resigned on ${convertISODate(profile?.resigned.date)}`: "Null"}
                             </p>
                             {isRole && pathName !== "/staff/profile" && <button className="profile-edit-btn"
                             onClick={() => dispatch({ type: "RESIG", toggle: true })}>
