@@ -235,15 +235,15 @@
 }
 
 .modal-header {
-    @apply text-xl font-semibold tracking-wider
+    @apply text-xl font-semibold tracking-wider w-fit
 }
 
 .modal-form {
-    @apply w-full flex flex-col gap-5 mt-2 mb-5
+    @apply w-full flex flex-col gap-5 mt-2
 }
 
 .modal-btn-container {
-    @apply flex gap-3 absolute bottom-0 mb-2 self-end
+    @apply flex gap-3 absolute bottom-0 mb-2 self-end justify-end mt-10
 }
 
 .save-btn, .del-btn {
@@ -373,6 +373,26 @@
 
 .avatar-container img {
     @apply w-full h-full object-cover;
+}
+
+.disclosure-btn {
+    @apply flex w-full justify-between rounded-lg bg-clr-5 px-4 py-2 text-left font-medium text-clr-2 trans
+}
+
+.disclosure-btn:hover {
+    @apply bg-clr-7
+}
+
+.disclosure-btn:focus {
+    @apply outline-none
+}
+
+.disclosure-btn:focus-visible {
+    @apply ring ring-purple-500 ring-opacity-75
+}
+
+.disclosure-panel {
+    @apply px-4 pt-4 pb-2 text-clr-3
 }
 
 @keyframes lds-roller {
