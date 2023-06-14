@@ -7,7 +7,7 @@ import { Router, Request, Response } from 'express'
 const root: Router = Router()
 
 root.use('/auth', auth)
-root.use('/api/user', user)
+root.use('/api/users', user)
 root.use('/patients', patients)
 root.use('/api/patients', getPatients)
 
