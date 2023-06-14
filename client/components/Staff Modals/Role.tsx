@@ -70,7 +70,15 @@ const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95">
                         <Dialog.Panel className="modal-panel min-h-[300px]">
-                            <h3 className="modal-header">Edit Role</h3>
+                            <article className="flex items-center">
+                                <div className="w-fit">
+                                    <button className="modal-close-btn"
+                                    onClick={() => dispatch({ type: "ROLES", toggle: false })}>
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                                <h3 className="modal-header">Edit Role</h3>
+                            </article>
                             <form className="modal-form">
                                 <CustomDropDown get={role} set={setRole} options={options} />
                             </form>
@@ -86,12 +94,6 @@ const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 <button className="cancel-btn"
                                 onClick={() => cancel()}>
                                     Cancel
-                                </button>
-                            </div>
-                            <div className="mt-4">
-                                <button className="modal-close-btn"
-                                onClick={() => dispatch({ type: "ROLES", toggle: false })}>
-                                    <FaTimes />
                                 </button>
                             </div>
                         </Dialog.Panel>
