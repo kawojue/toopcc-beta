@@ -69,7 +69,15 @@ const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95">
                         <Dialog.Panel className="modal-panel min-h-[200px]">
-                            <h3 className="modal-header">Edit Resignation</h3>
+                            <article className="flex items-center">
+                                <div className="w-fit">
+                                    <button className="modal-close-btn"
+                                    onClick={() => dispatch({ type: "RESIG", toggle: false })}>
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                                <h3 className="modal-header">Edit Resignation</h3>
+                            </article>
                             <form className="modal-form">
                                 <section className="flex flex-col items-center gap-5">
                                     <SwitchBtn get={resig} set={setResig} />
@@ -84,12 +92,6 @@ const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 <button className="cancel-btn"
                                 onClick={() => cancel()}>
                                     Cancel
-                                </button>
-                            </div>
-                            <div className="mt-4">
-                                <button className="modal-close-btn"
-                                onClick={() => dispatch({ type: "RESIG", toggle: false })}>
-                                    <FaTimes />
                                 </button>
                             </div>
                         </Dialog.Panel>
