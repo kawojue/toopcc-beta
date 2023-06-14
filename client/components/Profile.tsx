@@ -1,7 +1,8 @@
 "use client"
+import Staffs from './Staffs'
 import Image from 'next/image'
-import useAuth from '@/hooks/useAuth'
 import useRole from '@/hooks/useRole'
+import useAuth from '@/hooks/useAuth'
 import getPeriod from '@/utils/period'
 import { inter } from '@/public/font/font'
 import { useState, useEffect } from 'react'
@@ -20,7 +21,7 @@ import UsernameModal from './Staff Modals/Username'
 import FullnameModal from './Staff Modals/Fullname'
 
 const Profile: React.FC<{ profile: any }> = ({ profile }) => {
-    const isRole: boolean = useRole("hr")
+    const isRoles = useRole("hr", "admin")
     const pathName: string = usePathname()
     const { state, dispatch }: any = useAuth()
     const [onMouse, setOnMouse] = useState<boolean>(false)
@@ -34,6 +35,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
 
     return (
         <main className="profile-main">
+            {/* Modals */}
             <PswdModal state={state} dispatch={dispatch} />
             <RoleModal state={state} dispatch={dispatch} profile={profile} />
             <ResignModal state={state} dispatch={dispatch} profile={profile} />
@@ -57,7 +59,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
             <section className="profile-cards">
                 <article className="profile-card">
                     <div className="profile-card-center">
-                        {isRole && pathName !== "/staff/profile"  ?
+                        {pathName !== "/staff/profile"  ?
                         <div onMouseLeave={() => setOnMouse(false)}
                         onMouseEnter={() => setOnMouse(true)}
                         className={`profile-avatar md:w-[12rem] md:h-[12rem]`}>
@@ -81,7 +83,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                             </div>
                         </div>}
                         <div>
-                            <h3 title="edit fullname" onClick={() => isRole && pathName === "/staff/profile" ? dispatch({ type: "FULLNAME", toggle: true }) : ""}
+                            <h3 title="edit fullname" onClick={() => pathName === "/staff/profile" && dispatch({ type: "FULLNAME", toggle: true })}
                             className='leading-tight font-semibold cursor-pointer text-clr-2 text-lg md:text-2xl lg:text-4xl hover:underline tracking-wider trans'>
                                 {profile?.fullname}
                             </h3>
@@ -98,11 +100,11 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                     <div className="profile-card-info">
                         <p className="text-clr-3">Username</p>
                         <p className="text-clr-2">{profile?.user}</p>
-                        {isRole && pathName !== "/staff/profile" ? "" : 
+                        {pathName === "/staff/profile" &&
                         <button className="profile-edit-btn"
                         onClick={() => dispatch({ type: "USERNAME", toggle: true })}>
                             Edit Username
-                        </button> }
+                        </button>}
                     </div>
                     <div className="flex flex-col gap-1.5 justify-center">
                         <div className='profile-card-info'>
@@ -114,7 +116,8 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                                 </p>
                             </div>
                         </div>
-                        {isRole && pathName !== "/staff/profile" && <div className="profile-card-info">
+                        {pathName !== "/staff/profile" &&
+                        <div className="profile-card-info">
                             <p className="text-clr-3">Roles</p>
                             <p className="text-clr-2 capitalize">
                                 {authRoles.join(", ")}
@@ -129,7 +132,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                             <p title={`${profile?.resigned?.resign ? `Resigned ${getPeriod(profile?.resigned?.date)}` : "Staff hasn't resigned."}`} >
                                 {profile?.resigned?.resign ? `Resigned on ${convertISODate(profile?.resigned.date)}`: "Null"}
                             </p>
-                            {isRole && pathName !== "/staff/profile" && <button className="profile-edit-btn"
+                            {pathName !== "/staff/profile" && <button className="profile-edit-btn"
                             onClick={() => dispatch({ type: "RESIG", toggle: true })}>
                                 Edit Resignation
                             </button>}
@@ -140,6 +143,9 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                         </div>
                     </div>
                 </article>
+                {isRoles && <article className="mb-10">
+                    <Staffs />
+                </article>}
             </section>
         </main>
     )
