@@ -51,7 +51,17 @@ const AvatarModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95">
                         <Dialog.Panel className="modal-panel min-h-[180px]">
-                            <h3 className="modal-header">Change photo</h3>
+                            <article className="flex items-center">
+                                <div className="w-fit">
+                                    <button
+                                    type="button"
+                                    className="modal-close-btn"
+                                    onClick={() => dispatch({ type: "AVATAR", toggle: false })}>
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                                <h3 className="modal-header">Change photo</h3>
+                            </article>
                             <form className="modal-form">
                                 <div className='profile-avatar md:w-[12rem] md:h-[12rem] mx-auto'>
                                     {avatar ?
@@ -88,14 +98,6 @@ const AvatarModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 <button className="cancel-btn"
                                 onClick={() => cancel()}>
                                     Cancel
-                                </button>
-                            </div>
-                            <div className="mt-4">
-                                <button
-                                type="button"
-                                className="modal-close-btn"
-                                onClick={() => dispatch({ type: "AVATAR", toggle: false })}>
-                                    <FaTimes />
                                 </button>
                             </div>
                         </Dialog.Panel>
