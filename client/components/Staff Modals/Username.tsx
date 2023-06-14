@@ -42,7 +42,15 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95">
                         <Dialog.Panel className="modal-panel min-h-[180px]">
-                            <h3 className="modal-header">Edit Username</h3>
+                            <article className="flex items-center">
+                                <div className="w-fit">
+                                    <button className="modal-close-btn"
+                                    onClick={() => dispatch({ type: "USERNAME", toggle: false })}>
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                                <h3 className="modal-header">Edit Username</h3>
+                            </article>
                             <form className="modal-form">
                                 <article className="modal-form-group">
                                     <label htmlFor='username'>Username</label>
@@ -58,12 +66,6 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 <button className="cancel-btn"
                                 onClick={() => cancel()}>
                                     Cancel
-                                </button>
-                            </div>
-                            <div className="mt-4">
-                                <button className="modal-close-btn"
-                                onClick={() => dispatch({ type: "USERNAME", toggle: false })}>
-                                    <FaTimes />
                                 </button>
                             </div>
                         </Dialog.Panel>
