@@ -20,7 +20,7 @@ const page = ({ params: { profile } } : IProfile) => {
 
     const handleStaff = async (): Promise<void> => {
         setLoadingProfile(true)
-        await axios.get(`/api/user/profile/${profile}`, {
+        await axios.get(`/api/users/profile/${profile}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
