@@ -21,7 +21,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const pathName: string = usePathname()
     const router: AppRouterInstance = useRouter()
     const [token, setToken] = useState<string>("")
-    const [staffs, setStaffs] = useState<any[]>([])
     const [profile, setProfile] = useState<any>({})
     const [auth, setAuth] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
@@ -65,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [token, pathName, router])
 
     const handleProfile = async (token: string): Promise<void> => {
-        await axios.get('/api/user/profile', {
+        await axios.get('/api/users/user/profile', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -73,14 +72,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setAuth(true)
             setProfile(res.data?.profile)
         }).catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
-    }
-
-    const handleStaffs = async (token: string): Promise<void> => {
-        await axios.get('/api/user/profile/users', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }).then((res: any) => setStaffs(res.data?.users)).catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
     }
 
     const handleSignup = async (): Promise<void> => {
@@ -251,9 +242,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
-    // resignation
-    // roles
-
     return (
         <Auth.Provider value={{
             auth, handleSignup, pswd, pswd2, loading, setLoading,
@@ -261,9 +249,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setPswd, setPswd2, setEmail, email, fullname, setFullname,
             avatar, setAvatar, otp, setOTP, handleOTPRequest, profile,
             handlePswdReset, handleIdVerification, loadingProfile,
-            staffs, state, dispatch, user, setUser, handleUsername,
-            handleFullname, currentPswd, setCurrentPswd, handleEditPswd,
-            setStatesToDefault, delAvatar, changeAvatar
+            state, dispatch, user, setUser, handleUsername, handleFullname,
+            currentPswd, setCurrentPswd, handleEditPswd, setStatesToDefault,
+            delAvatar, changeAvatar
         }}>
             {children}
         </Auth.Provider>
