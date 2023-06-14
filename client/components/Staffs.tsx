@@ -47,12 +47,17 @@ const Staffs: React.FC = () => {
                             />
                         </Disclosure.Button>
                         <Disclosure.Panel className="disclosure-panel">
-                            {staffs?.map((staff: any, index: number) => (
-                                <Link href={`/staff/profile/${staff.username}`}
-                                key={index} target='_blank' className='staff-url'>
-                                    {staff.fullname}
-                                </Link>
-                            ))}
+                            <article className="staff-lists">
+                                {staffs?.map((staff: any, index: number) => (
+                                    <Link href={`/staff/profile/${staff.username}`}
+                                    key={index} target='_blank' className='staff-url md:text-[1.125rem]'>
+                                        {index + 1} - {staff.fullname}
+                                    </Link>
+                                ))}
+                            </article>
+                            <p className="total-staffs">
+                                Total Staffs: {staffs?.length}
+                            </p>
                         </Disclosure.Panel>
                     </>
                 )}
