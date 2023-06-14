@@ -376,11 +376,11 @@
 }
 
 .disclosure-btn {
-    @apply flex w-full justify-between rounded-lg bg-clr-5 px-4 py-2 text-left font-medium text-clr-2 trans
+    @apply flex w-full justify-between rounded-lg bg-clr-5 px-4 py-2 text-left text-lg font-semibold text-clr-3 tracking-wider trans
 }
 
 .disclosure-btn:hover {
-    @apply bg-clr-7
+    @apply bg-clr-7 text-clr-2
 }
 
 .disclosure-btn:focus {
@@ -392,7 +392,23 @@
 }
 
 .disclosure-panel {
-    @apply px-4 pt-4 pb-2 text-clr-3
+    @apply relative px-4 pt-4 pb-2 text-clr-3
+}
+
+.staff-lists {
+    @apply grid grid-cols-2 gap-5
+}
+
+.staff-url {
+    @apply font-medium text-[1rem] w-fit tracking-wide trans
+}
+
+.staff-url:hover {
+    @apply underline
+}
+
+.total-staffs {
+    @apply absolute bottom-2 right-2 font-bold text-sm tracking-wider
 }
 
 @keyframes lds-roller {
