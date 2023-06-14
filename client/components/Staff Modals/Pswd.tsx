@@ -46,7 +46,16 @@ const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95">
                         <Dialog.Panel className="modal-panel min-h-[180px]">
-                            <h3 className="modal-header">Edit Password</h3>
+                            <article className="flex items-center">
+                                <div className="w-fit">
+                                    <button className="modal-close-btn"
+                                    onClick={() => dispatch({ type: "PSWD", toggle: false })}>
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                                <h3 className="modal-header">Edit Password</h3>
+                            </article>
+                            {/* <section> */}
                             <form className="modal-form">
                                 <article className="modal-form-group">
                                     <label htmlFor='current-pswd'>Current Password</label>
@@ -58,7 +67,7 @@ const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
                                     <input type="password" id="pswd" value={pswd}
                                     onChange={e => setPswd(e.target.value)} /> 
                                 </article>
-                                <article className="modal-form-group">
+                                <article className="modal-form-group mb-14">
                                     <label htmlFor='pswd2'>Confirm Password</label>
                                     <input type="password" id="pswd2" value={pswd2}
                                     onChange={e => setPswd2(e.target.value)} /> 
@@ -74,12 +83,7 @@ const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
                                     Cancel
                                 </button>
                             </div>
-                            <div className="mt-4">
-                                <button className="modal-close-btn"
-                                onClick={() => dispatch({ type: "PSWD", toggle: false })}>
-                                    <FaTimes />
-                                </button>
-                            </div>
+                            {/* </section> */}
                         </Dialog.Panel>
                     </Transition.Child>
                 </div>
