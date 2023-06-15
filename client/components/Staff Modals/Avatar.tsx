@@ -22,13 +22,13 @@ const AvatarModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
 
     const cancel = () => {
         setStatesToDefault()
-        dispatch({ type: "AVATAR", toggle: false })
+        dispatch({ type: "AVATAR" })
     }
 
     return (
         <Transition appear show={state.avatar} as={Fragment}>
             <Dialog as="div" className="modal"
-            onClose={() => dispatch({ type: "AVATAR", toggle: false })}>
+            onClose={() => dispatch({ type: "AVATAR" })}>
             <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -56,7 +56,7 @@ const AvatarModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                     <button
                                     type="button"
                                     className="modal-close-btn"
-                                    onClick={() => dispatch({ type: "AVATAR", toggle: false })}>
+                                    onClick={() => dispatch({ type: "AVATAR" })}>
                                         <FaTimes />
                                     </button>
                                 </div>
