@@ -28,7 +28,7 @@ const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
             }
         ).then((res: any) => {
             notify(res.data?.action, "Successful.")
-            dispatch({ type: "RESIG", toggle: false })
+            dispatch({ type: "RESIG" })
             setTimeout(() => {
                 document.location.reload()
             }, 300)
@@ -38,7 +38,7 @@ const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
     const cancel = () => {
         setDate(null)
         setResig(profile.resigned?.resign)
-        dispatch({ type: "RESIG", toggle: false })
+        dispatch({ type: "RESIG" })
     }
 
     const eligible: boolean = Boolean(profile.resigned?.resign !== resig) || Boolean(date !== null)
@@ -46,7 +46,7 @@ const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
     return (
         <Transition appear show={state.resignation} as={Fragment}>
             <Dialog as="div" className="modal"
-            onClose={() => dispatch({ type: "RESIG", toggle: false })}>
+            onClose={() => dispatch({ type: "RESIG" })}>
             <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -72,7 +72,7 @@ const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                             <article className="flex items-center">
                                 <div className="w-fit">
                                     <button className="modal-close-btn"
-                                    onClick={() => dispatch({ type: "RESIG", toggle: false })}>
+                                    onClick={() => dispatch({ type: "RESIG" })}>
                                         <FaTimes />
                                     </button>
                                 </div>
