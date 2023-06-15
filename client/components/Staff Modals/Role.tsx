@@ -79,7 +79,7 @@ const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 </div>
                                 <h3 className="modal-header">Edit Role</h3>
                             </article>
-                            <form className="modal-form">
+                            <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
                                 <CustomDropDown get={role} set={setRole} options={options} />
                             </form>
                             <div className="modal-btn-container">
