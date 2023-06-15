@@ -1,22 +1,22 @@
 const modalReducer = (state: ModalStates, action: ModalActions) => {
     switch(action.type) {
         case "RESIG": {
-            return { ...state, resignation: action.toggle }
+            return { ...state, resignation: !state.resignation }
         }
         case "PSWD": {
-            return { ...state, password: action.toggle }
+            return { ...state, password: !state.password }
         }
         case "ROLES": {
-            return { ...state, roles: action.toggle }
+            return { ...state, roles: !state.roles }
         }
         case "USERNAME": {
-            return { ...state, username: action.toggle }
+            return { ...state, username: !state.username }
         }
         case "FULLNAME": {
-            return { ...state, fullname: action.toggle }
+            return { ...state, fullname: !state.fullname }
         }
         case "AVATAR": {
-            return { ...state, avatar: action.toggle }
+            return { ...state, avatar: !state.avatar }
         }
 
         default: {
