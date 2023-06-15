@@ -67,6 +67,6 @@ type PatientActions =
 | {
     type: 'DEATH'; payload: {
         dead: false,
-        dead: string
+        date: string
     }
 }
