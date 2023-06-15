@@ -25,18 +25,16 @@ interface IModal {
 }
 
 interface PatientStates {
-    sex: string,
-    date: string,
-    age: string,
-    cardNo: string,
-    card_no: string,
-    address: string,
-    fullname: string,
-    phone_no: string,
-    death: {
-        dead: boolean,
-        date: string
-    },
+    sex: string
+    date: string
+    age: string
+    dead: boolean | null
+    cardNo: string
+    card_no: string
+    address: string
+    fullname: string
+    phone_no: string
+    deathDate: string
 }
 
 interface IComponent {
@@ -64,9 +62,3 @@ type PatientActions =
 | { type: 'DEAD'; payload: boolean }
 | { type: 'DEAD_D'; payload: string }
 | { type: 'DATE'; payload: string }
-| {
-    type: 'DEATH'; payload: {
-        dead: false,
-        date: string
-    }
-}
