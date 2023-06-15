@@ -12,13 +12,13 @@ const FullnameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
 
     const cancel = () => {
         setFullname("")
-        dispatch({ type: "FULLNAME", toggle: false })
+        dispatch({ type: "FULLNAME" })
     }
 
     return (
         <Transition appear show={state.fullname} as={Fragment}>
             <Dialog as="div" className="modal"
-            onClose={() => dispatch({ type: "FULLNAME", toggle: false })}>
+            onClose={() => dispatch({ type: "FULLNAME" })}>
             <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -44,7 +44,7 @@ const FullnameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                             <article className="flex items-center">
                                 <div className="mt-4">
                                     <button className="modal-close-btn"
-                                    onClick={() => dispatch({ type: "FULLNAME", toggle: false })}>
+                                    onClick={() => dispatch({ type: "FULLNAME" })}>
                                         <FaTimes />
                                     </button>
                                 </div>
