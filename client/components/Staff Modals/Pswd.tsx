@@ -17,13 +17,13 @@ const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
 
     const cancel = (): void => {
         setStatesToDefault()
-        dispatch({ type: "PSWD", toggle: false })
+        dispatch({ type: "PSWD" })
     }
 
     return (
         <Transition appear show={state.password} as={Fragment}>
             <Dialog as="div" className="modal"
-            onClose={() => dispatch({ type: "PSWD", toggle: false })}>
+            onClose={() => dispatch({ type: "PSWD" })}>
             <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -49,7 +49,7 @@ const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
                             <article className="flex items-center">
                                 <div className="w-fit">
                                     <button className="modal-close-btn"
-                                    onClick={() => dispatch({ type: "PSWD", toggle: false })}>
+                                    onClick={() => dispatch({ type: "PSWD" })}>
                                         <FaTimes />
                                     </button>
                                 </div>
