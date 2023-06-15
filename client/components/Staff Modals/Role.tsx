@@ -22,7 +22,7 @@ const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
 
     const cancel = () => {
         setRole({ label: "", value: "" })
-        dispatch({ type: "ROLES", toggle: false })
+        dispatch({ type: "ROLES" })
     }
 
     const handler = async (url: string, setLoad: (load: boolean) => void): Promise<void> => {
@@ -37,7 +37,7 @@ const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
             },
         ).then((res: any) => {
             notify(res.data?.action, res.data?.msg)
-            dispatch({ type: "ROLES", toggle: false })
+            dispatch({ type: "ROLES" })
             setTimeout(() => {
                 document.location.reload()
             }, 350);
@@ -47,7 +47,7 @@ const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
     return (
         <Transition appear show={state.roles} as={Fragment}>
             <Dialog as="div" className="modal"
-            onClose={() => dispatch({ type: "ROLES", toggle: false })}>
+            onClose={() => dispatch({ type: "ROLES" })}>
             <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -73,7 +73,7 @@ const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                             <article className="flex items-center">
                                 <div className="w-fit">
                                     <button className="modal-close-btn"
-                                    onClick={() => dispatch({ type: "ROLES", toggle: false })}>
+                                    onClick={() => dispatch({ type: "ROLES" })}>
                                         <FaTimes />
                                     </button>
                                 </div>
