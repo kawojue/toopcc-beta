@@ -17,10 +17,8 @@ const initialStates: PatientStates = {
     address: '',
     fullname: '',
     phone_no: '',
-    death: {
-        dead: false,
-        date: ''
-    },
+    deathDate: '',
+    dead: null
 }
 
 export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -29,7 +27,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     return (
         <Patient.Provider value={{
-            token, auth
+            token, auth, state, dispatch
         }}>
             {children}
         </Patient.Provider>
