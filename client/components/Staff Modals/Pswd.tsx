@@ -56,7 +56,10 @@ const PswdModal: React.FC<IModal> = ({ state, dispatch }) => {
                                 <h3 className="modal-header">Edit Password</h3>
                             </article>
                             {/* <section> */}
-                            <form className="modal-form">
+                            <form className="modal-form" onSubmit={async (e: any) => {
+                                e.preventDefault();
+                                (async () => await handleEditPswd())()
+                            }}>
                                 <article className="modal-form-group">
                                     <label htmlFor='current-pswd'>Current Password</label>
                                     <input type="password" id="current-pswd" value={currentPswd}
