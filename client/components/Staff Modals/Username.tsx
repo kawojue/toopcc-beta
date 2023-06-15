@@ -13,13 +13,13 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
 
     const cancel = () => {
         setUser("")
-        dispatch({ type: "USERNAME", toggle: false })
+        dispatch({ type: "USERNAME" })
     }
 
     return (
         <Transition appear show={state.username} as={Fragment}>
             <Dialog as="div" className="modal"
-            onClose={() => dispatch({ type: "USERNAME", toggle: false })}>
+            onClose={() => dispatch({ type: "USERNAME" })}>
             <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -45,7 +45,7 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                             <article className="flex items-center">
                                 <div className="w-fit">
                                     <button className="modal-close-btn"
-                                    onClick={() => dispatch({ type: "USERNAME", toggle: false })}>
+                                    onClick={() => dispatch({ type: "USERNAME" })}>
                                         <FaTimes />
                                     </button>
                                 </div>
