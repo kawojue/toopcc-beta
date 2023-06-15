@@ -18,22 +18,55 @@ interface ModalStates {
     resignation: boolean
 }
 
-type ModalActions =
-| { type: 'RESIG'; toggle: boolean }
-| { type: 'PSWD'; toggle: boolean }
-| { type: 'ROLES'; toggle: boolean }
-| { type: 'USERNAME'; toggle: boolean }
-| { type: 'FULLNAME'; toggle: boolean }
-| { type: 'AVATAR'; toggle: boolean }
-
 interface IModal {
     profile?: any
     state: ModalStates
     dispatch: (obj: ModalActions) => void
 }
 
+interface PatientStates {
+    sex: string,
+    date: string,
+    age: string,
+    cardNo: string,
+    card_no: string,
+    address: string,
+    fullname: string,
+    phone_no: string,
+    death: {
+        dead: boolean,
+        date: string
+    },
+}
+
 interface IComponent {
     get?: any
     set: (get: any) => void
     options?: string[]
+}
+
+type ModalActions =
+| { type: 'RESIG' }
+| { type: 'PSWD' }
+| { type: 'ROLES' }
+| { type: 'USERNAME' }
+| { type: 'FULLNAME' }
+| { type: 'AVATAR' }
+
+type PatientActions =
+| { type: 'SEX'; payload: string }
+| { type: 'AGE'; payload: string }
+| { type: 'CARD_NO'; payload: string }
+| { type: 'CARDNO'; payload: string }
+| { type: 'ADDR'; payload: string }
+| { type: 'FULLN'; payload: string }
+| { type: 'PHN'; payload: string }
+| { type: 'DEAD'; payload: boolean }
+| { type: 'DEAD_D'; payload: string }
+| { type: 'DATE'; payload: string }
+| {
+    type: 'DEATH'; payload: {
+        dead: false,
+        dead: string
+    }
 }
