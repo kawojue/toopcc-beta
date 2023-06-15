@@ -48,7 +48,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                 </h1>
                 {pathName === "/staff/profile" &&
                 <button className="change-pswd-btn"
-                onClick={() => dispatch({ type: "PSWD", toggle: true })}>
+                onClick={() => dispatch({ type: "PSWD" })}>
                     <HiOutlineKey className="key" />
                     <div>
                         <span>Change Password</span>
@@ -66,24 +66,22 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                             {profile?.avatar?.secure_url ? 
                             <Image src={profile?.avatar?.secure_url} alt="avatar"
                             title="change your avatar" width={300} height={300} priority/> :
-                            <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar"
-                            title="change your avatar" width={300} height={300} priority/>}
+                            <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="change your avatar" width={300} height={300} priority/>}
                         </div> :
                         <div onMouseLeave={() => setOnMouse(false)}
                         onMouseEnter={() => setOnMouse(true)}
-                        onClick={() => dispatch({ type: "AVATAR", toggle: true })}
+                        onClick={() => dispatch({ type: "AVATAR" })}
                         className={`${onMouse && 'before:content-[""] before:bg-clr-10 before:absolute before:top-0 before:right-0 before:w-full before:h-full before:z-[999] cursor-pointer'} profile-avatar md:w-[12rem] md:h-[12rem]`}>
                             {profile?.avatar?.secure_url ? 
                             <Image src={profile?.avatar?.secure_url} alt="avatar"
                             title="change your avatar" width={300} height={300} priority/> :
-                            <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar"
-                            title="avatar" width={300} height={300} priority/>}
+                            <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="avatar" width={300} height={300} priority/>}
                             <div className={`${onMouse && 'cam-ico'}`}>
                                 <AiOutlineCamera className="text-clr-0 text-4xl md:text-5xl lg:text-6xl" />
                             </div>
                         </div>}
                         <div>
-                            <h3 title="edit fullname" onClick={() => pathName === "/staff/profile" && dispatch({ type: "FULLNAME", toggle: true })}
+                            <h3 title="edit fullname" onClick={() => pathName === "/staff/profile" && dispatch({ type: "FULLNAME" })}
                             className='leading-tight font-semibold cursor-pointer text-clr-2 text-lg md:text-2xl lg:text-4xl hover:underline tracking-wider trans'>
                                 {profile?.fullname}
                             </h3>
@@ -102,7 +100,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                         <p className="text-clr-2">{profile?.user}</p>
                         {pathName === "/staff/profile" &&
                         <button className="profile-edit-btn"
-                        onClick={() => dispatch({ type: "USERNAME", toggle: true })}>
+                        onClick={() => dispatch({ type: "USERNAME" })}>
                             Edit Username
                         </button>}
                     </div>
@@ -123,7 +121,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                                 {authRoles.join(", ")}
                             </p>
                             <button className="profile-edit-btn"
-                            onClick={() => dispatch({ type: "ROLES", toggle: true })}>
+                            onClick={() => dispatch({ type: "ROLES" })}>
                                 Edit Roles
                             </button>
                         </div>}
@@ -133,7 +131,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                                 {profile?.resigned?.resign ? `Resigned on ${convertISODate(profile?.resigned.date)}`: "Null"}
                             </p>
                             {pathName !== "/staff/profile" && <button className="profile-edit-btn"
-                            onClick={() => dispatch({ type: "RESIG", toggle: true })}>
+                            onClick={() => dispatch({ type: "RESIG" })}>
                                 Edit Resignation
                             </button>}
                         </div>
