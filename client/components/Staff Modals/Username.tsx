@@ -51,7 +51,10 @@ const UsernameModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 </div>
                                 <h3 className="modal-header">Edit Username</h3>
                             </article>
-                            <form className="modal-form">
+                            <form className="modal-form" onSubmit={async (e: any) => {
+                                e.preventDefault();
+                                (async () => await handleUsername())()
+                            }}>
                                 <article className="modal-form-group">
                                     <label htmlFor='username'>Username</label>
                                     <input type="text" id="username" placeholder={profile?.user}
