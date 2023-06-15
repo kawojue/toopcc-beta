@@ -162,7 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).then((res: any) => {
             setStatesToDefault()
             notify(res.data?.action, res.data?.msg)
-            dispatch({ type: "FULLNAME", toggle: false})
+            dispatch({ type: "FULLNAME" })
             document.location.reload()
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
@@ -180,7 +180,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ).then((res: any) => {
             setStatesToDefault()
             notify(res.data?.action, res.data?.msg)
-            dispatch({ type: "USERNAME", toggle: false})
+            dispatch({ type: "USERNAME" })
             setTimeout(() => {
                 (async () => await handleLogout())()
             }, 500)
@@ -200,7 +200,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ).then((res: any) => {
             setStatesToDefault()
             notify(res.data?.action, res.data?.msg)
-            dispatch({ type: "PSWD", toggle: false})
+            dispatch({ type: "PSWD" })
             setTimeout(() => {
                 (async () => await handleLogout())()
             }, 500)
@@ -215,7 +215,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).then((res: any) => {
             setStatesToDefault()
             notify(res.data?.action, res.data?.msg)
-            dispatch({ type: "AVATAR", toggle: false})
+            dispatch({ type: "AVATAR" })
             setTimeout(() => {
                 document.location.reload()
             }, 300)
@@ -235,7 +235,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ).then((res: any) => {
             setStatesToDefault()
             notify(res.data?.action, res.data?.msg)
-            dispatch({ type: "AVATAR", toggle: false})
+            dispatch({ type: "AVATAR" })
             setTimeout(() => {
                 document.location.reload()
             }, 300)
