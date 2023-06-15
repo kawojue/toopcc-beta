@@ -62,3 +62,9 @@ type PatientActions =
 | { type: 'DEAD'; payload: boolean }
 | { type: 'DEAD_D'; payload: string }
 | { type: 'DATE'; payload: string }
+
+interface IPatient {
+    token: string
+    state: PatientStates
+    dispatch: (obj: PatientActions) => void
+}
