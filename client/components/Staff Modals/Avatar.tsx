@@ -62,7 +62,7 @@ const AvatarModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 </div>
                                 <h3 className="modal-header">Change photo</h3>
                             </article>
-                            <form className="modal-form">
+                            <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
                                 <div className='profile-avatar md:w-[12rem] md:h-[12rem] mx-auto'>
                                     {avatar ?
                                     <img src={avatar} alt="avatar" /> :
