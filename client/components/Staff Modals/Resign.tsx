@@ -78,7 +78,10 @@ const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 </div>
                                 <h3 className="modal-header">Edit Resignation</h3>
                             </article>
-                            <form className="modal-form">
+                            <form className="modal-form" onSubmit={async (e: any) => {
+                                e.preventDefault();
+                                (async () => await handleResignation())()
+                            }}>
                                 <section className="flex flex-col items-center gap-5">
                                     <SwitchBtn get={resig} set={setResig} />
                                     <PickDate get={date} set={setDate} />
