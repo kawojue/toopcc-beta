@@ -25,12 +25,14 @@ const add = asyncHandler(async (req: Request, res: Response) => {
         address, age, date
     }: any = req.body
 
-    age = Number(age)
-    card_no = card_no.trim()
+    card_no = card_no?.trim()
     address = address?.trim()
-    fullname = full_name(fullname)
+    fullname = fullname?.trim()
 
     if (!card_no || !fullname || !sex || !age) return res.status(400).json(FIELDS_REQUIRED)
+
+    age = Number(age)
+    fullname = full_name(fullname)
 
     if (card_no.includes('/')) {
         return res.status(400).json({
