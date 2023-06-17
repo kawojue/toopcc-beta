@@ -1,5 +1,5 @@
 "use client"
-import PickDate from '../PickDate'
+import { parseISO } from 'date-fns'
 import notify from '@/utils/notify'
 import SwitchBtn from '../SwitchBtn'
 import useAuth from '@/hooks/useAuth'
@@ -12,15 +12,15 @@ import { Dialog, Transition } from '@headlessui/react'
 
 const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
     const { token }: any = useAuth()
+    const [date, setDate] = useState<any>("")
     const [loading, setLoading]= useState<boolean>(false)
-    const [date, setDate] = useState<any>(null)
     const [resig, setResig] = useState<boolean>(profile.resigned?.resign ? true: false)
 
     const handleResignation = async (): Promise<void> => {
         setLoading(true)
         await axios.post(
             `/auth/role/resign/${profile?.user}`,
-            JSON.stringify({ resign: resig, date: date?.toISOString() }),
+            JSON.stringify({ resign: resig, date: date ? parseISO(date).toISOString() : "" }),
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -82,10 +82,16 @@ const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 e.preventDefault();
                                 (async () => await handleResignation())()
                             }}>
-                                <section className="flex flex-col items-center gap-5">
+                                <form className="modal-form">
+
                                     <SwitchBtn get={resig} set={setResig} />
-                                    <PickDate get={date} set={setDate} />
-                                </section>
+                                    <article className="modal-form-group">
+                                        <label htmlFor='date' />
+                                        <input type='date' id='date' value={date}
+                                        onChange={(e) => setDate(e.target.value)}/>
+                                    </article>
+                                    {/* <PickDate get={date} set={setDate} /> */}
+                                </form>
                             </form>
                             <div className="modal-btn-container">
                                 <button className="save-btn" disabled={!eligible}
