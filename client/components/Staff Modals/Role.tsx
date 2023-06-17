@@ -11,25 +11,20 @@ import { Dialog, Transition } from '@headlessui/react'
 
 const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
     const { token }: any = useAuth()
+    const [role, setRole]= useState<string>("")
     const [assLoading, setAssLoading] = useState<boolean>(false)
     const [remLoading, setRemLoading] = useState<boolean>(false)
-    const [role, setRole]= useState<{
-        label: string, value: string
-    }>({
-        label: "", value: ""
-    })
     const options: string[] = ['HR', "Staff", "Admin"]
 
     const cancel = () => {
-        setRole({ label: "", value: "" })
+        setRole("")
         dispatch({ type: "ROLES" })
     }
 
     const handler = async (url: string, setLoad: (load: boolean) => void): Promise<void> => {
         setLoad(true)
         await axios.post(
-            url,
-            JSON.stringify({ role: role.value.toLowerCase() }),
+            url, JSON.stringify({ role: role.toLowerCase() }),
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -69,7 +64,7 @@ const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                     leave="ease-in duration-200"
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95">
-                        <Dialog.Panel className="modal-panel min-h-[300px]">
+                        <Dialog.Panel className="modal-panel min-h-[180px]">
                             <article className="flex items-center">
                                 <div className="w-fit">
                                     <button className="modal-close-btn"
@@ -80,7 +75,9 @@ const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 <h3 className="modal-header">Edit Role</h3>
                             </article>
                             <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
-                                <CustomDropDown get={role} set={setRole} options={options} />
+                                <article className="modal-form-group">
+                                    <CustomDropDown get={role} set={setRole} options={options} />
+                                </article>
                             </form>
                             <div className="modal-btn-container">
                                 <button className="save-btn"
