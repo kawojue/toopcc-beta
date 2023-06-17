@@ -1,13 +1,14 @@
-import 'react-dropdown/style.css'
-import Dropdown from 'react-dropdown'
-
 const CustomDropDown: React.FC<IComponent> = ({ get, set, options }) => {
-    const handleChange = (e: any) => {
-        set(e)
-    }
 
     return (
-        <Dropdown options={options as string[]} value={get} onChange={handleChange} placeholder="Select role" />
+        <select value={get} onChange={(e) => set(e.target.value)}>
+            <option>Select Role</option>
+            {options?.map((option: string, index: number) => (
+                <option key={index} value={option}>
+                    {option}
+                </option>
+            ))}
+        </select>
     )
 }
 
