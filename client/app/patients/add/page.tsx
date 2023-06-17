@@ -66,13 +66,13 @@ const page = () => {
                     <div>
                         <div>
                             <label htmlFor='male'>Male</label>
-                            <input value={state.sex} type="radio" id='male' name="sex"
-                            onChange={(e) => dispatch({ type: 'SEX', payload: e.target.value })} />
+                            <input value='Male' type="radio" id='male' name="sex"
+                            onChange={(e) => dispatch({ type: "SEX", payload: e.target.value })} />
                         </div>
                         <div>
                             <label htmlFor='female'>Female</label>
-                            <input value={state.sex} type="radio" id='female' name="sex"
-                            onChange={(e) => dispatch({ type: 'SEX', payload: e.target.value })} />
+                            <input value='Female' type="radio" id='female' name="sex"
+                            onChange={(e) => dispatch({ type: "SEX", payload: e.target.value })} />
                         </div>
                     </div>
                 </article>
