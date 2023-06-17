@@ -33,6 +33,38 @@ const page = () => {
     return (
         <section>
             <h3>Add Patient</h3>
+            <form>
+                <article>
+                    <label>Card Number</label>
+                    <input />
+                </article>
+                <article>
+                    <label>Full name</label>
+                    <input />
+                </article>
+                <article>
+                    <label>Phone number</label>
+                    <input />
+                </article>
+                <article>
+                    <label>Address</label>
+                    <input />
+                </article>
+                <article>
+                    <div>
+                        <label>Age</label>
+                        <input />
+                    </div>
+                    <div>
+                        <label>Sex</label>
+                        <input />
+                    </div>
+                </article>
+                <article>
+                    <label>Date</label>
+                    <input />
+                </article>
+            </form>
         </section>
     )
 }
