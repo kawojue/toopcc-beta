@@ -118,7 +118,7 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                         <div className="profile-card-info">
                             <p className="text-clr-3">Roles</p>
                             <p className="text-clr-2 capitalize">
-                                {authRoles.join(", ")}
+                                {authRoles.join(", ").trim()}
                             </p>
                             <button className="profile-edit-btn"
                             onClick={() => dispatch({ type: "ROLES" })}>
