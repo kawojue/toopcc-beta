@@ -33,53 +33,57 @@ const page = () => {
     }
 
     return (
-        <section>
+        <section className="add-patient">
             <h3>Add Patient</h3>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="patient-form">
                 <article>
-                    <label>Card Number</label>
-                    <input value={state.card_no} type='text'
-                    onChange={(e) => dispatch({ type: 'CARD_NO', payload: e.target.value })} />
+                    <div>
+                        <label>Card Number</label>
+                        <input value={state.card_no} type='text'
+                        onChange={(e) => dispatch({ type: 'CARD_NO', payload: e.target.value })} />
+                    </div>
+                    <div>
+                        <label>Date</label>
+                        <input value={state.date} type="date"
+                        onChange={(e) => dispatch({ type: 'DATE', payload: e.target.value })} />
+                    </div>
                 </article>
                 <article>
                     <label>Full name</label>
                     <input value={state.fullname} type='text'
                     onChange={(e) => dispatch({ type: 'FULLN', payload: e.target.value })} />
                 </article>
-                <article>
-                    <label>Phone number</label>
-                    <input value={state.phone_no} type='number'
-                    onChange={(e) => dispatch({ type: 'PHN', payload: e.target.value })} />
-                </article>
+                <div>
+                    <article>
+                            <label>Age</label>
+                            <input value={state.age} type='number'
+                            onChange={(e) => dispatch({ type: 'AGE', payload: e.target.value })} />
+                    </article>
+                    <article>
+                        <p>Gender</p>
+                        <div>
+                            <div>
+                                <label htmlFor='male'>Male</label>
+                                <input value='Male' type="radio" id='male' name="sex"
+                                onChange={(e) => dispatch({ type: "SEX", payload: e.target.value })} />
+                            </div>
+                            <div>
+                                <label htmlFor='female'>Female</label>
+                                <input value='Female' type="radio" id='female' name="sex"
+                                onChange={(e) => dispatch({ type: "SEX", payload: e.target.value })} />
+                            </div>
+                        </div>
+                    </article>
+                </div>
                 <article>
                     <label>Address</label>
                     <input value={state.address} type='text'
                     onChange={(e) => dispatch({ type: 'ADDR', payload: e.target.value })} />
                 </article>
                 <article>
-                        <label>Age</label>
-                        <input value={state.age} type='number'
-                        onChange={(e) => dispatch({ type: 'AGE', payload: e.target.value })} />
-                </article>
-                <article>
-                    <p>Sex</p>
-                    <div>
-                        <div>
-                            <label htmlFor='male'>Male</label>
-                            <input value='Male' type="radio" id='male' name="sex"
-                            onChange={(e) => dispatch({ type: "SEX", payload: e.target.value })} />
-                        </div>
-                        <div>
-                            <label htmlFor='female'>Female</label>
-                            <input value='Female' type="radio" id='female' name="sex"
-                            onChange={(e) => dispatch({ type: "SEX", payload: e.target.value })} />
-                        </div>
-                    </div>
-                </article>
-                <article>
-                    <label>Date</label>
-                    <input value={state.date} type="date"
-                    onChange={(e) => dispatch({ type: 'DATE', payload: e.target.value })} />
+                    <label>Phone number</label>
+                    <input value={state.phone_no} type='number'
+                    onChange={(e) => dispatch({ type: 'PHN', payload: e.target.value })} />
                 </article>
                 <button type="submit">
                     Submit
