@@ -286,15 +286,15 @@
     @apply flex flex-col gap-1
 }
 
-.modal-form-group label {
+.modal-form-group label, select option {
     @apply text-[14px] text-clr-2 tracking-wider font-medium
 }
 
-.modal-form-group input {
+.modal-form-group input, .modal-form-group select {
     @apply rounded-none border-[0.08125rem] border-clr-8 p-0.5 tracking-wide text-[15px] text-clr-2
 }
 
-.modal-form-group input:focus {
+.modal-form-group input:focus, .modal-form-group select:focus {
     @apply border-[0.125rem] border-clr-1 outline-none
 }
 
