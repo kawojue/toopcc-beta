@@ -5,9 +5,9 @@ import SwitchBtn from '../SwitchBtn'
 import useAuth from '@/hooks/useAuth'
 import axios from '@/app/api/instance'
 import { SpinnerOne } from '../Spinner'
-import { Fragment, useState } from 'react'
 import throwError from '@/utils/throwError'
 import { FaTimes } from '@/public/icons/ico'
+import { FormEvent, Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
 const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
@@ -82,15 +82,16 @@ const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
                                 e.preventDefault();
                                 (async () => await handleResignation())()
                             }}>
-                                <form className="modal-form">
-
+                                <form className="modal-form" onSubmit={(e: FormEvent) => {
+                                    e.preventDefault();
+                                    (async () => await handleResignation())()
+                                }}>
                                     <SwitchBtn get={resig} set={setResig} />
                                     <article className="modal-form-group">
                                         <label htmlFor='date' />
                                         <input type='date' id='date' value={date}
                                         onChange={(e) => setDate(e.target.value)}/>
                                     </article>
-                                    {/* <PickDate get={date} set={setDate} /> */}
                                 </form>
                             </form>
                             <div className="modal-btn-container">
