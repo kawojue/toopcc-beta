@@ -36,33 +36,40 @@ const page = () => {
             <form>
                 <article>
                     <label>Card Number</label>
-                    <input />
+                    <input value={state.card_no}
+                    onChange={(e) => dispatch({ type: 'CARD_NO', payload: e.target.value})} />
                 </article>
                 <article>
                     <label>Full name</label>
-                    <input />
+                    <input value={state.fullname}
+                    onChange={(e) => dispatch({ type: 'FULLN', payload: e.target.value})} />
                 </article>
                 <article>
                     <label>Phone number</label>
-                    <input />
+                    <input value={state.phone_no}
+                    onChange={(e) => dispatch({ type: 'PHN', payload: e.target.value})} />
                 </article>
                 <article>
                     <label>Address</label>
-                    <input />
+                    <input value={state.address}
+                    onChange={(e) => dispatch({ type: 'ADDR', payload: e.target.value})} />
                 </article>
                 <article>
                     <div>
                         <label>Age</label>
-                        <input />
+                        <input value={state.age}
+                        onChange={(e) => dispatch({ type: 'AGE', payload: e.target.value})} />
                     </div>
                     <div>
                         <label>Sex</label>
-                        <input />
+                        <input value={state.sex}
+                        onChange={(e) => dispatch({ type: 'SEX', payload: e.target.value})} />
                     </div>
                 </article>
                 <article>
                     <label>Date</label>
-                    <input />
+                    <input value={state.date}
+                    onChange={(e) => dispatch({ type: 'DATE', payload: e.target.value})} />
                 </article>
             </form>
         </section>
