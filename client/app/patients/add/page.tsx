@@ -32,6 +32,7 @@ const page = () => {
 
     return (
         <section>
+            <h3>Add Patient</h3>
         </section>
     )
 }
