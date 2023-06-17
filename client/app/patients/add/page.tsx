@@ -2,6 +2,7 @@
 "use client"
 import '../styles.css'
 import notify from '@/utils/notify'
+import { parseISO } from 'date-fns'
 import axios from '@/app/api/instance'
 import usePatient from '@/hooks/usePatient'
 import throwError from '@/utils/throwError'
@@ -19,7 +20,7 @@ const page = () => {
             JSON.stringify({
                 card_no: state.card_no, fullname: state.fullname,
                 phone_no: state.phone_no, address: state.address,
-                sex: state.sex, age: state.age, date: state.date
+                sex: state.sex, age: state.age, date: parseISO(state.date).toISOString()
             }),
             {
                 headers: {
@@ -33,44 +34,47 @@ const page = () => {
     return (
         <section>
             <h3>Add Patient</h3>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <article>
                     <label>Card Number</label>
-                    <input value={state.card_no}
-                    onChange={(e) => dispatch({ type: 'CARD_NO', payload: e.target.value})} />
+                    <input value={state.card_no} type='text'
+                    onChange={(e) => dispatch({ type: 'CARD_NO', payload: e.target.value })} />
                 </article>
                 <article>
                     <label>Full name</label>
-                    <input value={state.fullname}
-                    onChange={(e) => dispatch({ type: 'FULLN', payload: e.target.value})} />
+                    <input value={state.fullname} type='text'
+                    onChange={(e) => dispatch({ type: 'FULLN', payload: e.target.value })} />
                 </article>
                 <article>
                     <label>Phone number</label>
-                    <input value={state.phone_no}
-                    onChange={(e) => dispatch({ type: 'PHN', payload: e.target.value})} />
+                    <input value={state.phone_no} type='number'
+                    onChange={(e) => dispatch({ type: 'PHN', payload: e.target.value })} />
                 </article>
                 <article>
                     <label>Address</label>
-                    <input value={state.address}
-                    onChange={(e) => dispatch({ type: 'ADDR', payload: e.target.value})} />
+                    <input value={state.address} type='text'
+                    onChange={(e) => dispatch({ type: 'ADDR', payload: e.target.value })} />
                 </article>
                 <article>
                     <div>
                         <label>Age</label>
-                        <input value={state.age}
-                        onChange={(e) => dispatch({ type: 'AGE', payload: e.target.value})} />
+                        <input value={state.age} type='number'
+                        onChange={(e) => dispatch({ type: 'AGE', payload: e.target.value })} />
                     </div>
                     <div>
                         <label>Sex</label>
                         <input value={state.sex}
-                        onChange={(e) => dispatch({ type: 'SEX', payload: e.target.value})} />
+                        onChange={(e) => dispatch({ type: 'SEX', payload: e.target.value })} />
                     </div>
                 </article>
                 <article>
                     <label>Date</label>
-                    <input value={state.date}
-                    onChange={(e) => dispatch({ type: 'DATE', payload: e.target.value})} />
+                    <input value={state.date} type="date"
+                    onChange={(e) => dispatch({ type: 'DATE', payload: e.target.value })} />
                 </article>
+                <button type="submit">
+                    Submit
+                </button>
             </form>
         </section>
     )
