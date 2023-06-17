@@ -18,9 +18,10 @@ const page = () => {
         await axios.post(
             '/patients/add',
             JSON.stringify({
+                date: state.date ? parseISO(state.date).toISOString(): "",
                 card_no: state.card_no, fullname: state.fullname,
                 phone_no: state.phone_no, address: state.address,
-                sex: state.sex, age: state.age, date: parseISO(state.date).toISOString()
+                sex: state.sex, age: state.age,
             }),
             {
                 headers: {
@@ -56,15 +57,23 @@ const page = () => {
                     onChange={(e) => dispatch({ type: 'ADDR', payload: e.target.value })} />
                 </article>
                 <article>
-                    <div>
                         <label>Age</label>
                         <input value={state.age} type='number'
                         onChange={(e) => dispatch({ type: 'AGE', payload: e.target.value })} />
-                    </div>
+                </article>
+                <article>
+                    <p>Sex</p>
                     <div>
-                        <label>Sex</label>
-                        <input value={state.sex}
-                        onChange={(e) => dispatch({ type: 'SEX', payload: e.target.value })} />
+                        <div>
+                            <label htmlFor='male'>Male</label>
+                            <input value={state.sex} type="radio" id='male' name="sex"
+                            onChange={(e) => dispatch({ type: 'SEX', payload: e.target.value })} />
+                        </div>
+                        <div>
+                            <label htmlFor='female'>Female</label>
+                            <input value={state.sex} type="radio" id='female' name="sex"
+                            onChange={(e) => dispatch({ type: 'SEX', payload: e.target.value })} />
+                        </div>
                     </div>
                 </article>
                 <article>
