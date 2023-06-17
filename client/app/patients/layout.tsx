@@ -1,4 +1,5 @@
 import { Toaster } from "react-hot-toast"
+import { questrial } from "@/public/font/font"
 import { PatientProvider } from "@/hooks/usePatient"
 
 export const metadata = {
@@ -17,7 +18,9 @@ export default function RootLayout({
                 <Toaster
                 position="top-center"
                 reverseOrder={false} />
-                {children}
+                <main className={questrial.className}>
+                    {children}
+                </main>
             </PatientProvider>
         </>
     )
