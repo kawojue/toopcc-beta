@@ -18,7 +18,7 @@ export default function RootLayout({
                 <Toaster
                 position="top-center"
                 reverseOrder={false} />
-                <main className={questrial.className}>
+                <main className={`w-full ${questrial.className}`}>
                     {children}
                 </main>
             </PatientProvider>
