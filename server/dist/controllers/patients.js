@@ -26,14 +26,16 @@ const asyncHandler = require('express-async-handler');
 const phoneRegex = /^\d{11}$/;
 // add patient data
 const add = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let { card_no, fullname, sex, phone_no, address, age, date } = req.body;
+    let { card_no, fullname, phone_no, address, age, date, sex } = req.body;
     card_no = card_no === null || card_no === void 0 ? void 0 : card_no.trim();
     address = address === null || address === void 0 ? void 0 : address.trim();
     fullname = fullname === null || fullname === void 0 ? void 0 : fullname.trim();
     if (!card_no || !fullname || !sex || !age)
         return res.status(400).json(modal_1.FIELDS_REQUIRED);
-    age = Number(age);
     fullname = (0, full_name_1.default)(fullname);
+    if (/^\d/.test(age)) {
+        age = Number(age);
+    }
     if (card_no.includes('/')) {
         return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Invalid card number." }));
     }
