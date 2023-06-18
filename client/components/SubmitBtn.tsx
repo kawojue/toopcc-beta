@@ -2,13 +2,6 @@
 import useAuth from "@/hooks/useAuth"
 import { SpinnerOne } from "./Spinner"
 
-interface ISubmitBtn {
-    loading?: boolean
-    texts: string
-    styles?: string,
-    handler: () => Promise<void>
-}
-
 const SubmitBtn: React.FC<ISubmitBtn> = ({ loading, texts, styles, handler }) => {
     const { loading: load } = useAuth()
 
