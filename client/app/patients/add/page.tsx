@@ -40,12 +40,12 @@ const page = () => {
             </h3>
             <form onSubmit={handleSubmit} className="patient-form">
                 <article className="flex items-center justify-between">
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-col gap-1">
                         <label>Card Number</label>
-                        <input value={state.card_no} type='text'
+                        <input value={state.card_no} type='text' className="w-24"
                         onChange={(e) => dispatch({ type: 'CARD_NO', payload: e.target.value })} />
                     </div>
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-col gap-1">
                         <label>Date</label>
                         <input value={state.date} type="date"
                         onChange={(e) => dispatch({ type: 'DATE', payload: e.target.value })} />
@@ -62,9 +62,9 @@ const page = () => {
                     onChange={(e) => dispatch({ type: 'ADDR', payload: e.target.value })} />
                 </article>
                 <div className="flex justify-between">
-                    <article className="flex gap-1.5 self-end">
+                    <article className="flex gap-1 self-end">
                             <label>Age</label>
-                            <input value={state.age} type='number' className="w-10"
+                            <input value={state.age} type='text' className="w-10"
                             onChange={(e) => dispatch({ type: 'AGE', payload: e.target.value })} />
                     </article>
                     <article>
@@ -85,7 +85,7 @@ const page = () => {
                 </div>
                 <article className="flex items-center gap-3">
                     <label>Phone number</label>
-                    <input value={state.phone_no} type='number' className='flex-grow'
+                    <input value={state.phone_no} type='text' className='flex-grow'
                     onChange={(e) => dispatch({ type: 'PHN', payload: e.target.value })} />
                 </article>
                 <button type="submit">
