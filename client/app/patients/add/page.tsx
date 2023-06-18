@@ -4,6 +4,7 @@ import '../styles.css'
 import notify from '@/utils/notify'
 import { parseISO } from 'date-fns'
 import axios from '@/app/api/instance'
+import { exo_2 } from '@/public/font/font'
 import usePatient from '@/hooks/usePatient'
 import throwError from '@/utils/throwError'
 import { useState, FormEvent } from 'react'
@@ -33,56 +34,58 @@ const page = () => {
     }
 
     return (
-        <section className="add-patient">
-            <h3>Add Patient</h3>
+        <section className="add-patient md:mt-14">
+            <h3 className={`${exo_2.className} text-center font-semibold tracking-wider text-2xl md:text-3xl text-clr-1`}>
+                Add New Patient
+            </h3>
             <form onSubmit={handleSubmit} className="patient-form">
-                <article>
-                    <div>
+                <article className="flex items-center justify-between">
+                    <div className="flex flex-col gap-1.5">
                         <label>Card Number</label>
                         <input value={state.card_no} type='text'
                         onChange={(e) => dispatch({ type: 'CARD_NO', payload: e.target.value })} />
                     </div>
-                    <div>
+                    <div className="flex flex-col gap-1.5">
                         <label>Date</label>
                         <input value={state.date} type="date"
                         onChange={(e) => dispatch({ type: 'DATE', payload: e.target.value })} />
                     </div>
                 </article>
-                <article>
+                <article className="flex items-center gap-3">
                     <label>Full name</label>
-                    <input value={state.fullname} type='text'
+                    <input value={state.fullname} type='text' className="flex-grow"
                     onChange={(e) => dispatch({ type: 'FULLN', payload: e.target.value })} />
                 </article>
-                <div>
-                    <article>
+                <article className="flex items-center gap-3">
+                    <label>Address</label>
+                    <input value={state.address} type='text' className="flex-grow"
+                    onChange={(e) => dispatch({ type: 'ADDR', payload: e.target.value })} />
+                </article>
+                <div className="flex justify-between">
+                    <article className="flex gap-1.5 self-end">
                             <label>Age</label>
-                            <input value={state.age} type='number'
+                            <input value={state.age} type='number' className="w-10"
                             onChange={(e) => dispatch({ type: 'AGE', payload: e.target.value })} />
                     </article>
                     <article>
-                        <p>Gender</p>
-                        <div>
-                            <div>
-                                <label htmlFor='male'>Male</label>
+                        <p className="mb-1">Gender</p>
+                        <div className="flex gap-3">
+                            <div className="flex gap-1">
                                 <input value='Male' type="radio" id='male' name="sex"
                                 onChange={(e) => dispatch({ type: "SEX", payload: e.target.value })} />
+                                <label htmlFor='male'>Male</label>
                             </div>
-                            <div>
-                                <label htmlFor='female'>Female</label>
+                            <div className="flex gap-1">
                                 <input value='Female' type="radio" id='female' name="sex"
                                 onChange={(e) => dispatch({ type: "SEX", payload: e.target.value })} />
+                                <label htmlFor='female'>Female</label>
                             </div>
                         </div>
                     </article>
                 </div>
-                <article>
-                    <label>Address</label>
-                    <input value={state.address} type='text'
-                    onChange={(e) => dispatch({ type: 'ADDR', payload: e.target.value })} />
-                </article>
-                <article>
+                <article className="flex items-center gap-3">
                     <label>Phone number</label>
-                    <input value={state.phone_no} type='number'
+                    <input value={state.phone_no} type='number' className='flex-grow'
                     onChange={(e) => dispatch({ type: 'PHN', payload: e.target.value })} />
                 </article>
                 <button type="submit">
