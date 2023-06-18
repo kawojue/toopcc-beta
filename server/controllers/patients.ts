@@ -21,8 +21,8 @@ const phoneRegex: RegExp = /^\d{11}$/
 // add patient data
 const add = asyncHandler(async (req: Request, res: Response) => {
     let {
-        card_no, fullname, sex, phone_no,
-        address, age, date
+        card_no, fullname, phone_no,
+        address, age, date, sex
     }: any = req.body
 
     card_no = card_no?.trim()
@@ -31,8 +31,10 @@ const add = asyncHandler(async (req: Request, res: Response) => {
 
     if (!card_no || !fullname || !sex || !age) return res.status(400).json(FIELDS_REQUIRED)
 
-    age = Number(age)
     fullname = full_name(fullname)
+    if (/^\d/.test(age)) {
+        age = Number(age)
+    }
 
     if (card_no.includes('/')) {
         return res.status(400).json({
@@ -54,7 +56,7 @@ const add = asyncHandler(async (req: Request, res: Response) => {
     await Patient.create({
         sex, card_no, date,
         address, fullname,
-        phone_no, age: age as number,
+        phone_no, age: age,
     })
 
     res.status(200).json(SAVED)
