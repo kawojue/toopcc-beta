@@ -1,4 +1,8 @@
-.add-patient {
+.trans {
+    @apply transition-all ease-in-out duration-200
+}
+
+.form-section {
     @apply mt-10 w-[98vw] px-3 py-5 max-w-[600px] mx-auto min-h-[300px] bg-clr-5 rounded-lg card
 }
 
@@ -19,7 +23,7 @@ input:focus {
 }
 
 input[type="radio"] {
-    @apply appearance-none rounded-full w-4 h-4 border-[0.03125rem] border-clr-2 relative transition-all ease-in-out duration-200
+    @apply appearance-none rounded-full w-4 h-4 border-[0.03125rem] border-clr-2 trans
 }
 
 input[type="radio"]:checked {
