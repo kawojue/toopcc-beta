@@ -8,6 +8,7 @@ import { exo_2 } from '@/public/font/font'
 import usePatient from '@/hooks/usePatient'
 import throwError from '@/utils/throwError'
 import { useState, FormEvent } from 'react'
+import { SpinnerOne } from '@/components/Spinner'
 
 const page = () => {
     const [loading, setLoading] = useState<boolean>(false)
@@ -34,7 +35,7 @@ const page = () => {
     }
 
     return (
-        <section className="add-patient md:mt-14">
+        <section className="form-section md:mt-14">
             <h3 className={`${exo_2.className} text-center font-semibold tracking-wider text-2xl md:text-3xl text-clr-1`}>
                 Add New Patient
             </h3>
@@ -62,20 +63,20 @@ const page = () => {
                     onChange={(e) => dispatch({ type: 'ADDR', payload: e.target.value })} />
                 </article>
                 <div className="flex justify-between">
-                    <article className="flex gap-1 self-end">
+                    <article className="flex gap-1.5 self-end items-center">
                             <label>Age</label>
                             <input value={state.age} type='text' className="w-10"
                             onChange={(e) => dispatch({ type: 'AGE', payload: e.target.value })} />
                     </article>
                     <article>
                         <p className="mb-1">Gender</p>
-                        <div className="flex gap-3">
-                            <div className="flex gap-1">
+                        <div className="flex gap-3 items-center">
+                            <div className="flex gap-1 items-center">
                                 <input value='Male' type="radio" id='male' name="sex"
                                 onChange={(e) => dispatch({ type: "SEX", payload: e.target.value })} />
                                 <label htmlFor='male'>Male</label>
                             </div>
-                            <div className="flex gap-1">
+                            <div className="flex gap-1 items-center">
                                 <input value='Female' type="radio" id='female' name="sex"
                                 onChange={(e) => dispatch({ type: "SEX", payload: e.target.value })} />
                                 <label htmlFor='female'>Female</label>
@@ -88,8 +89,9 @@ const page = () => {
                     <input value={state.phone_no} type='text' className='flex-grow'
                     onChange={(e) => dispatch({ type: 'PHN', payload: e.target.value })} />
                 </article>
-                <button type="submit">
-                    Submit
+                <button type="submit"
+                className="submit-btn hover:bg-clr-6 hover: text-clr-5">
+                    {loading ? <SpinnerOne />: 'Submit'}
                 </button>
             </form>
         </section>
