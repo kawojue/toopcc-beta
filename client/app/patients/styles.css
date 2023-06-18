@@ -1,0 +1,13 @@
+.add-patient {
+    @apply mt-10 w-[98vw] p-5 max-w-[550px] mx-auto min-h-[300px] bg-clr-5 rounded-lg card
+}
+
+.patient-form {
+    @apply mt-5 flex flex-col gap-3
+}
+
+.card {
+    border-radius: 50px;
+    background: rgb(232, 232, 232);
+    box-shadow:  20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
+}
