@@ -336,7 +336,7 @@
 }
 
 .submit-btn {
-    @apply flex items-center justify-center px-7 py-2 font-semibold tracking-widest text-2xl bg-clr-1 rounded-lg text-clr-7 trans;
+    @apply flex items-center justify-center px-7 py-1.5 font-semibold tracking-widest text-xl bg-clr-1 rounded-lg text-clr-7 trans;
 }
 
 .fgt-pswd {
