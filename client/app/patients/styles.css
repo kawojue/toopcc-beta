@@ -6,8 +6,12 @@
     @apply mt-10 w-[98vw] px-3 py-5 max-w-[600px] mx-auto min-h-[300px] bg-clr-5 rounded-lg card
 }
 
+.form-header {
+    @apply text-center font-semibold tracking-wider text-2xl md:text-3xl text-clr-1
+}
+
 .patient-form {
-    @apply mt-5 flex flex-col gap-5
+    @apply mt-5 flex flex-col gap-3
 }
 
 label {
