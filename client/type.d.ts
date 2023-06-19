@@ -16,6 +16,12 @@ interface IProfile {
     }
 }
 
+interface IPatient {
+    params: {
+        patient: string
+    }
+}
+
 interface ModalStates {
     roles: boolean
     avatar: boolean
