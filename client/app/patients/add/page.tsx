@@ -36,7 +36,7 @@ const page = () => {
 
     return (
         <section className="form-section md:mt-14">
-            <h3 className={`${exo_2.className} text-center font-semibold tracking-wider text-2xl md:text-3xl text-clr-1`}>
+            <h3 className={`${exo_2.className} form-header`}>
                 Add New Patient
             </h3>
             <form onSubmit={handleSubmit} className="patient-form">
