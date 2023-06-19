@@ -9,10 +9,9 @@ import cloudinary from '../configs/cloudinary'
 import addExtension from '../utilities/addExtension'
 import { fetchByCardNumber } from '../utilities/getModels'
 import {
+    PATIENT_NOT_EXIST, SMTH_WENT_WRONG, PATIENT_EXIST, SAVED, SUCCESS,
+    DELETION_FAILED, EXT_NOT_EXIST, DIAG_NOT_EXIST, INVALID_PHONE_NO,
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
-    INVALID_PHONE_NO, PATIENT_NOT_EXIST, SMTH_WENT_WRONG,
-    PATIENT_EXIST, SAVED, SUCCESS, DELETION_FAILED,
-    EXT_NOT_EXIST, DIAG_NOT_EXIST
 } from '../utilities/modal'
 const asyncHandler = require('express-async-handler')
 
@@ -150,7 +149,7 @@ const remove = asyncHandler(async (req: Request, res: Response) => {
     let { card_no }: any = req.params
     if (!card_no || !card_no?.trim()) return res.status(400).json(CARD_NO_REQUIRED)
 
-    const patient: any = await fetchByCardNumber(card_no, '-body -recommendation')
+    const patient: any = await fetchByCardNumber(card_no)
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     const bodies: any[] = patient.body
@@ -276,7 +275,8 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const deleteRecommendation = asyncHandler(async (req: Request, res: Response) => {
-    const { card_no, idx, type }: any = req.params
+    const { type }: any = req.query
+    const { card_no, idx }: any = req.params
     const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
