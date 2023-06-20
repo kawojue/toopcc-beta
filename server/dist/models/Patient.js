@@ -45,7 +45,7 @@ const PatientModel = new mongoose_1.Schema({
     },
     date: {
         type: String,
-        default: `${new Date().toISOString()}`
+        default: ''
     },
     death: {
         dead: {

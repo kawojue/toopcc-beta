@@ -26,8 +26,9 @@ const asyncHandler = require('express-async-handler');
 const phoneRegex = /^\d{11}$/;
 // add patient data
 const add = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     let { card_no, fullname, phone_no, address, age, date, sex } = req.body;
-    card_no = card_no === null || card_no === void 0 ? void 0 : card_no.trim();
+    card_no = (_a = card_no === null || card_no === void 0 ? void 0 : card_no.trim()) === null || _a === void 0 ? void 0 : _a.toUpperCase();
     address = address === null || address === void 0 ? void 0 : address.trim();
     fullname = fullname === null || fullname === void 0 ? void 0 : fullname.trim();
     if (!card_no || !fullname || !sex || !age)
@@ -36,7 +37,7 @@ const add = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, functio
     if (/^\d/.test(age)) {
         age = Number(age);
     }
-    if (card_no.includes('/')) {
+    if (!/^[a-zA-Z0-9]+$/.test(card_no)) {
         return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Invalid card number." }));
     }
     if (phone_no === null || phone_no === void 0 ? void 0 : phone_no.trim()) {
@@ -61,7 +62,7 @@ exports.add = add;
 // edit patient data
 const edit = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { card_no } = req.params;
-    let { fullname, sex, phone_no, address, age, death, cardNo } = req.body;
+    let { fullname, sex, phone_no, address, age, death, cardNo, date } = req.body;
     const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body -recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
@@ -112,6 +113,8 @@ const edit = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, functi
     }
     if (address === null || address === void 0 ? void 0 : address.trim())
         patient.address = address;
+    if (date)
+        patient.date = date;
     yield patient.save();
     res.status(200).json(modal_1.SAVED);
 }));
@@ -197,7 +200,7 @@ const editDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 
 }));
 exports.editDiagnosis = editDiagnosis;
 const addRecommendation = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _b;
     const { card_no } = req.params;
     const { opthal, extension, physio, eligOpthal, eligPhysio } = req.body;
     const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body');
@@ -216,7 +219,7 @@ const addRecommendation = asyncHandler((req, res) => __awaiter(void 0, void 0, v
         const newMedics = (0, addMedic_1.default)(physio, physioMedic);
         physiotherapy.medication = newMedics;
     }
-    if (extension && ((_a = extension === null || extension === void 0 ? void 0 : extension.name) === null || _a === void 0 ? void 0 : _a.trim())) {
+    if (extension && ((_b = extension === null || extension === void 0 ? void 0 : extension.name) === null || _b === void 0 ? void 0 : _b.trim())) {
         const ext = rec.extensions;
         const newExtensions = (0, addExtension_1.default)(ext, extension);
         rec.extensions = newExtensions;
