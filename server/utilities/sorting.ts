@@ -18,8 +18,8 @@ const sortByCardNumbers = (array: any[]) => {
             return 1
         }
 
-        const alphaA = a.replace(/[^a-zA-Z]/g, "")
-        const alphaB = b.replace(/[^a-zA-Z]/g, "")
+        const alphaA = String(a).replace(/[^a-zA-Z]/g, "")
+        const alphaB = String(b).replace(/[^a-zA-Z]/g, "")
 
         return alphaA.localeCompare(alphaB)
     })
