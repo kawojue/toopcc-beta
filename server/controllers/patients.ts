@@ -24,7 +24,7 @@ const add = asyncHandler(async (req: Request, res: Response) => {
         address, age, date, sex
     }: any = req.body
 
-    card_no = card_no?.trim()
+    card_no = card_no?.trim()?.toUpperCase()
     address = address?.trim()
     fullname = fullname?.trim()
 
@@ -35,7 +35,7 @@ const add = asyncHandler(async (req: Request, res: Response) => {
         age = Number(age)
     }
 
-    if (card_no.includes('/')) {
+    if (!/^[a-zA-Z0-9]+$/.test(card_no)) {
         return res.status(400).json({
             ...ERROR,
             msg: "Invalid card number."
@@ -66,7 +66,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     const { card_no } = req.params
     let {
         fullname, sex, phone_no, address,
-        age, death, cardNo
+        age, death, cardNo, date
     }: any = req.body
 
     const patient: any = await fetchByCardNumber(card_no, '-body -recommendation')
@@ -138,6 +138,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (address?.trim()) patient.address = address
+    if (date) patient.date = date
 
     await patient.save()
 
