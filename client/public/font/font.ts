@@ -1,6 +1,6 @@
 import {
     Questrial, Inter,
-    Exo_2, Catamaran,
+    Lato, Catamaran,
 } from 'next/font/google'
 
 const questrial = Questrial({
@@ -13,8 +13,8 @@ const inter = Inter({
     subsets: ['latin']
 })
 
-const exo_2 = Exo_2({
-    weight: ['400', '500', '600'],
+const lato = Lato({
+    weight: '400',
     subsets: ['latin']
 })
 
@@ -25,5 +25,5 @@ const catamaran = Catamaran({
 
 export {
     questrial, inter,
-    exo_2, catamaran
+    lato, catamaran
 }
