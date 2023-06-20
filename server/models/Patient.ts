@@ -21,7 +21,7 @@ const PatientModel: Schema = new Schema({
     },
     date: {
         type: String,
-        default: `${new Date().toISOString()}`
+        default: ''
     },
     death: {
         dead: {
