@@ -4,7 +4,7 @@ import '../styles.css'
 import notify from '@/utils/notify'
 import { parseISO } from 'date-fns'
 import axios from '@/app/api/instance'
-import { exo_2 } from '@/public/font/font'
+import { lato } from '@/public/font/font'
 import usePatient from '@/hooks/usePatient'
 import throwError from '@/utils/throwError'
 import { useState, FormEvent } from 'react'
@@ -36,7 +36,7 @@ const page = () => {
 
     return (
         <section className="form-section md:mt-14">
-            <h3 className={`${exo_2.className} form-header`}>
+            <h3 className={`${lato.className} form-header`}>
                 Add New Patient
             </h3>
             <form onSubmit={handleSubmit} className="patient-form">
