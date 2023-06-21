@@ -1,6 +1,6 @@
 "use client"
 
-const page = ({ params: { patient } }: IPatient) => {
+const page = ({ params: { patient } }: { params: { patient: string } }) => {
     console.log(patient)
     return (
         <></>
