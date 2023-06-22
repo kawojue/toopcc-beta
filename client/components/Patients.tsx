@@ -1,40 +1,60 @@
 "use client"
-import { catamaran } from '@/public/font/font'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import '../app/patients/styles.css'
+import { catamaran, lato } from '@/public/font/font'
+import { RxMagnifyingGlass } from '@/public/icons/ico'
 
 const Patients = ({ patients }: any) => {
-    const router = useRouter()
+    const [search, setSeach]= useState<string>("")
+
+    const searchQuery: any[] = patients.filter((patient: any) =>
+    (patient.fullname?.toLowerCase()?.includes(search.toLowerCase()))
+    || (patient.address?.toLowerCase()?.includes(search.toLowerCase()))
+    || (patient.card_no?.includes(search.toUpperCase()))
+    || (patient.phone_no?.includes(search)))
 
     return (
         <>
-        <section className="px-1.5 flex flex-col gap-3 mt-10 max-w-[600px] md:max-w-[800px] w-[98vw] mx-auto overflow-y-auto trans relative">
+        <section className="patients md:max-w-[800px]">
             <div className="absolute top-10 right-2">
-                <input type="text"/>
-
+                <div className="relative">
+                    <input type="text" value={search} className="w-20 md:w-24 lg:w-28"
+                    onChange={(e) => setSeach(e.target.value)} />
+                    <RxMagnifyingGlass className="absolute top-1.5 right-2.5" />
+                </div>
             </div>
-            <div className="w-full flex flex-col items-center gap-2 font-bold text-2xl md:text-3xl mb-5 tracking-wider">
+            <div className="patients-header">
                 <h1 className={`${catamaran.className} text-clr-2`}>
                     List of All Patients
                 </h1>
-                <span className="rounded-md px-9 py-1 bg-clr-1"></span>
+                <span></span>
             </div>
-            {patients.map((patient: any) => (
-                <article key={patient._id} className="bg-clr-7 py-1 px-2 text-sm md:text-lg rounded-lg font-medium text-clr-2 trans hover:text-clr-3 hover:bg-clr-5">
-                    <Link href={`/patients/${patient.card_no?.split('/')[0]}`}
-                    className="flex justify-between items-center text-center">
-                        <p className="w-14">
-                            {patient.card_no}
-                        </p>
-                        <p className="font-semibold w-1/2">
-                            {patient.fullname}
-                        </p>
-                        <p className="w-28">
-                            {patient.phone_no}
-                        </p>
-                    </Link>
-                </article>
-            ))}
+            {searchQuery.length === 0 ?
+            <p className='text-clr-8 font-semibold text-2xl text-center'>
+                Patient does not exist.
+            </p> : 
+            <>
+                {searchQuery.map((patient: any) => (
+                    <article key={patient._id}
+                    className="patients-list hover:text-clr-3 hover:bg-clr-5">
+                        <Link href={`/patients/${patient.card_no?.split('/')[0]}`}
+                        className="patients-link">
+                            <div className="flex flex-col gap-1">
+                                <p className="w-14">
+                                    {patient.card_no}
+                                </p>
+                                <p className="font-semibold tracking-wider">
+                                    {patient.fullname}
+                                </p>
+                            </div>
+                            <p className={`${lato.className} tracking-wide w-28`}>
+                                {patient.phone_no}
+                            </p>
+                        </Link>
+                    </article>
+                ))}
+            </> }
         </section>
         </>
     )
