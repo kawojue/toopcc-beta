@@ -34,6 +34,30 @@ input[type="radio"]:checked {
     @apply bg-clr-1 w-5 h-5
 }
 
+.patients {
+    @apply px-1.5 flex flex-col gap-3 my-10 max-w-[600px] w-[98vw] mx-auto overflow-y-auto trans relative
+}
+
+.patients-header {
+    @apply w-full flex flex-col items-center gap-2 font-bold text-2xl md:text-3xl mb-5 tracking-wider
+}
+
+.patients-header span {
+    @apply rounded-md px-9 py-1 bg-clr-1
+}
+
+.patients-list {
+    @apply bg-clr-7 py-1 px-2 rounded-lg font-medium text-clr-2 trans
+}
+
+.patients-link {
+    @apply flex justify-between items-center text-center text-sm
+}
+
+.patients-link p {
+    @apply text-[15px]
+}
+
 .card {
     border-radius: 50px;
     background: rgb(232, 232, 232);
