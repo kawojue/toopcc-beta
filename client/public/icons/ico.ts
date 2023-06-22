@@ -5,9 +5,12 @@ import {
     AiOutlineCamera, AiOutlineMail, AiFillEye
 } from 'react-icons/ai'
 import { FaTimes } from 'react-icons/fa'
+import { RxMagnifyingGlass } from 'react-icons/rx'
+
 
 
 export {
     AiFillEyeInvisible, AiFillEye, AiOutlineCamera, AiOutlineMail,
-    HiOutlineKey, FaTimes, AiOutlineCloudUpload, RiDeleteBin6Line
+    HiOutlineKey, FaTimes, AiOutlineCloudUpload, RiDeleteBin6Line,
+    RxMagnifyingGlass
 }
