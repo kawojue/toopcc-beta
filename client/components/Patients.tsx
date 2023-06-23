@@ -16,7 +16,7 @@ const Patients = ({ patients }: any) => {
 
     return (
         <>
-        <section className="patients md:max-w-[800px]">
+        <section className="patients md:max-w-[800px] overflow-x-hidden">
             <div className="absolute top-10 right-2">
                 <div className="relative">
                     <input type="text" value={search} className="w-20 md:w-24 lg:w-28"
@@ -37,7 +37,7 @@ const Patients = ({ patients }: any) => {
             <>
                 {searchQuery.map((patient: any) => (
                     <article key={patient._id}
-                    className="patients-list hover:text-clr-3 hover:bg-clr-5">
+                    className={`show patients-list hover:text-clr-3 hover:bg-clr-5`}>
                         <Link href={`/patients/${patient.card_no?.split('/')[0]}`}
                         className="patients-link">
                             <div className="flex flex-col gap-1">
