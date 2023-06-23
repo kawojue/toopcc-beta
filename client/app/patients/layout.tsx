@@ -1,4 +1,3 @@
-import { Toaster } from "react-hot-toast"
 import { questrial } from "@/public/font/font"
 import { PatientProvider } from "@/hooks/usePatient"
 
@@ -15,9 +14,6 @@ export default function RootLayout({
     return (
         <>
             <PatientProvider>
-                <Toaster
-                position="top-center"
-                reverseOrder={false} />
                 <main className={`w-full ${questrial.className}`}>
                     {children}
                 </main>
