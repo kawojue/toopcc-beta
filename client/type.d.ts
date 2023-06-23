@@ -1,7 +1,7 @@
 interface ISubmitBtn {
     loading?: boolean
     texts: string
-    styles?: string,
+    styles?: string
     handler: () => Promise<void>
 }
 
@@ -10,17 +10,9 @@ interface JWT {
     user: string
 }
 
-interface IProfile {
-    params: {
-        profile: string
-    }
-}
+interface IProfile { params: { profile: string } }
 
-interface IPatient {
-    params: {
-        patient: string
-    }
-}
+interface IPt { params: { patientId: string } }
 
 interface ModalStates {
     roles: boolean
