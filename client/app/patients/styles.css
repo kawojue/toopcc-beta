@@ -1,3 +1,7 @@
+html {
+    scroll-behavior: smooth;
+}
+
 .trans {
     @apply transition-all ease-in-out duration-200
 }
@@ -46,16 +50,24 @@ input[type="radio"]:checked {
     @apply rounded-md px-9 py-1 bg-clr-1
 }
 
-.patients-list {
-    @apply bg-clr-7 py-1 px-2 rounded-lg font-medium text-clr-2 trans
-}
-
 .patients-link {
     @apply flex justify-between items-center text-center text-sm
 }
 
 .patients-link p {
     @apply text-[15px]
+}
+
+.patients-list {
+    @apply bg-clr-7 py-1 px-2 rounded-lg font-medium text-clr-2 trans
+}
+
+.patients-list.show {
+    @apply transform translate-x-0;
+}
+
+.patients-list {
+    @apply transform translate-x-[400%] transition-all ease-in-out duration-[0.4s];
 }
 
 .card {
