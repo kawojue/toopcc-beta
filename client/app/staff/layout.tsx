@@ -1,4 +1,3 @@
-import { Toaster } from "react-hot-toast"
 import { questrial } from "@/public/font/font"
 
 export const metadata = {
@@ -13,9 +12,6 @@ export default function RootLayout({
 }) {
     return (
         <main className={`staff-main ${questrial.className}`}>
-            <Toaster
-            position="top-center"
-            reverseOrder={false}/>
             {children}
         </main>
     )
