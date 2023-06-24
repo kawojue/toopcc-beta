@@ -7,6 +7,7 @@ import {
 } from 'react'
 import throwError from '@/utils/throwError'
 import patientReducer from '@/utils/patientReducer'
+import notify from '@/utils/notify'
 
 const Patient = createContext({})
 
@@ -26,6 +27,7 @@ const initialStates: PatientStates = {
 export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { token, auth }: any = useAuth()
     const [patient, setPatient] = useState({})
+    const [btnLoad, setBtnLoad] = useState<boolean>(false)
     const [profLoad, setProfLoad] = useState<boolean>(false)
     const [state, dispatch]= useReducer(patientReducer, initialStates)
 
@@ -42,9 +44,23 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
         .catch((err: any) => throwError(err)).finally(() => setProfLoad(false))
     }
 
+    const handleDelPatient = async (card_no: string) => {
+        setBtnLoad(true)
+        await axios.delete(
+            `/patients/patient/${card_no}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        ).then((res: any) => notify(res.data?.action, res.date?.msg))
+        .catch((err: any) => throwError(err)).finally(() => setBtnLoad(false))
+    }
+
     return (
         <Patient.Provider value={{
-            token, auth, state, dispatch, handlePatient, patient, profLoad
+            token, auth, state, dispatch, handlePatient, patient, profLoad,
+            handleDelPatient
         }}>
             {children}
         </Patient.Provider>
