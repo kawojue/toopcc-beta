@@ -12,7 +12,7 @@ const patients = (0, express_1.Router)();
 patients.use([jwtVerify_1.default, (0, verifyRoles_1.default)("admin", "hr")]);
 // add, edit, and delete patient data routes
 patients.post('/add', patients_1.add);
-patients.route('/:card_no')
+patients.route('/patient/:card_no')
     .put(patients_1.edit)
     .delete(patients_1.remove);
 // add, edit, and delete patient diagnosis routes
