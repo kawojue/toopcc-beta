@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import usePatient from "@/hooks/usePatient"
 import { SpinnerTwo } from '@/components/Spinner'
 
-const page = ({ params: { patientId } }: { params: { patientId: string } }) => {
+const page = ({ params: { patientId } }: IPt) => {
     const { handlePatient, patient, profLoad, token }: any = usePatient()
 
     useEffect(() => {
