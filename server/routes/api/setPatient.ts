@@ -15,7 +15,7 @@ patients.use([jwtVerify, verifyRoles("admin", "hr")])
 
 // add, edit, and delete patient data routes
 patients.post('/add', add)
-patients.route('/:card_no')
+patients.route('/patient/:card_no')
     .put(edit)
     .delete(remove)
 
