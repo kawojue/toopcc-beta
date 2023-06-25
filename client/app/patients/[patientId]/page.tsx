@@ -2,7 +2,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import { useEffect } from 'react'
-import usePatient from "@/hooks/usePatient"
+import Patient from '@/components/Patient'
+import usePatient from '@/hooks/usePatient'
 import { SpinnerTwo } from '@/components/Spinner'
 
 const page = ({ params: { patientId } }: IPt) => {
@@ -14,12 +15,7 @@ const page = ({ params: { patientId } }: IPt) => {
 
     if (profLoad) return <SpinnerTwo />
 
-    console.log(patient)
-
-    return (
-        <>
-        </>
-    )
+    return <Patient patient={patient}/>
 }
 
 export default page
