@@ -1,13 +1,14 @@
 "use client"
 import useAuth from './useAuth'
+import notify from '@/utils/notify'
 import axios from '@/app/api/instance'
 import {
     createContext, useState, useRef,
     useContext, useEffect, useReducer
 } from 'react'
 import throwError from '@/utils/throwError'
+import formatCardNo from '@/utils/formatCardNo'
 import patientReducer from '@/utils/patientReducer'
-import notify from '@/utils/notify'
 
 const Patient = createContext({})
 
@@ -40,7 +41,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     'Authorization': `Bearer ${token}`
                 }
             }
-        ).then((res: any) => setPatient(res.data?.patient))
+        ).then((res: any) => setPatient(formatCardNo(res.data.patient)))
         .catch((err: any) => throwError(err)).finally(() => setProfLoad(false))
     }
 
@@ -60,7 +61,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return (
         <Patient.Provider value={{
             token, auth, state, dispatch, handlePatient, patient, profLoad,
-            handleDelPatient
+            handleDelPatient, btnLoad
         }}>
             {children}
         </Patient.Provider>
