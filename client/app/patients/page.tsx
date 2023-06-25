@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import throwError from '@/utils/throwError'
 import Patients from '@/components/Patients'
+import formatCardNo from '@/utils/formatCardNo'
 import { SpinnerTwo } from '@/components/Spinner'
 
 const page = () => {
@@ -24,18 +25,7 @@ const page = () => {
         }).then((res: any) => {
             const pts: any[] = res.data?.patients || []
             const formattedPatients = pts.map((pt: any) => {
-                const { card_no: cardNo, date: ISOStringDate } = pt
-                let formattedDate: any
-                if (ISOStringDate) {
-                    const date = new Date(ISOStringDate)
-                    const year = date.getFullYear()
-                    formattedDate = `/${String(year).slice(2)}`
-                } else {
-                    formattedDate = ""
-                }
-
-                const card_no = cardNo + formattedDate
-                return { ...pt, card_no }
+                return formatCardNo(pt)
             })
             setPatients(formattedPatients)
         }).catch((err: any) => {
