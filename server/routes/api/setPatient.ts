@@ -27,7 +27,7 @@ patients.route('/diagnosis/:card_no/:idx')
 
 // update and delete patient referral or recommendation routes
 patients.put('/recommendation/:card_no', addRecommendation)
-patients.delete('/recommendation/:card_no/:type/:idx', deleteRecommendation)
+patients.delete('/recommendation/:card_no/:idx', deleteRecommendation)
 
 // update and delete patient extension routes
 patients.route('/recommendation/extension/:card_no/:idx')
