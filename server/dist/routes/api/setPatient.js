@@ -22,7 +22,7 @@ patients.route('/diagnosis/:card_no/:idx')
     .delete(patients_1.deleteDianosis);
 // update and delete patient referral or recommendation routes
 patients.put('/recommendation/:card_no', patients_1.addRecommendation);
-patients.delete('/recommendation/:card_no/:type/:idx', patients_1.deleteRecommendation);
+patients.delete('/recommendation/:card_no/:idx', patients_1.deleteRecommendation);
 // update and delete patient extension routes
 patients.route('/recommendation/extension/:card_no/:idx')
     .put(patients_1.editExtension)
