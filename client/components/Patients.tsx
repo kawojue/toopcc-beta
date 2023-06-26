@@ -1,18 +1,18 @@
 "use client"
 import Link from 'next/link'
 import { useState } from 'react'
-import '../app/patients/styles.css'
 import { catamaran, lato } from '@/public/font/font'
 import { RxMagnifyingGlass } from '@/public/icons/ico'
 
 const Patients = ({ patients }: any) => {
     const [search, setSeach]= useState<string>("")
 
+    // search
     const searchQuery: any[] = patients.filter((patient: any) =>
-    (patient.fullname?.toLowerCase()?.includes(search.toLowerCase()))
-    || (patient.address?.toLowerCase()?.includes(search.toLowerCase()))
-    || (patient.card_no?.includes(search.toUpperCase()))
-    || (patient.phone_no?.includes(search)))
+    (patient.fullname?.toLowerCase()?.includes(search.toLowerCase())) // by name
+    || (patient.address?.toLowerCase()?.includes(search.toLowerCase())) // by address
+    || (patient.card_no?.includes(search.toUpperCase())) // by card number
+    || (patient.phone_no?.includes(search))) // by phone number
 
     return (
         <>
