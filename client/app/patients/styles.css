@@ -75,3 +75,7 @@ input[type="radio"]:checked {
     background: rgb(232, 232, 232);
     box-shadow:  20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
 }
+
+.patient_info {
+    @apply flex gap-1.5 text-[16px]
+}
