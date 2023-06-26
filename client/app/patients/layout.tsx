@@ -1,3 +1,4 @@
+import '@/app/patients/styles.css'
 import { questrial } from "@/public/font/font"
 import { PatientProvider } from "@/hooks/usePatient"
 
