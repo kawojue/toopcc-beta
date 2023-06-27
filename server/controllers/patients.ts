@@ -281,21 +281,18 @@ const deleteRecommendation = asyncHandler(async (req: Request, res: Response) =>
     const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
-    if (type !== "physio" && type !== "opthal") {
-        return res.status(400).json({
-            ...ERROR,
-            msg: "Type is not defined."
-        })
-    }
-
     const rec: any = patient.recommendation
-    const originalRec: any[] = type === "opthal" ? rec.opthalmology.medication : rec.physiotherapy.medication
+    const originalRec: any[] = type === "opthal" ?
+    rec.opthalmology.medication : type === "physio" ?
+    rec.physiotherapy.medication : []
     const newRec: any[] = originalRec.filter((medic: any) => medic.idx !== idx)
 
     if (newRec.length === 0) {
-        type === "opthal" ? rec.opthalmology.eligible = false : rec.physiotherapy.eligible = false
+        type === "opthal" ? rec.opthalmology.eligible = false :
+        type === "physio" ? rec.physiotherapy.eligible = false : null
     }
-    type === "opthal" ? rec.opthalmology.medication = newRec : rec.physiotherapy.medication = newRec
+    type === "opthal" ? rec.opthalmology.medication = newRec :
+    type === "physio" ? rec.physiotherapy.medication = newRec: null
     await patient.save()
 
     res.status(200).json(SAVED)
