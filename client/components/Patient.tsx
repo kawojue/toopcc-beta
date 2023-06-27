@@ -5,12 +5,11 @@ import convertISODate from "@/utils/shortDate"
 const Patient = ({ patient }:any) => {
     console.log(patient)
 
-
     return (
         <section className="patients md:max-w-[800px] overflow-x-hidden">
-            <div className="patient_info absolute top-0 right-5">
-                <span>Card No:</span>
-                <span >
+            <div className="patient_info tracking-wider absolute top-0 right-5">
+                <span className="font-bold">Card No:</span>
+                <span className="font-semibold">
                     {patient.card_no}
                 </span>
             </div>
@@ -20,7 +19,7 @@ const Patient = ({ patient }:any) => {
                         <span>Full name: </span>
                         <span>{patient.fullname}</span>
                     </div>
-                    <div className="patient_info md:text-lg">
+                    <div className="patient_info">
                         <span>Address:</span>
                         <span>{patient.address || 'Null'}</span>
                     </div>
