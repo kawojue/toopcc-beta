@@ -59,7 +59,7 @@ input[type="radio"]:checked {
 }
 
 .patients-list {
-    @apply bg-clr-7 py-1 px-2 rounded-lg font-medium text-clr-2 trans
+    @apply bg-clr-7 py-1 px-2 rounded-lg font-medium text-clr-2 trans overflow-x-hidden
 }
 
 .patients-list.show {
@@ -77,5 +77,5 @@ input[type="radio"]:checked {
 }
 
 .patient_info {
-    @apply flex gap-1.5 text-[16px]
+    @apply flex gap-1.5
 }
