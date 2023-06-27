@@ -238,16 +238,17 @@ const deleteRecommendation = asyncHandler((req, res) => __awaiter(void 0, void 0
     const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
-    if (type !== "physio" && type !== "opthal") {
-        return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Type is not defined." }));
-    }
     const rec = patient.recommendation;
-    const originalRec = type === "opthal" ? rec.opthalmology.medication : rec.physiotherapy.medication;
+    const originalRec = type === "opthal" ?
+        rec.opthalmology.medication : type === "physio" ?
+        rec.physiotherapy.medication : [];
     const newRec = originalRec.filter((medic) => medic.idx !== idx);
     if (newRec.length === 0) {
-        type === "opthal" ? rec.opthalmology.eligible = false : rec.physiotherapy.eligible = false;
+        type === "opthal" ? rec.opthalmology.eligible = false :
+            type === "physio" ? rec.physiotherapy.eligible = false : null;
     }
-    type === "opthal" ? rec.opthalmology.medication = newRec : rec.physiotherapy.medication = newRec;
+    type === "opthal" ? rec.opthalmology.medication = newRec :
+        type === "physio" ? rec.physiotherapy.medication = newRec : null;
     yield patient.save();
     res.status(200).json(modal_1.SAVED);
 }));
