@@ -1,7 +1,7 @@
 "use client"
-import Link from 'next/link'
 import { useState } from 'react'
-import { catamaran, lato } from '@/public/font/font'
+import PatientList from './PatientList'
+import { catamaran } from '@/public/font/font'
 import { RxMagnifyingGlass } from '@/public/icons/ico'
 
 const Patients = ({ patients }: any) => {
@@ -35,26 +35,8 @@ const Patients = ({ patients }: any) => {
                 Patient does not exist.
             </p> : 
             <>
-                {searchQuery.map((patient: any) => (
-                    <article key={patient._id}
-                    className={`show patients-list hover:text-clr-3 hover:bg-clr-5`}>
-                        <Link href={`/patients/${patient.card_no?.split('/')[0]}`}
-                        className="patients-link">
-                            <div className="flex flex-col gap-1">
-                                <p className="w-14">
-                                    {patient.card_no}
-                                </p>
-                                <p className="font-semibold tracking-wider">
-                                    {patient.fullname}
-                                </p>
-                            </div>
-                            <p className={`${lato.className} tracking-wide w-28`}>
-                                {patient.phone_no}
-                            </p>
-                        </Link>
-                    </article>
-                ))}
-            </> }
+                {searchQuery.map((patient: any) => (<PatientList patient={patient} key={patient._id} />))}
+            </>}
         </section>
         </>
     )
