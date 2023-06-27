@@ -1,5 +1,4 @@
 "use client"
-import notify from "@/utils/notify"
 import convertISODate from "@/utils/shortDate"
 
 const Patient = ({ patient }:any) => {
