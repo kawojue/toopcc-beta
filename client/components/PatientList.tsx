@@ -11,7 +11,7 @@ const PatientList: React.FC<{ patient: any }> = ({ patient }) => {
         const current: HTMLElement | null = ptRef.current
         if (!current) return
         
-        const bottom: number = window.innerHeight / 5 * 4.5
+        const bottom: number = window.innerHeight / 5 * (9 / 2)
         const containerTop: number = current.getBoundingClientRect().top
         if (containerTop < bottom) {
             setShow(true)
