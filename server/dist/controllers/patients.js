@@ -56,7 +56,7 @@ const add = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, functio
         address, fullname,
         phone_no, age: age,
     });
-    res.status(200).json(modal_1.SAVED);
+    res.status(201).json(modal_1.SAVED);
 }));
 exports.add = add;
 // edit patient data
@@ -264,12 +264,12 @@ const deletExtension = asyncHandler((req, res) => __awaiter(void 0, void 0, void
         return res.status(404).json(modal_1.EXT_NOT_EXIST);
     patient.recommendation.extensions = extensions.filter((element) => element.idx !== idx);
     yield patient.save();
-    return res.status(200).json(modal_1.SAVED);
+    res.status(200).json(modal_1.SAVED);
 }));
 exports.deletExtension = deletExtension;
 const editExtension = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { card_no, idx } = req.params;
     const { extension } = req.body;
+    const { card_no, idx } = req.params;
     const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-body');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
@@ -279,7 +279,7 @@ const editExtension = asyncHandler((req, res) => __awaiter(void 0, void 0, void 
         return res.status(404).json(modal_1.EXT_NOT_EXIST);
     patient.recommendation.extensions = extensions.map((ext) => ext.idx === idx ? Object.assign(Object.assign({}, ext), extension) : ext);
     yield patient.save();
-    return res.status(200).json(modal_1.SAVED);
+    res.status(200).json(modal_1.SAVED);
 }));
 exports.editExtension = editExtension;
 const deleteDianosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
