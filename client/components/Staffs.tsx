@@ -1,16 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client"
-import useAuth from '@/hooks/useAuth'
+import Link from 'next/link'
 import axios from '@/app/api/instance'
 import { SpinnerTwo } from './Spinner'
+import useToken from '@/hooks/useToken'
 import { useState, useEffect } from 'react'
 import throwError from '@/utils/throwError'
 import { Disclosure } from '@headlessui/react'
 import { ChevronUpIcon } from '@heroicons/react/24/solid'
-import Link from 'next/link'
 
 const Staffs: React.FC = () => {
-    const { token }: any = useAuth()
+    const token: string = useToken()
     const [staffs, setStaffs] = useState<any[]>([])
     const [loading, setLoading] = useState<boolean>(false)
 
