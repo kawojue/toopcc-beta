@@ -58,7 +58,7 @@ const add = asyncHandler(async (req: Request, res: Response) => {
         phone_no, age: age,
     })
 
-    res.status(200).json(SAVED)
+    res.status(201).json(SAVED)
 })
 
 // edit patient data
