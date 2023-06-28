@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import '../styles.css'
 import notify from '@/utils/notify'
 import { parseISO } from 'date-fns'
 import axios from '@/app/api/instance'
+import useToken from '@/hooks/useToken'
 import { lato } from '@/public/font/font'
 import usePatient from '@/hooks/usePatient'
 import throwError from '@/utils/throwError'
@@ -11,8 +11,9 @@ import { useState, FormEvent } from 'react'
 import { SpinnerOne } from '@/components/Spinner'
 
 const page = () => {
+    const token: string = useToken()
+    const { state, dispatch }: IPatient = usePatient()
     const [loading, setLoading] = useState<boolean>(false)
-    const { token, state, dispatch }: IPatient = usePatient()
 
     const handleSubmit = async (e: FormEvent): Promise<void> => {
         e.preventDefault()
@@ -20,10 +21,10 @@ const page = () => {
         await axios.post(
             '/patients/add',
             JSON.stringify({
-                date: state.date ? parseISO(state.date).toISOString(): "",
-                card_no: state.card_no, fullname: state.fullname,
-                phone_no: state.phone_no, address: state.address,
                 sex: state.sex, age: state.age,
+                phone_no: state.phone_no, address: state.address,
+                card_no: state.card_no, fullname: state.fullname,
+                date: state.date ? parseISO(state.date).toISOString(): "",
             }),
             {
                 headers: {
