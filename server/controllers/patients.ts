@@ -314,8 +314,8 @@ const deletExtension = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const editExtension = asyncHandler(async (req: Request, res: Response) => {
-    const { card_no, idx }: any = req.params
     const { extension }: any = req.body
+    const { card_no, idx }: any = req.params
     const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
@@ -328,7 +328,7 @@ const editExtension = asyncHandler(async (req: Request, res: Response) => {
     } : ext)
     await patient.save()
 
-    return res.status(200).json(SAVED)
+    res.status(200).json(SAVED)
 })
 
 const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
