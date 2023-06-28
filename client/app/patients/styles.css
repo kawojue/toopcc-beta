@@ -77,5 +77,13 @@ input[type="radio"]:checked {
 }
 
 .patient_info {
-    @apply flex gap-1.5
+    @apply flex gap-1.5 text-[14px]
+}
+
+.patient_info span:nth-child(1) {
+    @apply font-semibold
+}
+
+.patient_info span:nth-child(2) {
+    @apply font-medium
 }
