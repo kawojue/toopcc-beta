@@ -69,7 +69,6 @@ type PatientActions =
 | { type: 'DATE'; payload: string }
 
 interface IPatient {
-    token: string
     state: PatientStates
     dispatch: (obj: PatientActions) => void
 }
