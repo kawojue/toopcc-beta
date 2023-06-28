@@ -310,7 +310,7 @@ const deletExtension = asyncHandler(async (req: Request, res: Response) => {
     patient.recommendation.extensions = extensions.filter((element: any) => element.idx !== idx)
     await patient.save()
 
-    return res.status(200).json(SAVED)
+    res.status(200).json(SAVED)
 })
 
 const editExtension = asyncHandler(async (req: Request, res: Response) => {
