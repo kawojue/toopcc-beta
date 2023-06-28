@@ -1,4 +1,5 @@
 "use client"
+import useToken from "./useToken"
 import notify from "@/utils/notify"
 import axios from "@/app/api/instance"
 import throwError from "@/utils/throwError"
@@ -18,6 +19,7 @@ const initialStates: ModalStates = {
 }
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const getToken: string = useToken()
     const pathName: string = usePathname()
     const router: AppRouterInstance = useRouter()
     const [token, setToken] = useState<string>("")
@@ -53,9 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     useEffect(() => {
-        const storedToken: string = JSON.parse(localStorage.getItem('token') as string)
-        if (storedToken) setToken(storedToken)
-    }, [])
+        setToken(getToken)
+    }, [getToken])
 
     useEffect(() => {
         if (pathName === '/staff/profile' && token) {
@@ -145,7 +146,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             '/auth/logout',
             { headers: { 'Authorization': `Bearer ${token}` } }
         ).then((res: any) => {
-            setToken("")
             setAuth(false)
             setStatesToDefault()
             localStorage.clear()
@@ -245,13 +245,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return (
         <Auth.Provider value={{
             auth, handleSignup, pswd, pswd2, loading, setLoading,
-            handleLogin, userId, setUserId, token, handleLogout,
-            setPswd, setPswd2, setEmail, email, fullname, setFullname,
-            avatar, setAvatar, otp, setOTP, handleOTPRequest, profile,
-            handlePswdReset, handleIdVerification, loadingProfile,
-            state, dispatch, user, setUser, handleUsername, handleFullname,
-            currentPswd, setCurrentPswd, handleEditPswd, setStatesToDefault,
-            delAvatar, changeAvatar
+            handleLogin, userId, setUserId, handleLogout, setPswd,
+            setPswd2, setEmail, email, fullname, setFullname, avatar,
+            setAvatar, otp, setOTP, handleOTPRequest, profile, state,
+            handlePswdReset, handleIdVerification, loadingProfile, user,
+            dispatch, setUser, handleUsername, handleFullname, currentPswd,
+            setCurrentPswd, handleEditPswd, setStatesToDefault, delAvatar,
+            changeAvatar
         }}>
             {children}
         </Auth.Provider>
