@@ -2,9 +2,9 @@
 "use client"
 import { useEffect } from 'react'
 import useAuth from '@/hooks/useAuth'
+import Profile from '@/components/Profile'
 import { useRouter } from 'next/navigation'
 import { SpinnerTwo } from '@/components/Spinner'
-import Profile from '@/components/Profile'
 
 const page = () => {
     const router = useRouter()
