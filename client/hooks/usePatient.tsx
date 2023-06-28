@@ -1,5 +1,5 @@
 "use client"
-import useAuth from './useAuth'
+import useToken from './useToken'
 import notify from '@/utils/notify'
 import axios from '@/app/api/instance'
 import {
@@ -26,7 +26,7 @@ const initialStates: PatientStates = {
 }
 
 export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { token, auth }: any = useAuth()
+    const token: string = useToken()
     const [patient, setPatient] = useState({})
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
     const [profLoad, setProfLoad] = useState<boolean>(false)
@@ -60,7 +60,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     return (
         <Patient.Provider value={{
-            token, auth, state, dispatch, handlePatient, patient, profLoad,
+            state, dispatch, handlePatient, patient, profLoad,
             handleDelPatient, btnLoad
         }}>
             {children}
