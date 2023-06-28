@@ -1,16 +1,21 @@
 "use client"
-import useAuth from "./useAuth"
+import useToken from "./useToken"
 import jwtDecode from "jwt-decode"
+import { useState, useEffect } from "react"
 
 const useJWT = (): JWT => {
-    const { token }: any = useAuth()
-    let decodedToken: JWT = { roles: [], user: "" };
+    const token: string = useToken()
+    const [decodedToken, setDecodedToken] = useState<{
+        roles: string[], user: string
+    }>({ roles: [], user: "" })
 
-    try {
-        decodedToken = jwtDecode(token as string)
-    } catch {
-        console.log("Invalid Token!")
-    }
+    useEffect(() => {
+        try {
+            if (token) setDecodedToken(jwtDecode(token))
+        } catch {
+            console.log("Invalid Token!")
+        }
+    }, [token])
 
     return decodedToken
 }
