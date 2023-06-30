@@ -77,13 +77,13 @@ input[type="radio"]:checked {
 }
 
 .patient_info {
-    @apply flex gap-1.5 text-[18px]
+    @apply flex gap-1.5 text-[15px] tracking-wide
 }
 
 .patient_info span:nth-child(1) {
-    @apply font-semibold
+    @apply font-semibold text-clr-8
 }
 
 .patient_info span:nth-child(2) {
-    @apply font-medium
+    @apply font-medium text-clr-2
 }
