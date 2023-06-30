@@ -15,29 +15,29 @@ const Patient = ({ patient }:any) => {
             </div>
             <article className={`flex flex-col justify-between gap-5 mt-9 md:items-center md:flex-row`}>
                 <div className="patient_info flex-col">
-                    <div className="patient_info md:text-[17px]">
+                    <div className="patient_info">
                         <span>Full name :</span>
                         <span>{patient.fullname}</span>
                     </div>
-                    <div className="patient_info md:text-[17px]">
+                    <div className="patient_info">
                         <span>Address :</span>
                         <span>{patient.address || 'Null'}</span>
                     </div>
-                    <div className="patient_info md:text-[17px]">
+                    <div className="patient_info">
                         <span>Date :</span>
                         <span>{convertISODate(patient.date) || 'Null'}</span>
                     </div>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                    <div className="patient_info md:text-[17px]">
+                    <div className="patient_info">
                         <span>Age :</span>
                         <span>{patient.age}</span>
                     </div>
-                    <div className="patient_info md:text-[17px]">
+                    <div className="patient_info">
                         <span>Sex :</span>
                         <span>{patient.sex}</span>
                     </div>
-                    <div className="patient_info md:text-[17px]">
+                    <div className="patient_info">
                         <span>Phone No :</span>
                         <span>{patient.phone_no || 'Null'}</span>
                     </div>
