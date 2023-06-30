@@ -16,33 +16,31 @@ const page = ({ params: { profile } } : IProfile) => {
     const roles: unknown = useRole("hr", "admin")
 
     const [staff, setStaff] = useState<any>({})
-    const [loadingProfile, setLoadingProfile] = useState<boolean>(false)
+    const [laodProf, setLoadProf] = useState<boolean>(false)
 
     const handleStaff = async (): Promise<void> => {
-        setLoadingProfile(true)
+        setLoadProf(true)
         await axios.get(`/api/users/profile/${profile}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         }).then((res: any) => setStaff(res.data?.user))
-        .catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
+        .catch((err: any) => throwError(err)).finally(() => setLoadProf(false))
     }
 
     useEffect(() => {
-        if (token) {
-            if (roles !== null) {
-                if (roles === false) {
-                    // router.push('/staff/profile')
-                }
+        if (roles !== null) {
+            if (roles === false) {
+                router.push('/staff/profile')
             }
         }
-    }, [router, token, roles])
+    }, [router, roles])
 
     useEffect(() => {
         if (token) (async () => await handleStaff())()
     }, [token])
 
-    if (loadingProfile) return <SpinnerTwo />
+    if (laodProf) return <SpinnerTwo />
 
     return <Profile profile={staff} />
 }
