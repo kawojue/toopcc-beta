@@ -21,7 +21,7 @@ const patientReducer = (state: PatientStates, action: PatientActions) => {
         case 'CARDNO': {
             return { ...state, cardNo: action.payload }
         }
-        case 'DEAD_D': {
+        case 'DEATH_D': {
             return { ...state, deathDate: action.payload }
         }
         case 'DEAD': {
