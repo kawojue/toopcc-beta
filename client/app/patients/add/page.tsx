@@ -31,8 +31,10 @@ const page = () => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-        ).then((res: any) => notify(res.data?.action, res.data?.msg))
-        .catch((err: any) => throwError(err)).finally(() => setLoading(false))
+        ).then((res: any) => {
+            dispatch({ type: 'RESET' })
+            notify(res.data?.action, res.data?.msg)
+        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
     return (
