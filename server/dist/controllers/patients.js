@@ -99,17 +99,15 @@ const edit = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, functi
         }
         patient.age = age;
     }
-    if (death === null || death === void 0 ? void 0 : death.dead) {
-        if (Boolean(death === null || death === void 0 ? void 0 : death.dead) !== patient.death.dead) {
-            if (!(death === null || death === void 0 ? void 0 : death.date)) {
-                return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Date of death is required." }));
-            }
-            death = {
-                dead: !Boolean(patient.dead),
-                date: death.date
-            };
-            patient.death = death;
+    if (death) {
+        console.log(death);
+        if (death.dead === true && !death.date) {
+            return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: 'Death date is required' }));
         }
+        if (death.dead === false) {
+            death = { dead: false, date: '' };
+        }
+        patient.death = death;
     }
     if (address === null || address === void 0 ? void 0 : address.trim())
         patient.address = address;
