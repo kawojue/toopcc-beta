@@ -21,7 +21,7 @@ import UsernameModal from './Staff Modals/Username'
 import FullnameModal from './Staff Modals/Fullname'
 
 const Profile: React.FC<{ profile: any }> = ({ profile }) => {
-    const isRoles = useRole("hr", "admin")
+    const isRoles = useRole("hr", "admin") as boolean
     const pathName: string = usePathname()
     const { state, dispatch }: any = useAuth()
     const [onMouse, setOnMouse] = useState<boolean>(false)
