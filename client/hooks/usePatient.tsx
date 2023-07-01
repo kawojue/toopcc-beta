@@ -16,13 +16,13 @@ const initialStates: PatientStates = {
     sex: '',
     age: '',
     date: '',
+    dead: '',
     cardNo: '',
     card_no: '',
     address: '',
     fullname: '',
     phone_no: '',
     deathDate: '',
-    dead: null
 }
 
 export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
