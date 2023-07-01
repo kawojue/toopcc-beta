@@ -30,6 +30,12 @@ const patientReducer = (state: PatientStates, action: PatientActions) => {
         case 'DATE': {
             return { ...state, date: action.payload }
         }
+        case 'RESET': {
+            return {
+                sex: '', date: '', age: '', dead: '', cardNo: '', card_no: '',
+                address: '', fullname: '', phone_no: '', deathDate: '',
+            }
+        }
     
         default: {
             return state
