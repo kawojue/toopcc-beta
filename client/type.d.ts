@@ -33,7 +33,7 @@ interface PatientStates {
     sex: string
     date: string
     age: string
-    dead: boolean | null
+    dead: string
     cardNo: string
     card_no: string
     address: string
@@ -64,8 +64,8 @@ type PatientActions =
 | { type: 'ADDR'; payload: string }
 | { type: 'FULLN'; payload: string }
 | { type: 'PHN'; payload: string }
-| { type: 'DEAD'; payload: boolean }
-| { type: 'DEAD_D'; payload: string }
+| { type: 'DEAD'; payload: string }
+| { type: 'DEATH_D'; payload: string }
 | { type: 'DATE'; payload: string }
 
 interface IPatient {
