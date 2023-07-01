@@ -121,20 +121,20 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         patient.age = age
     }
 
-    if (death?.dead) {
-        if (Boolean(death?.dead) !== patient.death.dead) {
-            if (!death?.date) {
-                return res.status(400).json({
-                    ...ERROR,
-                    msg: "Date of death is required."
-                })
-            }
-            death = {
-                dead: !Boolean(patient.dead),
-                date: death.date
-            }
-            patient.death = death
+    if (death) {
+        console.log(death)
+        if (death.dead === true && !death.date) {
+            return res.status(400).json({
+                ...ERROR,
+                msg: 'Death date is required'
+            })
         }
+
+        if (death.dead === false) {
+            death = { dead: false, date: '' }
+        }
+
+        patient.death = death
     }
 
     if (address?.trim()) patient.address = address
