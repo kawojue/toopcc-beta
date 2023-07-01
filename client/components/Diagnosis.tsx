@@ -1,0 +1,6 @@
+const Diagnosis = () => {
+    
+    return (
+        <></>
+    )
+}
