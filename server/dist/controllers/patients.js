@@ -67,8 +67,8 @@ const edit = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, functi
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
     if (cardNo || (cardNo === null || cardNo === void 0 ? void 0 : cardNo.trim())) {
-        cardNo = cardNo.trim();
-        const cardNoExists = yield Patient_1.default.findOne({ card_no: cardNo }).exec();
+        cardNo = cardNo.trim().toUpperCase();
+        const cardNoExists = yield (0, getModels_1.fetchByCardNumber)(cardNo, '-body -recommendation');
         if (cardNoExists)
             return res.status(409).json(modal_1.PATIENT_EXIST);
         patient.card_no = cardNo;
