@@ -31,7 +31,7 @@ const page = ({ params: { profile } } : IProfile) => {
     useEffect(() => {
         if (roles !== null) {
             if (roles === false) {
-                router.push('/staff/profile')
+                // router.push('/staff/profile')
             }
         }
     }, [router, roles])
