@@ -73,8 +73,8 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
     if (cardNo || cardNo?.trim()) {
-        cardNo = cardNo.trim()
-        const cardNoExists: any = await Patient.findOne({ card_no: cardNo }).exec()
+        cardNo = cardNo.trim().toUpperCase()
+        const cardNoExists: any = await fetchByCardNumber(cardNo, '-body -recommendation')
         if (cardNoExists) return res.status(409).json(PATIENT_EXIST)
         patient.card_no = cardNo
     }
