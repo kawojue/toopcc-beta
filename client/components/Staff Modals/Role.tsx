@@ -1,8 +1,8 @@
 "use client"
 import notify from '@/utils/notify'
-import useAuth from '@/hooks/useAuth'
 import axios from '@/app/api/instance'
 import { SpinnerOne } from '../Spinner'
+import useToken from '@/hooks/useToken'
 import { Fragment, useState } from 'react'
 import throwError from '@/utils/throwError'
 import { FaTimes } from '@/public/icons/ico'
@@ -10,7 +10,7 @@ import CustomDropDown from '../CustomDropDown'
 import { Dialog, Transition } from '@headlessui/react'
 
 const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
-    const { token }: any = useAuth()
+    const token: string = useToken()
     const [role, setRole]= useState<string>("")
     const [assLoading, setAssLoading] = useState<boolean>(false)
     const [remLoading, setRemLoading] = useState<boolean>(false)
