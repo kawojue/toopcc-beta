@@ -2,8 +2,8 @@
 import { parseISO } from 'date-fns'
 import notify from '@/utils/notify'
 import SwitchBtn from '../SwitchBtn'
-import useAuth from '@/hooks/useAuth'
 import axios from '@/app/api/instance'
+import useToken from '@/hooks/useToken'
 import { SpinnerOne } from '../Spinner'
 import throwError from '@/utils/throwError'
 import { FaTimes } from '@/public/icons/ico'
@@ -11,7 +11,7 @@ import { FormEvent, Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
 const ResignModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
-    const { token }: any = useAuth()
+    const token: string = useToken()
     const [date, setDate] = useState<any>("")
     const [loading, setLoading]= useState<boolean>(false)
     const [resig, setResig] = useState<boolean>(profile.resigned?.resign ? true: false)
