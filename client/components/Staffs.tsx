@@ -16,7 +16,7 @@ const Staffs: React.FC = () => {
 
     const handleStaffs = async (): Promise<void> => {
         setLoading(true)
-        await axios.get('/api/users/profile', {
+        await axios.get('/api/users', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
