@@ -6,6 +6,7 @@ import {
     createContext, useState, useRef,
     useContext, useEffect, useReducer
 } from 'react'
+import { useRouter } from 'next/navigation'
 import throwError from '@/utils/throwError'
 import formatCardNo from '@/utils/formatCardNo'
 import patientReducer from '@/utils/patientReducer'
@@ -26,14 +27,36 @@ const initialStates: PatientStates = {
 }
 
 export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const router = useRouter()
     const token: string = useToken()
     const [patient, setPatient] = useState({})
+    const [patients, setPatients] = useState<any[]>([])
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
-    const [profLoad, setProfLoad] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(false)
     const [state, dispatch]= useReducer(patientReducer, initialStates)
 
+    const getAllPatients = async (token: string) => {
+        setLoading(true)
+        await axios.get(`/api/patients`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((res: any) => {
+            const pts: any[] = res.data?.patients || []
+            const formattedPatients = pts.map((pt: any) => {
+                return formatCardNo(pt)
+            })
+            setPatients(formattedPatients)
+        }).catch((err: any) => {
+            throwError(err)
+            setTimeout(() => {
+                router.push('/staff/profile')
+            }, 500)
+        }).finally(() => setLoading(false))
+    }
+
     const handlePatient = async (card_no: string) => {
-        setProfLoad(true)
+        setLoading(true)
         await axios.get(
             `/api/patients/patient/${card_no}`,
             {
@@ -42,7 +65,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 }
             }
         ).then((res: any) => setPatient(formatCardNo(res.data.patient)))
-        .catch((err: any) => throwError(err)).finally(() => setProfLoad(false))
+        .catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handleDelPatient = async (card_no: string) => {
@@ -60,8 +83,8 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     return (
         <Patient.Provider value={{
-            state, dispatch, handlePatient, patient, profLoad,
-            handleDelPatient, btnLoad
+            state, dispatch, handlePatient, patient, loading,
+            handleDelPatient, btnLoad, getAllPatients, patients
         }}>
             {children}
         </Patient.Provider>
