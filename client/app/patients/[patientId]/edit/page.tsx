@@ -19,7 +19,7 @@ const page = ({ params: { patientId } }: IPt) => {
 
     const death = {
         dead: state.dead === 'yes' ? true : state.dead === 'no' ? false : null,
-        date: state.deathDate ? parseISO(state.deathDate).toISOString(): ""
+        date: state.deathDate ? parseISO(state.deathDate).toISOString(): ''
     }
 
     const handleSubmit = async (e: FormEvent): Promise<void> => {
@@ -51,7 +51,7 @@ const page = ({ params: { patientId } }: IPt) => {
             notify(res.data?.action, res.data?.msg)
             setTimeout(() => {
                 router.push(`/patients/${patientId}`)
-            }, 500);
+            }, 230);
         }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
