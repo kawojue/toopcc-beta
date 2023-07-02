@@ -25,7 +25,8 @@ const jwtVerify = asyncHandler((req, res, next) => __awaiter(void 0, void 0, voi
     jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET, (err, decoded) => __awaiter(void 0, void 0, void 0, function* () {
         if (err)
             return res.status(403).json(modal_1.ACCESS_DENIED);
-        const account = yield User_1.default.findOne({ token }).exec();
+        const account = yield User_1.default.findOne({ token })
+            .select('-password -OTP').exec();
         if (!account)
             return res.status(403).json(modal_1.ACCESS_DENIED);
         const user = decoded.user;
