@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [token, pathName, router])
 
     const handleProfile = async (token: string): Promise<void> => {
-        await axios.get('/api/users/user/profile', {
+        await axios.get('/api/users/profile', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
