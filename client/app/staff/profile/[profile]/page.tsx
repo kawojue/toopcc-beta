@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import useRole from "@/hooks/useRole"
 import axios from "@/app/api/instance"
 import useToken from "@/hooks/useToken"
 import Profile from "@/components/Profile"
@@ -13,7 +12,6 @@ import { SpinnerTwo } from "@/components/Spinner"
 const page = ({ params: { profile } } : IProfile) => {
     const router = useRouter()
     const token: string = useToken()
-    const roles: unknown = useRole("hr", "admin")
 
     const [staff, setStaff] = useState<any>({})
     const [laodProf, setLoadProf] = useState<boolean>(false)
@@ -25,16 +23,13 @@ const page = ({ params: { profile } } : IProfile) => {
                 'Authorization': `Bearer ${token}`
             }
         }).then((res: any) => setStaff(res.data?.user))
-        .catch((err: any) => throwError(err)).finally(() => setLoadProf(false))
+        .catch((err: any) => {
+            throwError(err)
+            setTimeout(() => {
+                router.push('/staff/profile')
+            }, 500)
+        }).finally(() => setLoadProf(false))
     }
-
-    useEffect(() => {
-        if (roles !== null) {
-            if (roles === false) {
-                // router.push('/staff/profile')
-            }
-        }
-    }, [router, roles])
 
     useEffect(() => {
         if (token) (async () => await handleStaff())()
