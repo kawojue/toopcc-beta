@@ -21,9 +21,9 @@ import UsernameModal from './Staff Modals/Username'
 import FullnameModal from './Staff Modals/Fullname'
 
 const Profile: React.FC<{ profile: any }> = ({ profile }) => {
-    const isRoles = useRole("hr", "admin") as boolean
     const pathName: string = usePathname()
     const { state, dispatch }: any = useAuth()
+    const isRoles = useRole("hr", "admin") as boolean
     const [onMouse, setOnMouse] = useState<boolean>(false)
     const [shortDate, setShortDate] = useState<string>("")
     
@@ -36,12 +36,14 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
     return (
         <main className="profile-main">
             {/* Modals */}
-            <PswdModal state={state} dispatch={dispatch} />
-            <RoleModal state={state} dispatch={dispatch} profile={profile} />
-            <ResignModal state={state} dispatch={dispatch} profile={profile} />
-            <AvatarModal state={state} dispatch={dispatch} profile={profile} />
-            <UsernameModal state={state} dispatch={dispatch} profile={profile} />
-            <FullnameModal state={state} dispatch={dispatch} profile={profile} />
+            <>
+                <PswdModal state={state} dispatch={dispatch} />
+                <RoleModal state={state} dispatch={dispatch} profile={profile} />
+                <ResignModal state={state} dispatch={dispatch} profile={profile} />
+                <AvatarModal state={state} dispatch={dispatch} profile={profile} />
+                <UsernameModal state={state} dispatch={dispatch} profile={profile} />
+                <FullnameModal state={state} dispatch={dispatch} profile={profile} />
+            </>
             <section className="profile-header">
                 <h1 className='profile-header-h1 md:text-3xl'>
                     {pathName === "/staff/profile" ? "Your Info": "Staff Info"}
