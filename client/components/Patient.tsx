@@ -1,4 +1,5 @@
 "use client"
+import getPeriod from "@/utils/period"
 import convertISODate from "@/utils/shortDate"
 
 const Patient = ({ patient }:any) => {
@@ -6,10 +7,12 @@ const Patient = ({ patient }:any) => {
     return (
         <section className="patients md:max-w-[800px] overflow-x-hidden">
             <article className="w-full flex justify-between">
-                <div className="patient_info tracking-wider ">
+                <div className="patient_info tracking-wider"
+                title={`${patient.death?.dead ? getPeriod(patient.death?.date): ''}`}>
                     <span className="font-bold">Status :</span>
                     <span className="font-semibold">
-                        {patient.death?.dead === true ? 'Dead': 'Active'}
+                        {patient.death?.dead === true ?
+                        `Dead ${convertISODate(patient.death?.date)}`: 'Active'}
                     </span>
                 </div>
                 <div className="patient_info tracking-wider ">
