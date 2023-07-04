@@ -24,10 +24,11 @@ const page = ({ params: { profile } } : IProfile) => {
             }
         }).then((res: any) => setStaff(res.data?.user))
         .catch((err: any) => {
-            throwError(err)
-            setTimeout(() => {
+            if (err.response.status === 401) {
                 router.push('/staff/profile')
-            }, 500)
+            } else {
+                throwError(err)
+            }
         }).finally(() => setLoadProf(false))
     }
 
