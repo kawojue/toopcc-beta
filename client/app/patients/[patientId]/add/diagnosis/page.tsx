@@ -6,10 +6,6 @@ const page = () => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [content, setContent] = useState<string>('');
 
-    const handleBold = () => {
-        document.execCommand('bold', false);
-    };
-
     const handleSave = () => {
         if (!editorRef.current) return
 
@@ -17,9 +13,9 @@ const page = () => {
     };
 
     return (
-        <>
+        <section>
         <div className="flex gap-3">
-            <button onClick={handleBold}>Bold</button>
+            <button onClick={() => document.execCommand('bold', false)}>Bold</button>
             <button onClick={() => document.execCommand('italic', false)}>Italic</button>
             <button onClick={handleSave}>Save</button>
         </div>
@@ -32,7 +28,7 @@ const page = () => {
         {/* <div>
             <div dangerouslySetInnerHTML={{ __html: content }} />
         </div> */}
-        </>
+        </section>
     );
 };
 
