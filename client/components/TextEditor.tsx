@@ -23,7 +23,6 @@ const TextEditor: React.FC<{ textsFn: (texts: string) => void }> = ({ textsFn })
             <div
                 ref={editorRef}
                 contentEditable="true"
-                onChange={handleTexts}
                 style={{ border: '1px solid #ccc', minHeight: '100px', padding: '10px' }} />
         </section>
     )
