@@ -1,9 +1,9 @@
 "use client"
 import Link from 'next/link'
 import { lato } from '@/public/font/font'
-import { useRef, useState, useEffect } from 'react'
+import { FC, useRef, useState, useEffect } from 'react'
 
-const PatientList: React.FC<{ patient: any }> = ({ patient }) => {
+const PatientList: FC<{ patient: any }> = ({ patient }) => {
     const ptRef = useRef<HTMLElement>(null)
     const [show, setShow] = useState<boolean>(false)
 
