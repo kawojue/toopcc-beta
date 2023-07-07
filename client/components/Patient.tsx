@@ -2,7 +2,7 @@
 import getPeriod from "@/utils/period"
 import convertISODate from "@/utils/shortDate"
 
-const Patient = ({ patient }: any) => {
+const Patient: React.FC<{ patient: any }> = ({ patient }) => {
 
     return (
         <section className="patients md:max-w-[800px] overflow-x-hidden">
