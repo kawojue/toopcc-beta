@@ -1,4 +1,4 @@
-const Diagnosis = () => {
+const Diagnosis: React.FC = () => {
     
     return (
         <></>
