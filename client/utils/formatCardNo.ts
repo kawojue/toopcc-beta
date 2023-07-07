@@ -1,4 +1,4 @@
-const formatCardNo = (patient: any) => {
+const formatCardNo = (patient: any): any => {
     if (!patient) return
     
     const { card_no: cardNo, date: ISOStringDate } = patient
