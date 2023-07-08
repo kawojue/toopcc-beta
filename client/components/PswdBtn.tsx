@@ -1,9 +1,5 @@
 import { AiFillEyeInvisible, AiFillEye } from '@/public/icons/ico'
 
-interface IPswdButton {
-    get: boolean
-    set: (x: boolean) => void
-}
 
 const PswdButton: React.FC<IPswdButton> = ({get, set}) => {
     return (
