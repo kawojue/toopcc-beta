@@ -1,3 +1,8 @@
+interface IPswdButton {
+    get: boolean
+    set: (x: boolean) => void
+}
+
 interface ISubmitBtn {
     loading?: boolean
     texts: string
