@@ -1,16 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { useState, FormEvent } from 'react'
+import { handleFile } from '@/utils/file'
 import TextEditor from '@/components/TextEditor'
+import { useState, FormEvent, useRef } from 'react'
 
 const page = () => {
-    const [texts, setTexts] = useState<string>("")
-
-    console.log(texts)
+    const textEditorRef = useRef<HTMLDivElement>(null)
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
+        if (!textEditorRef.current) return
+
+        console.log(textEditorRef.current.innerHTML)
     }
 
     return (
@@ -18,7 +20,7 @@ const page = () => {
             <button onClick={handleSubmit}>
                 Submit
             </button>
-            <TextEditor textsFn={setTexts} />
+            <TextEditor textEditorRef={textEditorRef} />
         </form>
     )
 }
