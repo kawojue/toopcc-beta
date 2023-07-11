@@ -54,25 +54,25 @@ interface IComponent {
 }
 
 type ModalActions =
-| { type: 'RESIG' }
-| { type: 'PSWD' }
-| { type: 'ROLES' }
-| { type: 'USERNAME' }
-| { type: 'FULLNAME' }
-| { type: 'AVATAR' }
+    | { type: 'RESIG' }
+    | { type: 'PSWD' }
+    | { type: 'ROLES' }
+    | { type: 'USERNAME' }
+    | { type: 'FULLNAME' }
+    | { type: 'AVATAR' }
 
 type PatientActions =
-| { type: 'RESET' }
-| { type: 'PHN'; payload: string }
-| { type: 'SEX'; payload: string }
-| { type: 'AGE'; payload: string }
-| { type: 'DEAD'; payload: string }
-| { type: 'ADDR'; payload: string }
-| { type: 'DATE'; payload: string }
-| { type: 'FULLN'; payload: string }
-| { type: 'CARDNO'; payload: string }
-| { type: 'CARD_NO'; payload: string }
-| { type: 'DEATH_D'; payload: string }
+    | { type: 'RESET' }
+    | { type: 'PHN'; payload: string }
+    | { type: 'SEX'; payload: string }
+    | { type: 'AGE'; payload: string }
+    | { type: 'DEAD'; payload: string }
+    | { type: 'ADDR'; payload: string }
+    | { type: 'DATE'; payload: string }
+    | { type: 'FULLN'; payload: string }
+    | { type: 'CARDNO'; payload: string }
+    | { type: 'CARD_NO'; payload: string }
+    | { type: 'DEATH_D'; payload: string }
 
 interface IPatient {
     state: PatientStates
