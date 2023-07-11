@@ -12,10 +12,11 @@ const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
                 <button type="button" onClick={() => document.execCommand('italic', false)}>
                     Italic
                 </button>
+                <button type="button" onClick={() => document.execCommand('underline', false)}>
+                    Underline
+                </button>
             </div>
-            <div
-                ref={textEditorRef}
-                contentEditable="true"
+            <div ref={textEditorRef} contentEditable="true"
                 style={{ border: '1px solid #ccc', minHeight: '100px', padding: '10px' }} />
         </section>
     )
