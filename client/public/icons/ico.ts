@@ -4,7 +4,10 @@ import {
     AiFillEyeInvisible, AiOutlineCloudUpload,
     AiOutlineCamera, AiOutlineMail, AiFillEye
 } from 'react-icons/ai'
-import { FaTimes, FaCopy } from 'react-icons/fa'
+import {
+    FaTimes, FaUnderline, FaCopy,
+    FaItalic, FaBold, FaPaste
+} from 'react-icons/fa'
 import { RxMagnifyingGlass } from 'react-icons/rx'
 
 
