@@ -33,7 +33,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const [patients, setPatients] = useState<any[]>([])
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
-    const [state, dispatch]= useReducer(patientReducer, initialStates)
+    const [state, dispatch] = useReducer(patientReducer, initialStates)
 
     const getAllPatients = async (token: string) => {
         setLoading(true)
@@ -65,7 +65,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 }
             }
         ).then((res: any) => setPatient(formatCardNo(res.data.patient)))
-        .catch((err: any) => throwError(err)).finally(() => setLoading(false))
+            .catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handleDelPatient = async (card_no: string) => {
@@ -78,7 +78,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 }
             }
         ).then((res: any) => notify(res.data?.action, res.date?.msg))
-        .catch((err: any) => throwError(err)).finally(() => setBtnLoad(false))
+            .catch((err: any) => throwError(err)).finally(() => setBtnLoad(false))
     }
 
     return (
