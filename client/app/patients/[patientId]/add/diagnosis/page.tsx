@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { handleFile } from '@/utils/file'
+import PicsUpload from '@/components/PicsUpload'
 import TextEditor from '@/components/TextEditor'
 import { useState, FormEvent, useRef } from 'react'
 
@@ -21,6 +21,7 @@ const page = () => {
                 Submit
             </button>
             <TextEditor textEditorRef={textEditorRef} />
+            <PicsUpload />
         </form>
     )
 }
