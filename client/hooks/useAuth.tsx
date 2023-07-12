@@ -6,9 +6,13 @@ import throwError from "@/utils/throwError"
 import modalReducer from "@/utils/modalReducers"
 import { useRouter, usePathname } from "next/navigation"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context"
-import { createContext, useState, useEffect, useContext, useReducer } from "react"
+import {
+    createContext, useState, useEffect,
+    useContext, useReducer, Context
+} from "react"
 
-const Auth: any = createContext({})
+const Auth: Context<{}> = createContext({})
+
 const initialStates: ModalStates = {
     roles: false,
     avatar: false,
@@ -27,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [auth, setAuth] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
     const [loadingProfile, setLoadingProfile] = useState<boolean>(true)
-    
+
     const [otp, setOTP] = useState<string>("")
     const [user, setUser] = useState<string>("")
     const [pswd, setPswd] = useState<string>("")
@@ -109,21 +113,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const handleOTPRequest = async (): Promise<void> => {
         await axios.post('/auth/otp/request', JSON.stringify({ email }))
-        .then((res: any) => notify(res.data?.action, res.data?.msg))
-        .catch((err: any) => throwError(err))
+            .then((res: any) => notify(res.data?.action, res.data?.msg))
+            .catch((err: any) => throwError(err))
     }
 
     const handleIdVerification = async (): Promise<void> => {
         setLoading(true)
         await axios.post('/auth/otp/verify', JSON.stringify({ otp, email }))
-        .then((res: any) => {
-            setOTP("")
-            setVerified(res.data?.verified)
-            notify(res.data?.action, "Verification successful")
-            setTimeout(() => {
-                router.push('/staff/password/reset')
-            }, 500)
-        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+            .then((res: any) => {
+                setOTP("")
+                setVerified(res.data?.verified)
+                notify(res.data?.action, "Verification successful")
+                setTimeout(() => {
+                    router.push('/staff/password/reset')
+                }, 500)
+            }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handlePswdReset = async (): Promise<void> => {
