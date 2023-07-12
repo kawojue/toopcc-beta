@@ -2,7 +2,7 @@ import notify from "@/utils/notify"
 
 const checkFile = (file: any): boolean => {
     if (!file) return false
-    const maxSize: number = 3145728 // 3MB
+    const maxSize: number = 5242880 // 5MB
     const { name, size }: any = file
     const allowedFormats: string[] = ['jpg', 'png']
     const split: string[] = name.split('.')
