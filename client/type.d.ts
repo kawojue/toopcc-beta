@@ -53,6 +53,11 @@ interface IComponent {
     options?: string[]
 }
 
+interface IPatient {
+    state: PatientStates
+    dispatch: (obj: PatientActions) => void
+}
+
 type ModalActions =
     | { type: 'RESIG' }
     | { type: 'PSWD' }
@@ -73,8 +78,3 @@ type PatientActions =
     | { type: 'CARDNO'; payload: string }
     | { type: 'CARD_NO'; payload: string }
     | { type: 'DEATH_D'; payload: string }
-
-interface IPatient {
-    state: PatientStates
-    dispatch: (obj: PatientActions) => void
-}
