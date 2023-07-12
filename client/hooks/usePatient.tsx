@@ -4,14 +4,14 @@ import notify from '@/utils/notify'
 import axios from '@/app/api/instance'
 import {
     createContext, useState, useRef,
-    useContext, useEffect, useReducer
+    useContext, useReducer, Context
 } from 'react'
 import { useRouter } from 'next/navigation'
 import throwError from '@/utils/throwError'
 import formatCardNo from '@/utils/formatCardNo'
 import patientReducer from '@/utils/patientReducer'
 
-const Patient = createContext({})
+const Patient: Context<{}> = createContext({})
 
 const initialStates: PatientStates = {
     sex: '',
