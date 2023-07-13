@@ -10,6 +10,7 @@ import {
     createContext, useState, useEffect,
     useContext, useReducer, Context
 } from "react"
+import { AxiosError } from "axios"
 
 const Auth: Context<{}> = createContext({})
 
@@ -76,7 +77,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).then((res: any) => {
             setAuth(true)
             setProfile(res.data?.profile)
-        }).catch((err: any) => throwError(err)).finally(() => setLoadingProfile(false))
+        }).catch((err: AxiosError) => {
+            const statusCode: unknown = err.response?.status
+            if (statusCode === 401 || statusCode === 403) {
+                setAuth(false)
+            } else {
+                setAuth(true)
+                throwError(err)
+            }
+        }).finally(() => setLoadingProfile(false))
     }
 
     const handleSignup = async (): Promise<void> => {
