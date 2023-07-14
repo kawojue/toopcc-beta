@@ -4,13 +4,24 @@ import {
     FaItalic, FaBold,
     FaUnderline, FaCopy,
 } from '@/public/icons/ico'
+import { useTextEditor } from '@/utils/store'
 
 const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
+    const {
+        isCopy, setIsCopy,
+        isBold, setIsBold,
+        isItalic, setIsItalic,
+        isUnderline, setIsUnderline
+    }: TextEditorState = useTextEditor()
+
     return (
         <section>
             <div>
-                <button type="button" title='Bold' className="editor-btn"
-                    onClick={() => document.execCommand('bold', false)}>
+                <button type="button" title='Bold' className={`${isBold ? 'text-lg' : ''} editor-btn`}
+                    onClick={() => {
+                        document.execCommand('bold', false)
+                        setIsBold(!isBold)
+                    }}>
                     <FaBold />
                 </button>
                 <button type="button" title='Italic' className="editor-btn"
