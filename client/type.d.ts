@@ -58,6 +58,28 @@ interface IPatient {
     dispatch: (obj: PatientActions) => void
 }
 
+interface TextEditorState {
+    isCopy: boolean
+    isBold: boolean
+    isItalic: boolean
+    isUnderline: boolean
+    setIsCopy: (isCopy: boolean) => void
+    setIsBold: (isBold: boolean) => void
+    setIsItalic: (isItalic: boolean) => void
+    setIsUnderline: (isUnderline: boolean) => void
+}
+
+interface DiagnosisState {
+    isLoading: boolean
+    picsArray: string[]
+    currentDate: string
+    nextAppDate: string
+    setIsLoading: (isLoading: boolean) => void
+    setPicsArray: (picsArray: string[]) => void
+    setCurrentDate: (currentDate: string) => void
+    setNextAppDate: (nextAppDate: string) => void
+}
+
 type ModalActions =
     | { type: 'RESIG' }
     | { type: 'PSWD' }
