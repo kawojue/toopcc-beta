@@ -176,8 +176,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const patient = await fetchByCardNumber(card_no, '-recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
-    if (images) {
-        images = Array(images)
+    if (images.length > 0) {
         if (images.length > 3) return res.status(400).json(SMTH_WENT_WRONG)
 
         images.forEach(async (image: any) => {
@@ -208,7 +207,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
             date,
             next_app
         }
-    ] : [ ...patient.body ]
+    ] : [...patient.body]
     await patient.save()
 
     res.status(200).json(SAVED)
@@ -236,11 +235,11 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
-    const  { card_no }: any = req.params
+    const { card_no }: any = req.params
     const {
         opthal, extension, physio,
         eligOpthal, eligPhysio
-    } : any = req.body
+    }: any = req.body
 
     const patient: any = await fetchByCardNumber(card_no, '-body')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
@@ -283,16 +282,16 @@ const deleteRecommendation = asyncHandler(async (req: Request, res: Response) =>
 
     const rec: any = patient.recommendation
     const originalRec: any[] = type === "opthal" ?
-    rec.opthalmology.medication : type === "physio" ?
-    rec.physiotherapy.medication : []
+        rec.opthalmology.medication : type === "physio" ?
+            rec.physiotherapy.medication : []
     const newRec: any[] = originalRec.filter((medic: any) => medic.idx !== idx)
 
     if (newRec.length === 0) {
         type === "opthal" ? rec.opthalmology.eligible = false :
-        type === "physio" ? rec.physiotherapy.eligible = false : null
+            type === "physio" ? rec.physiotherapy.eligible = false : null
     }
     type === "opthal" ? rec.opthalmology.medication = newRec :
-    type === "physio" ? rec.physiotherapy.medication = newRec: null
+        type === "physio" ? rec.physiotherapy.medication = newRec : null
     await patient.save()
 
     res.status(200).json(SAVED)
@@ -340,7 +339,7 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
     const bodies: IBody[] = patient.body
     const body: any = bodies.find((body: IBody) => body.idx === idx)
     if (!body) return res.status(404).json(DIAG_NOT_EXIST)
-    
+
     const images: ICloud[] = body.diagnosis.images
     if (images.length > 0) {
         images.forEach(async (image: ICloud) => {
