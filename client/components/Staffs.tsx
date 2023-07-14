@@ -1,18 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 import Link from 'next/link'
+import { useEffect, FC } from 'react'
 import axios from '@/app/api/instance'
 import { SpinnerTwo } from './Spinner'
 import useToken from '@/hooks/useToken'
-import { useState, useEffect } from 'react'
 import throwError from '@/utils/throwError'
+import { useAuthStore } from '@/utils/store'
 import { Disclosure } from '@headlessui/react'
+import { AxiosResponse, AxiosError } from 'axios'
 import { ChevronUpIcon } from '@heroicons/react/24/solid'
 
-const Staffs: React.FC = () => {
+const Staffs: FC = () => {
     const token: string = useToken()
-    const [staffs, setStaffs] = useState<any[]>([])
-    const [loading, setLoading] = useState<boolean>(false)
+    const {
+        staffs, setStaffs,
+        loading, setLoading
+    } = useAuthStore()
 
     const handleStaffs = async (): Promise<void> => {
         setLoading(true)
@@ -20,9 +24,9 @@ const Staffs: React.FC = () => {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        }).then((res: any) => setStaffs(res.data?.names))
-        .catch((err: any) => throwError(err))
-        .finally(() => setLoading(false))
+        }).then((res: AxiosResponse) => setStaffs(res.data?.names))
+            .catch((err: AxiosError) => throwError(err))
+            .finally(() => setLoading(false))
     }
 
     useEffect(() => {
@@ -41,16 +45,15 @@ const Staffs: React.FC = () => {
                         <Disclosure.Button className="disclosure-btn md:text-xl">
                             <span>List of Staffs</span>
                             <ChevronUpIcon
-                            className={`${
-                                open ? 'rotate-180 transform' : ''
-                            } h-5 w-5 text-clr-2`}
+                                className={`${open ? 'rotate-180 transform' : ''
+                                    } h-5 w-5 text-clr-2`}
                             />
                         </Disclosure.Button>
                         <Disclosure.Panel className="disclosure-panel">
                             <article className="staff-lists">
                                 {staffs?.map((staff: any, index: number) => (
                                     <Link href={`/staff/profile/${staff.username}`}
-                                    key={index} target='_blank' className='staff-url md:text-[1.125rem]'>
+                                        key={index} target='_blank' className='staff-url md:text-[1.125rem]'>
                                         {index + 1} - {staff.fullname}
                                     </Link>
                                 ))}
