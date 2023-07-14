@@ -1,14 +1,16 @@
 "use client"
+import {
+    createContext, Context,
+    useContext, useReducer,
+} from 'react'
 import useToken from './useToken'
 import notify from '@/utils/notify'
 import axios from '@/app/api/instance'
-import {
-    createContext, useState, useRef,
-    useContext, useReducer, Context
-} from 'react'
 import { useRouter } from 'next/navigation'
 import throwError from '@/utils/throwError'
 import formatCardNo from '@/utils/formatCardNo'
+import { usePatientStore } from '@/utils/store'
+import { AxiosError, AxiosResponse } from 'axios'
 import patientReducer from '@/utils/patientReducer'
 
 const Patient: Context<{}> = createContext({})
@@ -30,10 +32,11 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const router = useRouter()
     const token: string = useToken()
 
-    const [patient, setPatient] = useState<any>({})
-    const [patients, setPatients] = useState<any[]>([])
-    const [btnLoad, setBtnLoad] = useState<boolean>(false)
-    const [loading, setLoading] = useState<boolean>(false)
+    const {
+        setBtnLoad, setLoading,
+        setPatient, setPatients,
+    } = usePatientStore()
+
     const [state, dispatch] = useReducer(patientReducer, initialStates)
 
     const getAllPatients = async (token: string) => {
@@ -42,13 +45,13 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        }).then((res: any) => {
+        }).then((res: AxiosResponse) => {
             const pts: any[] = res.data?.patients || []
             const formattedPatients = pts.map((pt: any) => {
                 return formatCardNo(pt)
             })
             setPatients(formattedPatients)
-        }).catch((err: any) => {
+        }).catch((err: AxiosError) => {
             throwError(err)
             setTimeout(() => {
                 router.push('/staff/profile')
@@ -65,8 +68,8 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     'Authorization': `Bearer ${token}`
                 }
             }
-        ).then((res: any) => setPatient(formatCardNo(res.data.patient)))
-            .catch((err: any) => throwError(err)).finally(() => setLoading(false))
+        ).then((res: AxiosResponse) => setPatient(formatCardNo(res.data.patient)))
+            .catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handleDelPatient = async (card_no: string) => {
@@ -78,14 +81,14 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     'Authorization': `Bearer ${token}`
                 }
             }
-        ).then((res: any) => notify(res.data?.action, res.date?.msg))
-            .catch((err: any) => throwError(err)).finally(() => setBtnLoad(false))
+        ).then((res: AxiosResponse) => notify(res.data?.action, res.data?.msg))
+            .catch((err: AxiosError) => throwError(err)).finally(() => setBtnLoad(false))
     }
 
     return (
         <Patient.Provider value={{
-            state, dispatch, handlePatient, patient, loading,
-            handleDelPatient, btnLoad, getAllPatients, patients,
+            state, dispatch, handlePatient,
+            handleDelPatient, getAllPatients,
         }}>
             {children}
         </Patient.Provider>
