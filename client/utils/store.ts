@@ -46,9 +46,12 @@ const initialStore = {
 
 const useAuthStore = create<AuthStore>()((set) => ({
     token: '',
+    staff: {},
+    staffs: [],
     auth: false,
     profile: {},
     loading: false,
+    pswdBtn: false,
     loadProf: false,
     ...initialStore,
     resetStates: () => set(initialStore),
@@ -56,12 +59,15 @@ const useAuthStore = create<AuthStore>()((set) => ({
     setUser: (user: string) => set({ user }),
     setPswd: (pswd: string) => set({ pswd }),
     setAuth: (auth: boolean) => set({ auth }),
+    setStaff: (staff: any[]) => set({ staff }),
     setPswd2: (pswd2: string) => set({ pswd2 }),
     setToken: (token: string) => set({ token }),
     setEmail: (email: string) => set({ email }),
+    setStaffs: (staffs: any[]) => set({ staffs }),
     setProfile: (profile: any) => set({ profile }),
     setUserId: (userId: string) => set({ userId }),
     setAvatar: (avatar: string) => set({ avatar }),
+    setPswdBtn: (pswdBtn: boolean) => set({ pswdBtn }),
     setLoading: (loading: boolean) => set({ loading }),
     setFullname: (fullname: string) => set({ fullname }),
     setLoadProf: (loadProf: boolean) => set({ loadProf }),
@@ -70,10 +76,12 @@ const useAuthStore = create<AuthStore>()((set) => ({
 }))
 
 const usePatientStore = create<PatientStore>()((set) => ({
+    search: '',
     patient: {},
     patients: [],
     btnLoad: false,
     loading: false,
+    setSearch: (search: string) => set({ search }),
     setPatient: (patient: any) => set({ patient }),
     setLoading: (loading: boolean) => set({ loading }),
     setBtnLoad: (btnLoad: boolean) => set({ btnLoad }),
