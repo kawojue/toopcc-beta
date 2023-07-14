@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react"
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect } from 'react'
+import { useAuthStore } from '@/utils/store'
 
-const useToken  = (): string => {
-    const [token, setToken] = useState<string>("")
+const useToken = (): string => {
+    const { token, setToken } = useAuthStore()
 
     useEffect(() => {
         const storedToken: string = JSON.parse(localStorage.getItem('token') as string)
