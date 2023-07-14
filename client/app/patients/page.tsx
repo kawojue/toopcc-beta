@@ -5,13 +5,13 @@ import { useEffect } from 'react'
 import useToken from '@/hooks/useToken'
 import usePatient from '@/hooks/usePatient'
 import Patients from '@/components/Patients'
+import { usePatientStore } from '@/utils/store'
 import { SpinnerTwo } from '@/components/Spinner'
 
 const page = () => {
     const token: string = useToken()
-    const {
-        loading, getAllPatients, patients
-    }: any = usePatient()
+    const { getAllPatients }: any = usePatient()
+    const { loading, patients } = usePatientStore()
 
     useEffect(() => {
         if (token) (async () => await getAllPatients(token))()
