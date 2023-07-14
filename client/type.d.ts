@@ -80,6 +80,15 @@ interface DiagnosisState {
     setNextAppDate: (nextAppDate: string) => void
 }
 
+interface PhotoState {
+    photo1: string
+    photo2: string
+    photo3: string
+    setPhoto1: (photo1: string) => void
+    setPhoto2: (photo2: string) => void
+    setPhoto3: (photo3: string) => void
+}
+
 type ModalActions =
     | { type: 'RESIG' }
     | { type: 'PSWD' }
