@@ -69,4 +69,18 @@ const useAuthStore = create<AuthStore>()((set) => ({
     setCurrentPswd: (currentPswd: string) => set({ currentPswd }),
 }))
 
-export { useTextEditor, useDiagnosis, usePhoto, useAuthStore }
+const usePatientStore = create<PatientStore>()((set) => ({
+    patient: {},
+    patients: [],
+    btnLoad: false,
+    loading: false,
+    setPatient: (patient: any) => set({ patient }),
+    setLoading: (loading: boolean) => set({ loading }),
+    setBtnLoad: (btnLoad: boolean) => set({ btnLoad }),
+    setPatients: (patients: any[]) => set({ patients }),
+}))
+
+export {
+    useAuthStore, usePatientStore,
+    useTextEditor, useDiagnosis, usePhoto,
+}
