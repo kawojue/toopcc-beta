@@ -141,8 +141,7 @@ const addDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
     const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
-    if (images) {
-        images = Array(images);
+    if (images.length > 0) {
         if (images.length > 3)
             return res.status(400).json(modal_1.SMTH_WENT_WRONG);
         images.forEach((image) => __awaiter(void 0, void 0, void 0, function* () {
