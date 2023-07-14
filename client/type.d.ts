@@ -10,14 +10,11 @@ interface ISubmitBtn {
     handler: () => Promise<void>
 }
 
-interface JWT {
-    roles: string[]
-    user: string
-}
-
-interface IProfile { params: { profile: string } }
+interface JWT { roles: string[]; user: string }
 
 interface IPt { params: { patientId: string } }
+
+interface IProfile { params: { profile: string } }
 
 interface ModalStates {
     roles: boolean
@@ -90,10 +87,12 @@ interface PhotoState {
 }
 
 interface AuthStore {
+    staff: any
     otp: string
     profile: any
     user: string
     pswd: string
+    staffs: any[]
     auth: boolean
     token: string
     pswd2: string
@@ -101,21 +100,25 @@ interface AuthStore {
     userId: string
     avatar: string
     loading: boolean
+    pswdBtn: boolean
     fullname: string
     loadProf: boolean
     verified: boolean
     currentPswd: string
     resetStates: () => void
     setOTP: (otp: string) => void
+    setStaff: (staffs: any) => void
     setUser: (user: string) => void
     setPswd: (pswd: string) => void
     setAuth: (auth: boolean) => void
     setToken: (token: string) => void
     setPswd2: (pswd2: string) => void
     setEmail: (email: string) => void
+    setStaffs: (staffs: any[]) => void
     setProfile: (profile: any) => void
     setUserId: (userId: string) => void
     setAvatar: (avatar: string) => void
+    setPswdBtn: (pswdBtn: boolean) => void
     setLoading: (loading: boolean) => void
     setFullname: (fullname: string) => void
     setLoadProf: (loadProf: boolean) => void
@@ -125,10 +128,12 @@ interface AuthStore {
 
 interface PatientStore {
     patient: any
+    search: string
     patients: any[]
     btnLoad: boolean
     loading: boolean
     setPatient: (patient: any) => void
+    setSearch: (search: string) => void
     setPatients: (patients: any[]) => void
     setLoading: (loading: boolean) => void
     setBtnLoad: (btnLoad: boolean) => void
