@@ -22,4 +22,13 @@ const useDiagnosis = create<DiagnosisState>()((set) => ({
     setNextAppDate: (nextAppDate: string) => set({ nextAppDate })
 }))
 
-export { useTextEditor, useDiagnosis }
+const usePhoto = create<PhotoState>()((set) => ({
+    photo1: '',
+    photo2: '',
+    photo3: '',
+    setPhoto1: (photo1: string) => set({ photo1 }),
+    setPhoto2: (photo2: string) => set({ photo2 }),
+    setPhoto3: (photo3: string) => set({ photo3 }),
+}))
+
+export { useTextEditor, useDiagnosis, usePhoto }
