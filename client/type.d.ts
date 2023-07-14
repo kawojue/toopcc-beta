@@ -113,7 +113,7 @@ interface AuthStore {
     setToken: (token: string) => void
     setPswd2: (pswd2: string) => void
     setEmail: (email: string) => void
-    setProfile: (object: any) => void
+    setProfile: (profile: any) => void
     setUserId: (userId: string) => void
     setAvatar: (avatar: string) => void
     setLoading: (loading: boolean) => void
@@ -121,6 +121,17 @@ interface AuthStore {
     setLoadProf: (loadProf: boolean) => void
     setVerified: (verified: boolean) => void
     setCurrentPswd: (currentPswd: string) => void
+}
+
+interface PatientStore {
+    patient: any
+    patients: any[]
+    btnLoad: boolean
+    loading: boolean
+    setPatient: (patient: any) => void
+    setPatients: (patients: any[]) => void
+    setLoading: (loading: boolean) => void
+    setBtnLoad: (btnLoad: boolean) => void
 }
 
 type ModalActions =
