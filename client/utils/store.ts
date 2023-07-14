@@ -31,4 +31,42 @@ const usePhoto = create<PhotoState>()((set) => ({
     setPhoto3: (photo3: string) => set({ photo3 }),
 }))
 
-export { useTextEditor, useDiagnosis, usePhoto }
+const initialStore = {
+    otp: '',
+    user: '',
+    pswd: '',
+    pswd2: '',
+    email: '',
+    avatar: '',
+    userId: '',
+    fullname: '',
+    currentPswd: '',
+    verified: false
+}
+
+const useAuthStore = create<AuthStore>()((set) => ({
+    token: '',
+    auth: false,
+    profile: {},
+    loading: false,
+    loadProf: false,
+    ...initialStore,
+    resetStates: () => set(initialStore),
+    setOTP: (otp: string) => set({ otp }),
+    setUser: (user: string) => set({ user }),
+    setPswd: (pswd: string) => set({ pswd }),
+    setAuth: (auth: boolean) => set({ auth }),
+    setPswd2: (pswd2: string) => set({ pswd2 }),
+    setToken: (token: string) => set({ token }),
+    setEmail: (email: string) => set({ email }),
+    setProfile: (profile: any) => set({ profile }),
+    setUserId: (userId: string) => set({ userId }),
+    setAvatar: (avatar: string) => set({ avatar }),
+    setLoading: (loading: boolean) => set({ loading }),
+    setFullname: (fullname: string) => set({ fullname }),
+    setLoadProf: (loadProf: boolean) => set({ loadProf }),
+    setVerified: (verified: boolean) => set({ verified }),
+    setCurrentPswd: (currentPswd: string) => set({ currentPswd }),
+}))
+
+export { useTextEditor, useDiagnosis, usePhoto, useAuthStore }
