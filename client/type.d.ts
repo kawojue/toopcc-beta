@@ -71,11 +71,11 @@ interface TextEditorState {
 
 interface DiagnosisState {
     isLoading: boolean
-    picsArray: string[]
+    photoArray: string[]
     currentDate: string
     nextAppDate: string
     setIsLoading: (isLoading: boolean) => void
-    setPicsArray: (picsArray: string[]) => void
+    setPhotoArray: (photoArray: string[]) => void
     setCurrentDate: (currentDate: string) => void
     setNextAppDate: (nextAppDate: string) => void
 }
