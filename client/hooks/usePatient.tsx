@@ -30,11 +30,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const router = useRouter()
     const token: string = useToken()
 
-    const [pic1, setPic1] = useState<string>('')
-    const [pic2, setPic2] = useState<string>('')
-    const [pic3, setPic3] = useState<string>('')
-
-    const [patient, setPatient] = useState({})
+    const [patient, setPatient] = useState<any>({})
     const [patients, setPatients] = useState<any[]>([])
     const [btnLoad, setBtnLoad] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
@@ -90,7 +86,6 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
         <Patient.Provider value={{
             state, dispatch, handlePatient, patient, loading,
             handleDelPatient, btnLoad, getAllPatients, patients,
-            pic1, setPic1, pic2, setPic2, pic3, setPic3
         }}>
             {children}
         </Patient.Provider>
