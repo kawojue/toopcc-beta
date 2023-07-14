@@ -3,15 +3,15 @@ import notify from '@/utils/notify'
 import axios from '@/app/api/instance'
 import { SpinnerOne } from '../Spinner'
 import useToken from '@/hooks/useToken'
-import { Fragment, useState } from 'react'
 import throwError from '@/utils/throwError'
 import { FaTimes } from '@/public/icons/ico'
 import CustomDropDown from '../CustomDropDown'
+import { Fragment, useState, FC } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
-const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
+const RoleModal: FC<IModal> = ({ state, dispatch, profile }) => {
     const token: string = useToken()
-    const [role, setRole]= useState<string>("")
+    const [role, setRole] = useState<string>("")
     const [assLoading, setAssLoading] = useState<boolean>(false)
     const [remLoading, setRemLoading] = useState<boolean>(false)
     const options: string[] = ['HR', "Staff", "Admin"]
@@ -42,61 +42,61 @@ const RoleModal: React.FC<IModal> = ({ state, dispatch, profile }) => {
     return (
         <Transition appear show={state.roles} as={Fragment}>
             <Dialog as="div" className="modal"
-            onClose={() => dispatch({ type: "ROLES" })}>
-            <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0">
-                <div className="fixed inset-0 bg-black bg-opacity-25" />
-            </Transition.Child>
-
-            <div className="modal-main">
-                <div className="modal-center">
-                    <Transition.Child
+                onClose={() => dispatch({ type: "ROLES" })}>
+                <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
-                    enterFrom="opacity-0 scale-95"
-                    enterTo="opacity-100 scale-100"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
                     leave="ease-in duration-200"
-                    leaveFrom="opacity-100 scale-100"
-                    leaveTo="opacity-0 scale-95">
-                        <Dialog.Panel className="modal-panel min-h-[180px]">
-                            <article className="flex items-center">
-                                <div className="w-fit">
-                                    <button className="modal-close-btn"
-                                    onClick={() => dispatch({ type: "ROLES" })}>
-                                        <FaTimes />
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0">
+                    <div className="fixed inset-0 bg-black bg-opacity-25" />
+                </Transition.Child>
+
+                <div className="modal-main">
+                    <div className="modal-center">
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95">
+                            <Dialog.Panel className="modal-panel min-h-[180px]">
+                                <article className="flex items-center">
+                                    <div className="w-fit">
+                                        <button className="modal-close-btn"
+                                            onClick={() => dispatch({ type: "ROLES" })}>
+                                            <FaTimes />
+                                        </button>
+                                    </div>
+                                    <h3 className="modal-header">Edit Role</h3>
+                                </article>
+                                <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
+                                    <article className="modal-form-group">
+                                        <CustomDropDown get={role} set={setRole} options={options} />
+                                    </article>
+                                </form>
+                                <div className="modal-btn-container">
+                                    <button className="save-btn"
+                                        onClick={async () => await handler(`/auth/role/assign/${profile?.user}`, setAssLoading)}>
+                                        {assLoading ? <SpinnerOne /> : 'Assign'}
+                                    </button>
+                                    <button className="del-btn"
+                                        onClick={async () => await handler(`/auth/role/remove/${profile?.user}`, setRemLoading)}>
+                                        {remLoading ? <SpinnerOne /> : 'Remove'}
+                                    </button>
+                                    <button className="cancel-btn"
+                                        onClick={() => cancel()}>
+                                        Cancel
                                     </button>
                                 </div>
-                                <h3 className="modal-header">Edit Role</h3>
-                            </article>
-                            <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
-                                <article className="modal-form-group">
-                                    <CustomDropDown get={role} set={setRole} options={options} />
-                                </article>
-                            </form>
-                            <div className="modal-btn-container">
-                                <button className="save-btn"
-                                onClick={async () => await handler(`/auth/role/assign/${profile?.user}`, setAssLoading)}>
-                                    {assLoading ? <SpinnerOne /> : 'Assign'}
-                                </button>
-                                <button className="del-btn"
-                                onClick={async () => await handler(`/auth/role/remove/${profile?.user}`, setRemLoading)}>
-                                    {remLoading ? <SpinnerOne /> : 'Remove'}
-                                </button>
-                                <button className="cancel-btn"
-                                onClick={() => cancel()}>
-                                    Cancel
-                                </button>
-                            </div>
-                        </Dialog.Panel>
-                    </Transition.Child>
+                            </Dialog.Panel>
+                        </Transition.Child>
+                    </div>
                 </div>
-            </div>
             </Dialog>
         </Transition>
     )
