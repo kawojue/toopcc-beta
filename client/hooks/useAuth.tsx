@@ -1,16 +1,18 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 import useToken from "./useToken"
 import notify from "@/utils/notify"
 import axios from "@/app/api/instance"
 import throwError from "@/utils/throwError"
+import { useAuthStore } from "@/utils/store"
 import modalReducer from "@/utils/modalReducers"
+import { AxiosError, AxiosResponse } from "axios"
 import { useRouter, usePathname } from "next/navigation"
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context"
 import {
-    createContext, useState, useEffect,
-    useContext, useReducer, Context
+    createContext, Context,
+    useEffect, useContext, useReducer
 } from "react"
-import { AxiosError } from "axios"
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context"
 
 const Auth: Context<{}> = createContext({})
 
@@ -27,37 +29,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const getToken: string = useToken()
     const pathName: string = usePathname()
     const router: AppRouterInstance = useRouter()
-    const [token, setToken] = useState<string>("")
-    const [profile, setProfile] = useState<any>({})
-    const [auth, setAuth] = useState<boolean>(false)
-    const [loading, setLoading] = useState<boolean>(false)
-    const [loadingProfile, setLoadingProfile] = useState<boolean>(true)
 
-    const [otp, setOTP] = useState<string>("")
-    const [user, setUser] = useState<string>("")
-    const [pswd, setPswd] = useState<string>("")
-    const [pswd2, setPswd2] = useState<string>("")
-    const [email, setEmail] = useState<string>("")
-    const [userId, setUserId] = useState<string>("")
-    const [avatar, setAvatar] = useState<string>("")
-    const [fullname, setFullname] = useState<string>("")
-    const [verified, setVerified] = useState<boolean>(false)
-    const [currentPswd, setCurrentPswd] = useState<string>("")
+    const {
+        resetStates, token, setToken, setLoading,
+        setAuth, setLoadProf, fullname, avatar, email,
+        pswd, pswd2, otp, userId, verified, currentPswd,
+        user, setOTP, setVerified, setProfile,
+    } = useAuthStore()
 
     const [state, dispatch] = useReducer(modalReducer, initialStates)
-
-    const setStatesToDefault = (): void => {
-        setOTP("")
-        setUser("")
-        setPswd("")
-        setPswd2("")
-        setEmail("")
-        setAvatar("")
-        setUserId("")
-        setFullname("")
-        setCurrentPswd("")
-        setVerified(false)
-    }
 
     useEffect(() => {
         setToken(getToken)
@@ -70,11 +50,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [token, pathName, router])
 
     const handleProfile = async (token: string): Promise<void> => {
+        setLoadProf(true)
         await axios.get('/api/users/profile', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        }).then((res: any) => {
+        }).then((res: AxiosResponse) => {
             setAuth(true)
             setProfile(res.data?.profile)
         }).catch((err: AxiosError) => {
@@ -85,39 +66,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setAuth(true)
                 throwError(err)
             }
-        }).finally(() => setLoadingProfile(false))
+        }).finally(() => setLoadProf(false))
     }
 
     const handleSignup = async (): Promise<void> => {
         setLoading(true)
         await axios.post('/auth/signup', JSON.stringify({
             fullname, avatar, email, pswd, pswd2
-        })).then((res: any) => {
-            const msg: string = res.data.msg
-            const action: string = res.data.action
-            notify(action, msg)
-            setStatesToDefault()
+        })).then((res: AxiosResponse) => {
+            resetStates()
+            notify(res.data?.action, res.data?.msg)
             setTimeout(() => {
                 router.push('/staff/login')
             }, 500)
-        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handleLogin = async (): Promise<void> => {
         setLoading(true)
         await axios.post('/auth/login', JSON.stringify({
             userId, pswd
-        })).then((res: any) => {
+        })).then((res: AxiosResponse) => {
             const token: string = res.data.token
             setAuth(true)
             setToken(token)
             localStorage.setItem('token', JSON.stringify(token))
             notify(res.data.action, res.data.msg)
-            setStatesToDefault()
+            resetStates()
             setTimeout(() => {
                 router.push('/staff/profile')
             }, 500)
-        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handleOTPRequest = async (): Promise<void> => {
@@ -129,14 +108,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const handleIdVerification = async (): Promise<void> => {
         setLoading(true)
         await axios.post('/auth/otp/verify', JSON.stringify({ otp, email }))
-            .then((res: any) => {
+            .then((res: AxiosResponse) => {
                 setOTP("")
                 setVerified(res.data?.verified)
                 notify(res.data?.action, "Verification successful")
                 setTimeout(() => {
                     router.push('/staff/password/reset')
                 }, 500)
-            }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+            }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handlePswdReset = async (): Promise<void> => {
@@ -144,26 +123,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await axios.post('/auth/password/reset', JSON.stringify({
             email, newPswd2: pswd2,
             verified, newPswd: pswd
-        })).then(async (res: any) => {
-            setStatesToDefault()
+        })).then(async (res: AxiosResponse) => {
+            resetStates()
             notify(res.data?.action, res.data?.msg)
             setTimeout(async () => {
                 await handleLogout()
                 router.push('/staff/login')
             }, 500)
-        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handleLogout = async (): Promise<void> => {
         await axios.get(
             '/auth/logout',
             { headers: { 'Authorization': `Bearer ${token}` } }
-        ).then((res: any) => {
+        ).then((res: AxiosResponse) => {
             setAuth(false)
-            setStatesToDefault()
+            resetStates()
             localStorage.clear()
             router.push('/staff/login')
-        }).catch((err) => throwError(err))
+        }).catch((err: AxiosError) => throwError(err))
     }
 
     const handleFullname = async (): Promise<void> => {
@@ -172,12 +151,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        }).then((res: any) => {
-            setStatesToDefault()
+        }).then((res: AxiosResponse) => {
+            resetStates()
             notify(res.data?.action, res.data?.msg)
             dispatch({ type: "FULLNAME" })
             document.location.reload()
-        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handleUsername = async (): Promise<void> => {
@@ -190,14 +169,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     'Authorization': `Bearer ${token}`
                 }
             }
-        ).then((res: any) => {
-            setStatesToDefault()
+        ).then((res: AxiosResponse) => {
+            resetStates()
             notify(res.data?.action, res.data?.msg)
             dispatch({ type: "USERNAME" })
             setTimeout(() => {
                 (async () => await handleLogout())()
             }, 500)
-        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
     const handleEditPswd = async (): Promise<void> => {
@@ -210,14 +189,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     'Authorization': `Bearer ${token}`
                 }
             }
-        ).then((res: any) => {
-            setStatesToDefault()
+        ).then((res: AxiosResponse) => {
+            resetStates()
             notify(res.data?.action, res.data?.msg)
             dispatch({ type: "PSWD" })
             setTimeout(() => {
                 (async () => await handleLogout())()
             }, 500)
-        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
     const delAvatar = async (): Promise<void> => {
@@ -225,14 +204,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        }).then((res: any) => {
-            setStatesToDefault()
+        }).then((res: AxiosResponse) => {
+            resetStates()
             notify(res.data?.action, res.data?.msg)
             dispatch({ type: "AVATAR" })
             setTimeout(() => {
                 document.location.reload()
             }, 300)
-        }).catch((err: any) => throwError(err))
+        }).catch((err: AxiosError) => throwError(err))
     }
 
     const changeAvatar = async (): Promise<void> => {
@@ -245,26 +224,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     'Authorization': `Bearer ${token}`
                 }
             }
-        ).then((res: any) => {
-            setStatesToDefault()
+        ).then((res: AxiosResponse) => {
+            resetStates()
             notify(res.data?.action, res.data?.msg)
             dispatch({ type: "AVATAR" })
             setTimeout(() => {
                 document.location.reload()
             }, 300)
-        }).catch((err: any) => throwError(err)).finally(() => setLoading(false))
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
     return (
         <Auth.Provider value={{
-            auth, handleSignup, pswd, pswd2, loading, setLoading,
-            handleLogin, userId, setUserId, handleLogout, setPswd,
-            setPswd2, setEmail, email, fullname, setFullname, avatar,
-            setAvatar, otp, setOTP, handleOTPRequest, profile, state,
-            handlePswdReset, handleIdVerification, loadingProfile, user,
-            dispatch, setUser, handleUsername, handleFullname, currentPswd,
-            setCurrentPswd, handleEditPswd, setStatesToDefault, delAvatar,
-            changeAvatar
+            handleSignup, handleLogin, handleLogout, handleOTPRequest, state,
+            handlePswdReset, handleIdVerification, dispatch, handleUsername,
+            handleFullname, handleEditPswd, resetStates, delAvatar, changeAvatar
         }}>
             {children}
         </Auth.Provider>
