@@ -89,6 +89,40 @@ interface PhotoState {
     setPhoto3: (photo3: string) => void
 }
 
+interface AuthStore {
+    otp: string
+    profile: any
+    user: string
+    pswd: string
+    auth: boolean
+    token: string
+    pswd2: string
+    email: string
+    userId: string
+    avatar: string
+    loading: boolean
+    fullname: string
+    loadProf: boolean
+    verified: boolean
+    currentPswd: string
+    resetStates: () => void
+    setOTP: (otp: string) => void
+    setUser: (user: string) => void
+    setPswd: (pswd: string) => void
+    setAuth: (auth: boolean) => void
+    setToken: (token: string) => void
+    setPswd2: (pswd2: string) => void
+    setEmail: (email: string) => void
+    setProfile: (object: any) => void
+    setUserId: (userId: string) => void
+    setAvatar: (avatar: string) => void
+    setLoading: (loading: boolean) => void
+    setFullname: (fullname: string) => void
+    setLoadProf: (loadProf: boolean) => void
+    setVerified: (verified: boolean) => void
+    setCurrentPswd: (currentPswd: string) => void
+}
+
 type ModalActions =
     | { type: 'RESIG' }
     | { type: 'PSWD' }
