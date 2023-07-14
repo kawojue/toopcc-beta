@@ -12,10 +12,10 @@ const useTextEditor = create<TextEditorState>()((set) => ({
 }))
 
 const useDiagnosis = create<DiagnosisState>()((set) => ({
-    isLoading: false,
     photoArray: [],
     currentDate: '',
     nextAppDate: '',
+    isLoading: false,
     setIsLoading: (isLoading: boolean) => set({ isLoading }),
     setPhotoArray: (photoArray: string[]) => set({ photoArray }),
     setCurrentDate: (currentDate: string) => set({ currentDate }),
