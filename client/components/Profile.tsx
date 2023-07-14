@@ -5,9 +5,9 @@ import useRole from '@/hooks/useRole'
 import useAuth from '@/hooks/useAuth'
 import getPeriod from '@/utils/period'
 import { inter } from '@/public/font/font'
-import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import convertISODate from '@/utils/shortDate'
+import { useState, useEffect, FC } from 'react'
 import {
     HiOutlineKey, AiOutlineCamera, AiOutlineMail
 } from '@/public/icons/ico'
@@ -20,13 +20,13 @@ import AvatarModal from './Staff Modals/Avatar'
 import UsernameModal from './Staff Modals/Username'
 import FullnameModal from './Staff Modals/Fullname'
 
-const Profile: React.FC<{ profile: any }> = ({ profile }) => {
+const Profile: FC<{ profile: any }> = ({ profile }) => {
     const pathName: string = usePathname()
-    const { state, dispatch }: any = useAuth()
+    const { state, dispatch }: IModal = useAuth()
     const isRoles = useRole("hr", "admin") as boolean
     const [onMouse, setOnMouse] = useState<boolean>(false)
     const [shortDate, setShortDate] = useState<string>("")
-    
+
     useEffect(() => {
         setShortDate(convertISODate(profile?.createdAt))
     }, [profile])
@@ -46,45 +46,45 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
             </>
             <section className="profile-header">
                 <h1 className='profile-header-h1 md:text-3xl'>
-                    {pathName === "/staff/profile" ? "Your Info": "Staff Info"}
+                    {pathName === "/staff/profile" ? "Your Info" : "Staff Info"}
                 </h1>
                 {pathName === "/staff/profile" &&
-                <button className="change-pswd-btn"
-                onClick={() => dispatch({ type: "PSWD" })}>
-                    <HiOutlineKey className="key" />
-                    <div>
-                        <span>Change Password</span>
-                        <span>Security</span>
-                    </div>
-                </button>}
+                    <button className="change-pswd-btn"
+                        onClick={() => dispatch({ type: "PSWD" })}>
+                        <HiOutlineKey className="key" />
+                        <div>
+                            <span>Change Password</span>
+                            <span>Security</span>
+                        </div>
+                    </button>}
             </section>
             <section className="profile-cards">
                 <article className="profile-card">
                     <div className="profile-card-center">
-                        {pathName !== "/staff/profile"  ?
-                        <div onMouseLeave={() => setOnMouse(false)}
-                        onMouseEnter={() => setOnMouse(true)}
-                        className={`profile-avatar md:w-[12rem] md:h-[12rem]`}>
-                            {profile?.avatar?.secure_url ? 
-                            <Image src={profile?.avatar?.secure_url} alt="avatar"
-                            title="change your avatar" width={300} height={300} priority/> :
-                            <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="change your avatar" width={300} height={300} priority/>}
-                        </div> :
-                        <div onMouseLeave={() => setOnMouse(false)}
-                        onMouseEnter={() => setOnMouse(true)}
-                        onClick={() => dispatch({ type: "AVATAR" })}
-                        className={`${onMouse && 'before:content-[""] before:bg-clr-10 before:absolute before:top-0 before:right-0 before:w-full before:h-full before:z-[999] cursor-pointer'} profile-avatar md:w-[12rem] md:h-[12rem]`}>
-                            {profile?.avatar?.secure_url ? 
-                            <Image src={profile?.avatar?.secure_url} alt="avatar"
-                            title="change your avatar" width={300} height={300} priority/> :
-                            <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="avatar" width={300} height={300} priority/>}
-                            <div className={`${onMouse && 'cam-ico'}`}>
-                                <AiOutlineCamera className="text-clr-0 text-4xl md:text-5xl lg:text-6xl" />
-                            </div>
-                        </div>}
+                        {pathName !== "/staff/profile" ?
+                            <div onMouseLeave={() => setOnMouse(false)}
+                                onMouseEnter={() => setOnMouse(true)}
+                                className={`profile-avatar md:w-[12rem] md:h-[12rem]`}>
+                                {profile?.avatar?.secure_url ?
+                                    <Image src={profile?.avatar?.secure_url} alt="avatar"
+                                        title="change your avatar" width={300} height={300} priority /> :
+                                    <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="change your avatar" width={300} height={300} priority />}
+                            </div> :
+                            <div onMouseLeave={() => setOnMouse(false)}
+                                onMouseEnter={() => setOnMouse(true)}
+                                onClick={() => dispatch({ type: "AVATAR" })}
+                                className={`${onMouse && 'before:content-[""] before:bg-clr-10 before:absolute before:top-0 before:right-0 before:w-full before:h-full before:z-[999] cursor-pointer'} profile-avatar md:w-[12rem] md:h-[12rem]`}>
+                                {profile?.avatar?.secure_url ?
+                                    <Image src={profile?.avatar?.secure_url} alt="avatar"
+                                        title="change your avatar" width={300} height={300} priority /> :
+                                    <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="avatar" width={300} height={300} priority />}
+                                <div className={`${onMouse && 'cam-ico'}`}>
+                                    <AiOutlineCamera className="text-clr-0 text-4xl md:text-5xl lg:text-6xl" />
+                                </div>
+                            </div>}
                         <div>
                             <h3 title="edit fullname" onClick={() => pathName === "/staff/profile" && dispatch({ type: "FULLNAME" })}
-                            className='leading-tight font-semibold cursor-pointer text-clr-2 text-lg md:text-2xl lg:text-4xl hover:underline tracking-wider trans'>
+                                className='leading-tight font-semibold cursor-pointer text-clr-2 text-lg md:text-2xl lg:text-4xl hover:underline tracking-wider trans'>
                                 {profile?.fullname}
                             </h3>
                             <h6 className='capitalize mt-2 text-clr-3 text-sm'>
@@ -101,10 +101,10 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                         <p className="text-clr-3">Username</p>
                         <p className="text-clr-2">{profile?.user}</p>
                         {pathName === "/staff/profile" &&
-                        <button className="profile-edit-btn"
-                        onClick={() => dispatch({ type: "USERNAME" })}>
-                            Edit Username
-                        </button>}
+                            <button className="profile-edit-btn"
+                                onClick={() => dispatch({ type: "USERNAME" })}>
+                                Edit Username
+                            </button>}
                     </div>
                     <div className="flex flex-col gap-1.5 justify-center">
                         <div className='profile-card-info'>
@@ -117,23 +117,23 @@ const Profile: React.FC<{ profile: any }> = ({ profile }) => {
                             </div>
                         </div>
                         {pathName !== "/staff/profile" &&
-                        <div className="profile-card-info">
-                            <p className="text-clr-3">Roles</p>
-                            <p className="text-clr-2 capitalize">
-                                {authRoles.join(", ").trim()}
-                            </p>
-                            <button className="profile-edit-btn"
-                            onClick={() => dispatch({ type: "ROLES" })}>
-                                Edit Roles
-                            </button>
-                        </div>}
+                            <div className="profile-card-info">
+                                <p className="text-clr-3">Roles</p>
+                                <p className="text-clr-2 capitalize">
+                                    {authRoles.join(", ").trim()}
+                                </p>
+                                <button className="profile-edit-btn"
+                                    onClick={() => dispatch({ type: "ROLES" })}>
+                                    Edit Roles
+                                </button>
+                            </div>}
                         <div className="profile-card-info">
                             <p className="text-clr-3">Resigned</p>
                             <p title={`${profile?.resigned?.resign ? `Resigned ${getPeriod(profile?.resigned?.date)}` : "Staff hasn't resigned."}`} >
-                                {profile?.resigned?.resign ? `Resigned on ${convertISODate(profile?.resigned.date)}`: "Null"}
+                                {profile?.resigned?.resign ? `Resigned on ${convertISODate(profile?.resigned.date)}` : "Null"}
                             </p>
                             {pathName !== "/staff/profile" && <button className="profile-edit-btn"
-                            onClick={() => dispatch({ type: "RESIG" })}>
+                                onClick={() => dispatch({ type: "RESIG" })}>
                                 Edit Resignation
                             </button>}
                         </div>
