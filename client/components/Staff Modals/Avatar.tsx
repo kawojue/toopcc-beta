@@ -9,8 +9,8 @@ import { Fragment, FC } from 'react'
 import useAuth from '@/hooks/useAuth'
 import { SpinnerOne } from '../Spinner'
 import { handleFile } from '@/utils/file'
-import { Dialog, Transition } from '@headlessui/react'
 import { useAuthStore } from '@/utils/store'
+import { Dialog, Transition } from '@headlessui/react'
 
 
 const AvatarModal: FC<IModal> = ({ state, dispatch, profile }) => {
