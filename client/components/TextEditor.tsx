@@ -20,7 +20,7 @@ const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
 
     return (
         <section>
-            <div className="w-full flex items-center justify-end gap-5 mb-2">
+            <div className="w-full flex items-center justify-end gap-4 mb-2 pr-5">
                 <button type="button" title='Bold'
                     className={`${isBold && 'active'} editor-btn`}
                     onClick={() => {
@@ -43,7 +43,7 @@ const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
                 </button>
             </div>
             <div ref={textEditorRef} contentEditable="true"
-                className="outline-none h-[100px] px-0.5 rounded-lg text-lg overflow-y-auto" />
+                className="outline-none h-[120px] px-1 py-0.5 rounded-lg text-lg overflow-y-auto border-2 focus:border-clr-2" />
         </section>
     )
 }
