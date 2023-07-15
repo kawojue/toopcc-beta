@@ -94,6 +94,10 @@ input[type="radio"]:checked {
     /* background: rgb(96, 94, 92); */
 }
 
+.editor-btn {}
+
+.editor-btn.active {}
+
 @keyframes slick {
     0% {
         background-position: 100% 50%;
