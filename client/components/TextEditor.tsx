@@ -14,10 +14,15 @@ const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
         isUnderline, setIsUnderline
     }: TextEditorState = useTextEditor()
 
+    setTimeout(() => {
+        setIsCopy(false)
+    }, 1200)
+
     return (
         <section>
-            <div>
-                <button type="button" title='Bold' className={`${isBold ? 'text-lg' : ''} editor-btn`}
+            <div className="w-full flex items-center justify-end gap-5 mb-2">
+                <button type="button" title='Bold'
+                    className={`${isBold && 'active'} editor-btn`}
                     onClick={() => {
                         document.execCommand('bold', false)
                         setIsBold(!isBold)
@@ -38,7 +43,7 @@ const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
                 </button>
             </div>
             <div ref={textEditorRef} contentEditable="true"
-                style={{ border: '1px solid #ccc', minHeight: '100px', padding: '10px', resize: 'both' }} />
+                className="outline-none h-[100px] px-0.5 rounded-lg text-lg overflow-y-auto" />
         </section>
     )
 }
