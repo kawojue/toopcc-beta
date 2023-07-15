@@ -56,10 +56,8 @@ const page = ({ params: { patientId } }: IPt) => {
     }
 
     return (
-        <form onSubmit={async (e) => await handleSubmit(e)}>
-            <button type='submit' onClick={handleSubmit}>
-                Submit
-            </button>
+        <form onSubmit={async (e) => await handleSubmit(e)}
+            className="form-section">
             <div>
                 <label>Current Date</label>
                 <input value={currentDate} type="date"
@@ -72,6 +70,9 @@ const page = ({ params: { patientId } }: IPt) => {
             </div>
             <TextEditor textEditorRef={textEditorRef} />
             <PhotoUpload />
+            <button type='submit' onClick={handleSubmit}>
+                Submit
+            </button>
         </form>
     )
 }
