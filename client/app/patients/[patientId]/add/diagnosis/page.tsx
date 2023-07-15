@@ -7,6 +7,7 @@ import axios from '@/app/api/instance'
 import useToken from '@/hooks/useToken'
 import throwError from '@/utils/throwError'
 import TextEditor from '@/components/TextEditor'
+import { AxiosError, AxiosResponse } from 'axios'
 import PhotoUpload from '@/components/PhotoUpload'
 import { FormEvent, useRef, useEffect } from 'react'
 import { useDiagnosis, usePhoto } from '@/utils/store'
@@ -49,8 +50,8 @@ const page = ({ params: { patientId } }: IPt) => {
                 'Authorization': `Bearer ${token}`
             }
         })
-            .then((res: any) => notify(res.data?.action, res.data?.msg))
-            .catch((err: any) => throwError(err))
+            .then((res: AxiosResponse) => notify(res.data?.action, res.data?.msg))
+            .catch((err: AxiosError) => throwError(err))
             .finally(() => setIsLoading(false))
     }
 
