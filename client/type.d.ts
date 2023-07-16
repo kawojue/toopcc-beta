@@ -56,11 +56,9 @@ interface IPatient {
 }
 
 interface TextEditorState {
-    isCopy: boolean
     isBold: boolean
     isItalic: boolean
     isUnderline: boolean
-    setIsCopy: (isCopy: boolean) => void
     setIsBold: (isBold: boolean) => void
     setIsItalic: (isItalic: boolean) => void
     setIsUnderline: (isUnderline: boolean) => void
