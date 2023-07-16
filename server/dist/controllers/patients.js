@@ -141,6 +141,10 @@ const addDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
     const patient = yield (0, getModels_1.fetchByCardNumber)(card_no, '-recommendation');
     if (!patient)
         return res.status(404).json(modal_1.PATIENT_NOT_EXIST);
+    if (!date)
+        return res.status(400).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: "Current date is required." }));
+    if (texts || (texts === null || texts === void 0 ? void 0 : texts.trim()))
+        texts = texts.trim();
     if (images.length > 0) {
         if (images.length > 3)
             return res.status(400).json(modal_1.SMTH_WENT_WRONG);
@@ -157,10 +161,6 @@ const addDiagnosis = asyncHandler((req, res) => __awaiter(void 0, void 0, void 0
             });
         }));
     }
-    if (texts)
-        texts = texts.trim();
-    if (!date)
-        date = `${new Date().toISOString()}`;
     patient.body = (imageArr.length > 0 || texts) ? [
         ...patient.body,
         {
