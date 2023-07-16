@@ -176,6 +176,9 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const patient = await fetchByCardNumber(card_no, '-recommendation')
     if (!patient) return res.status(404).json(PATIENT_NOT_EXIST)
 
+    if (!date) return res.status(400).json({ ...ERROR, msg: "Current date is required." })
+    if (texts || texts?.trim()) texts = texts.trim()
+
     if (images.length > 0) {
         if (images.length > 3) return res.status(400).json(SMTH_WENT_WRONG)
 
@@ -192,9 +195,6 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
             })
         })
     }
-
-    if (texts) texts = texts.trim()
-    if (!date) date = `${new Date().toISOString()}`
 
     patient.body = (imageArr.length > 0 || texts) ? [
         ...patient.body,
