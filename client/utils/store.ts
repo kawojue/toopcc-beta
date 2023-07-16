@@ -1,11 +1,9 @@
 import { create } from 'zustand'
 
 const useTextEditor = create<TextEditorState>()((set) => ({
-    isCopy: false,
     isBold: false,
     isItalic: false,
     isUnderline: false,
-    setIsCopy: (isCopy: boolean) => set({ isCopy }),
     setIsBold: (isBold: boolean) => set({ isBold }),
     setIsItalic: (isItalic: boolean) => set({ isItalic }),
     setIsUnderline: (isUnderline: boolean) => set({ isUnderline }),
