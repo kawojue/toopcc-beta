@@ -8,15 +8,10 @@ import { useTextEditor } from '@/utils/store'
 
 const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
     const {
-        isCopy, setIsCopy,
         isBold, setIsBold,
         isItalic, setIsItalic,
         isUnderline, setIsUnderline
     }: TextEditorState = useTextEditor()
-
-    setTimeout(() => {
-        setIsCopy(false)
-    }, 2000)
 
     return (
         <article className="my-5">
@@ -36,13 +31,6 @@ const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
                 <button type="button" title='Underline' className="editor-btn"
                     onClick={() => document.execCommand('underline', false)}>
                     <FaUnderline />
-                </button>
-                <button type="button" title='Copy' className="editor-btn"
-                    onClick={() => {
-                        document.execCommand('copy', false)
-                        setIsCopy(!isBold)
-                    }}>
-                    {isCopy ? 'Copied' : <FaCopy />}
                 </button>
             </div>
             <div ref={textEditorRef} contentEditable="true"
