@@ -1,9 +1,9 @@
 import dotenv from 'dotenv'
-import nodemailer, { Transporter } from 'nodemailer'
+import { Transporter, createTransport } from 'nodemailer'
 
 dotenv.config()
 
-const transporter: Transporter = nodemailer.createTransport({
+const transporter: Transporter = createTransport({
     host: 'smtp.gmail.com',
     secure: true,
     service: 'gmail',
