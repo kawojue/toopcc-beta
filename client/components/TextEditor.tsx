@@ -16,10 +16,10 @@ const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
 
     setTimeout(() => {
         setIsCopy(false)
-    }, 1200)
+    }, 2000)
 
     return (
-        <section>
+        <article className="my-5">
             <div className="w-full flex items-center justify-end gap-4 mb-2 pr-5">
                 <button type="button" title='Bold'
                     className={`${isBold && 'active'} editor-btn`}
@@ -38,13 +38,16 @@ const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
                     <FaUnderline />
                 </button>
                 <button type="button" title='Copy' className="editor-btn"
-                    onClick={() => document.execCommand('copy', false)}>
-                    <FaCopy />
+                    onClick={() => {
+                        document.execCommand('copy', false)
+                        setIsCopy(!isBold)
+                    }}>
+                    {isCopy ? 'Copied' : <FaCopy />}
                 </button>
             </div>
             <div ref={textEditorRef} contentEditable="true"
-                className="outline-none h-[120px] px-1 py-0.5 rounded-lg text-lg overflow-y-auto border-2 focus:border-clr-2" />
-        </section>
+                className="outline-none h-[120px] px-1 py-0.5 rounded-lg text-lg overflow-y-auto border-[1px] border-clr-3 focus:border-2 focus:border-clr-2" />
+        </article>
     )
 }
 
