@@ -58,16 +58,18 @@ const page = ({ params: { patientId } }: IPt) => {
     return (
         <form onSubmit={async (e) => await handleSubmit(e)}
             className="form-section">
-            <div>
-                <label>Current Date</label>
-                <input value={currentDate} type="date"
-                    onChange={(e) => setCurrentDate(e.target.value)} />
-            </div>
-            <div>
-                <label>Next Appointment Date</label>
-                <input value={nextAppDate} type="date"
-                    onChange={(e) => setNextAppDate(e.target.value)} />
-            </div>
+            <article className="flex justify-between">
+                <div className="flex flex-col gap-2">
+                    <label>Current Date</label>
+                    <input value={currentDate} type="date"
+                        onChange={(e) => setCurrentDate(e.target.value)} />
+                </div>
+                <div className="flex flex-col gap-1">
+                    <label>Next Appointment Date</label>
+                    <input value={nextAppDate} type="date"
+                        onChange={(e) => setNextAppDate(e.target.value)} />
+                </div>
+            </article>
             <TextEditor textEditorRef={textEditorRef} />
             <PhotoUpload />
             <button type='submit' onClick={handleSubmit}>
