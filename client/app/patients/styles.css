@@ -94,9 +94,13 @@ input[type="radio"]:checked {
     /* background: rgb(96, 94, 92); */
 }
 
-.editor-btn {}
+.editor-btn {
+    @apply text-clr-3
+}
 
-.editor-btn.active {}
+.editor-btn.active {
+    @apply text-clr-8
+}
 
 @keyframes slick {
     0% {
