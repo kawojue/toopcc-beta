@@ -17,7 +17,7 @@ const PhotoUpload: React.FC = () => {
                     <input type="file" id='pic1' className="hidden"
                         onChange={(e) => handleFile(e, setPhoto1)} />
                 </div>
-                {/* <div className="pic-box"></div> */}
+                <div className="photo-box"></div>
             </article>
             <article>
                 <div>
