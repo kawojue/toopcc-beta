@@ -88,9 +88,9 @@ input[type="radio"]:checked {
     @apply font-medium text-clr-2
 }
 
-.pic-box {
+.photo-box {
     animation: slick 4s linear infinite alternate both;
-    @apply w-16 h-16 rounded-lg;
+    @apply w-16 h-16 rounded-lg bg-clr-0;
     /* background: rgb(96, 94, 92); */
 }
 
