@@ -94,12 +94,16 @@ input[type="radio"]:checked {
     /* background: rgb(96, 94, 92); */
 }
 
-.editor-btn {
-    @apply text-clr-3
+.editor-box {
+    @apply outline-none h-[150px] px-1 py-0.5 rounded-lg text-lg text-clr-2 overflow-y-auto border-[1px] border-clr-3
 }
 
-.editor-btn.active {
-    @apply text-clr-8
+.editor-btn {
+    @apply text-clr-3 rounded-md p-0.5 bg-clr-5 trans
+}
+
+.editor-btn.active, .editor-btn:hover {
+    @apply text-clr-8 bg-clr-0
 }
 
 @keyframes slick {
