@@ -28,7 +28,5 @@ app.use(express_1.default.urlencoded({
 }));
 app.use('/', root_1.default);
 mongoose_1.default.connection.once('open', () => {
-    app.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${PORT}`);
-    });
+    app.listen(PORT, () => console.log(`http://localhost:${PORT}`));
 });
