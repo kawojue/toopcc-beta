@@ -135,7 +135,7 @@ model Extensions {
     date             String?
     name             String?
     given            Boolean?
-    occurence        Int
+    occurence        Int?
     recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
     recommendationId String         @unique @db.ObjectId
 }
