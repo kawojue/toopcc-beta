@@ -131,7 +131,7 @@ model Physiotherapy {
 
 model Extensions {
     id               String         @id @default(auto()) @map("_id") @db.ObjectId
-    idx              String?
+    idx              String
     date             String?
     name             String?
     given            Boolean?
