@@ -116,7 +116,7 @@ model Opthalmology {
     idx              String
     date             String
     next_app         String?
-    Recommendation   Recommendation? @relation(fields: [recommendationId], references: [id])
+    Recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
     recommendationId String         @db.ObjectId
 }
 
@@ -125,7 +125,7 @@ model Physiotherapy {
     idx              String
     date             String
     next_app         String?
-    Recommendation   Recommendation? @relation(fields: [recommendationId], references: [id])
+    Recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
     recommendationId String         @db.ObjectId
 }
 
