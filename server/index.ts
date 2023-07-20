@@ -4,7 +4,7 @@ dotenv.config()
 // import utilities
 import cors from 'cors'
 import logger from 'morgan'
-import mongoose from'mongoose'
+import mongoose from 'mongoose'
 import connectDB from './configs/dbConn'
 import corsOption from './configs/corsOption'
 import express, { Application } from 'express'
@@ -20,7 +20,7 @@ connectDB(process.env.DB_URI as string)
 
 // set middlewares
 app.use(credentials)
-app.use(express.json({ limit: '14mb'}))
+app.use(express.json({ limit: '14mb' }))
 app.use(logger('dev'))
 app.use(cors(corsOption))
 app.use(express.urlencoded({
@@ -30,7 +30,5 @@ app.use(express.urlencoded({
 app.use('/', root)
 
 mongoose.connection.once('open', () => {
-    app.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${PORT}`)
-    })
+    app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
 })
