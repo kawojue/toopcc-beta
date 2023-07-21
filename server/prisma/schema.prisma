@@ -22,6 +22,20 @@ model User {
     otp       OTP?
 }
 
+model Patient {
+    id             String          @id @default(auto()) @map("_id") @db.ObjectId
+    card_no        String          @unique
+    fullname       String
+    age            Int
+    sex            String
+    date           String          @default("")
+    phone_no       String?
+    address        String?
+    death          Death?
+    body           Body[]
+    recommendation Recommendation?
+}
+
 type Mail {
     email    String
     verified Boolean @default(false)
@@ -40,20 +54,6 @@ type Avatar {
 type OTP {
     totp     String
     totpDate String
-}
-
-model Patient {
-    id             String          @id @default(auto()) @map("_id") @db.ObjectId
-    card_no        String          @unique
-    fullname       String
-    age            Int
-    sex            String
-    date           String          @default("")
-    phone_no       String?
-    address        String?
-    death          Death?
-    body           Body[]
-    recommendation Recommendation?
 }
 
 type Death {
