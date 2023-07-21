@@ -300,18 +300,27 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
 
     if (!otp || !email) return res.status(400).json(FIELDS_REQUIRED)
 
-    const account: any = await prisma.user.findUnique({
+    const account = await prisma.user.findUnique({
         where: {
             mail: { email }
         }
     })
-    const totp: string = account.OTP.totp
-    const totpDate: number = account.OTP.totpDate
-    const expiry: number = totpDate + (60 * 60 * 1000) // after 1hr
+
+    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
+
+    const totp: string = account.otp?.totp as string
+    const totpDate: number = account.otp?.totpDate as number
+    const expiry: number = totpDate as number + (60 * 60 * 1000) // after 1hr
 
     if (expiry < Date.now()) {
-        account.OTP = {}
-        await account.save()
+        await prisma.user.update({
+            where: {
+                mail: { email }
+            },
+            data: {
+                otp: {}
+            }
+        })
         return res.status(400).json({
             ...ERROR,
             msg: "OTP Expired."
@@ -325,9 +334,17 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    account.OTP = {}
-    account.mail.verified = true
-    await account.save()
+    await prisma.user.update({
+        where: {
+            mail: { email }
+        },
+        data: {
+            otp: {},
+            mail: {
+                verified: true
+            }
+        }
+    })
 
     res.status(200).json({
         ...SUCCESS,
