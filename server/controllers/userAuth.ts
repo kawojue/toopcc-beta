@@ -38,9 +38,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     user = email.split('@')[0]
     const account = await prisma.user.findUnique({
         where: {
-            mail: {
-                email
-            }
+            mail: { email }
         }
     })
 
@@ -155,9 +153,7 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
 
     const account: any = await prisma.user.findUnique({
         where: {
-            mail: {
-                email
-            }
+            mail: { email }
         }
     })
 
@@ -270,9 +266,7 @@ const editFullname = asyncHandler(async (req: any, res: Response) => {
         where: {
             user: account.user
         },
-        data: {
-            fullname
-        }
+        data: { fullname }
     })
 
     res.status(200).json({
@@ -287,20 +281,14 @@ const logout = asyncHandler(async (req: any, res: Response) => {
 
     const token: string = authHeader.split(' ')[1]
     const account = await prisma.user.findUnique({
-        where: {
-            token
-        }
+        where: { token }
     })
 
     if (!account) return res.sendStatus(204)
 
     await prisma.user.update({
-        where: {
-            token
-        },
-        data: {
-            token: ""
-        }
+        where: { token },
+        data: { token: "" }
     })
 
     res.sendStatus(204)
@@ -312,7 +300,11 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
 
     if (!otp || !email) return res.status(400).json(FIELDS_REQUIRED)
 
-    const account: any = await fetchUserByEmail(email)
+    const account: any = await prisma.user.findUnique({
+        where: {
+            mail: { email }
+        }
+    })
     const totp: string = account.OTP.totp
     const totpDate: number = account.OTP.totpDate
     const expiry: number = totpDate + (60 * 60 * 1000) // after 1hr
