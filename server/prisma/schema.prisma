@@ -15,7 +15,7 @@ model User {
     createdAt DateTime  @default(now())
     lastLogin String?
     roles     String[]  @default(["staff"])
-    token     String?
+    token     String?   @unique
     mail      Mail      @unique
     resigned  Resigned?
     avatar    Avatar?
