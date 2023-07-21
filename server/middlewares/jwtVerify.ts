@@ -21,13 +21,14 @@ const jwtVerify = expressAsyncHandler(async (req: IRequest, res: Response, next:
                     user: decoded.user
                 }
             })
+
             if (!account) return res.status(403).json(ACCESS_DENIED)
 
             const user: string = decoded.user
             const roles: string[] = decoded.roles
             const authRoles: string[] = account.roles
 
-            if (account.resigned.resign || roles.length !== authRoles.length) {
+            if (account.resigned?.resign || roles.length !== authRoles.length) {
                 await prisma.user.update({
                     where: {
                         user: decoded.user
