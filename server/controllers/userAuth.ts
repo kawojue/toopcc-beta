@@ -215,10 +215,20 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
         })
     }
 
-    const account: any = await fetchUserByUser(req?.user)
+    const account: any = await prisma.user.findUnique({
+        where: {
+            user: req?.user
+        }
+    })
+
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
-    const userExists: any = await fetchUserByUser(newUser)
+    const userExists: any = await prisma.user.findUnique({
+        where: {
+            user: newUser
+        }
+    })
+
     if (userExists) {
         return res.status(409).json({
             ...ERROR,
@@ -226,9 +236,15 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
         })
     }
 
-    account.token = ""
-    account.user = newUser
-    await account.save()
+    await prisma.user.update({
+        where: {
+            user: account.user
+        },
+        data: {
+            token: "",
+            user: newUser
+        }
+    })
 
     res.status(200).json({
         ...SUCCESS,
@@ -238,20 +254,30 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
 
 const editFullname = asyncHandler(async (req: any, res: Response) => {
     let { fullname }: any = req.body
+    fullname = full_name(fullname)
 
     if (!fullname) return res.status(400).json(FIELDS_REQUIRED)
 
-    fullname = full_name(fullname)
+    const account: any = await prisma.user.findUnique({
+        where: {
+            user: req?.user
+        }
+    })
 
-    const account: any = await fetchUserByUser(req?.user)
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
-    account.fullname = fullname
-    await account.save()
+    await prisma.user.update({
+        where: {
+            user: account.user
+        },
+        data: {
+            fullname
+        }
+    })
 
     res.status(200).json({
         ...SUCCESS,
-        msg: "You've successfully changed your full name."
+        msg: "You've successfully changed your fullname."
     })
 })
 
