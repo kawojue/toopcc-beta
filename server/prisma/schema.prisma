@@ -116,8 +116,8 @@ model Opthalmology {
     idx              String
     date             String
     next_app         String?
-    Recommendation   Recommendation? @relation(fields: [recommendationId], references: [id])
-    recommendationId String?         @db.ObjectId
+    Recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
+    recommendationId String         @unique @db.ObjectId
 }
 
 model Physiotherapy {
@@ -125,17 +125,17 @@ model Physiotherapy {
     idx              String
     date             String
     next_app         String?
-    Recommendation   Recommendation? @relation(fields: [recommendationId], references: [id])
-    recommendationId String?         @db.ObjectId
+    Recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
+    recommendationId String         @unique @db.ObjectId
 }
 
 model Extensions {
     id               String         @id @default(auto()) @map("_id") @db.ObjectId
-    idx              String?
+    idx              String
     date             String?
     name             String?
     given            Boolean?
-    occurence        Int
+    occurence        Int?
     recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
     recommendationId String         @unique @db.ObjectId
 }
