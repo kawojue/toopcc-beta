@@ -283,19 +283,25 @@ const editFullname = asyncHandler(async (req: any, res: Response) => {
 
 const logout = asyncHandler(async (req: any, res: Response) => {
     const authHeader = req.headers?.authorization
-    if (!authHeader || !authHeader.startsWith('Bearer')) {
-        return res.sendStatus(204)
-    }
+    if (!authHeader || !authHeader.startsWith('Bearer')) return res.sendStatus(204)
 
     const token: string = authHeader.split(' ')[1]
-    const account: any = await User.findOne({ token }).exec()
+    const account: any = await prisma.user.findUnique({
+        where: {
+            token
+        }
+    })
 
-    if (!account) {
-        return res.sendStatus(204)
-    }
+    if (!account) return res.sendStatus(204)
 
-    account.token = ""
-    await account.save()
+    await prisma.user.update({
+        where: {
+            token
+        },
+        data: {
+            token: ""
+        }
+    })
 
     res.sendStatus(204)
 })
