@@ -37,7 +37,7 @@ model Patient {
 }
 
 type Mail {
-    email    String
+    email    String?
     verified Boolean @default(false)
 }
 
@@ -53,7 +53,7 @@ type Avatar {
 
 type OTP {
     totp     String
-    totpDate String
+    totpDate Int
 }
 
 type Death {
