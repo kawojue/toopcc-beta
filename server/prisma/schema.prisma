@@ -99,7 +99,7 @@ type Physiotherapy {
 type Extensions {
     idx       String
     date      String?
-    name      String?
+    name      String
     given     Boolean?
     occurence Int?
 }
