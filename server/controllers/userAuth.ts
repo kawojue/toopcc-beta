@@ -286,7 +286,7 @@ const logout = asyncHandler(async (req: any, res: Response) => {
     if (!authHeader || !authHeader.startsWith('Bearer')) return res.sendStatus(204)
 
     const token: string = authHeader.split(' ')[1]
-    const account: any = await prisma.user.findUnique({
+    const account = await prisma.user.findUnique({
         where: {
             token
         }
