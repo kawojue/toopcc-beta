@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt'
+import prisma from '../prisma'
 import User from '../models/User'
 import randomString from 'randomstring'
 import mailer from '../utilities/mailer'
@@ -35,7 +36,13 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     if (EMAIL_REGEX.test(email) === false) return res.status(400).json(INVALID_EMAIL)
 
     user = email.split('@')[0]
-    const account: any = await fetchUserByEmail(email)
+    const account = await prisma.user.findUnique({
+        where: {
+            mail: {
+                email
+            }
+        }
+    })
 
     if (account) {
         return res.status(409).json({
@@ -44,7 +51,9 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
         })
     }
 
-    const isUserExists: any = await fetchUserByUser(user)
+    const isUserExists: any = await prisma.user.findUnique({
+        where: { user }
+    })
 
     if (!USER_REGEX.test(user) || isUserExists) {
         const rand: string = randomString.generate({
@@ -65,15 +74,17 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
         if (!result) return res.status(404).json(SMTH_WENT_WRONG)
     }
 
-    await User.create({
-        user,
-        avatar: {
-            secure_url: result?.secure_url,
-            public_id: result?.public_id
-        },
-        password: pswd as string,
-        fullname: fullname as string,
-        'mail.email': email as string
+    await prisma.user.create({
+        data: {
+            user,
+            avatar: {
+                secure_url: result?.secure_url,
+                public_id: result?.public_id
+            },
+            fullname,
+            password: pswd,
+            mail: { email }
+        }
     })
 
     res.status(201).json({
@@ -89,10 +100,18 @@ const login = asyncHandler(async (req: Request, res: Response) => {
 
     if (!userId || !pswd) return res.status(400).json(FIELDS_REQUIRED)
 
-    const account: any = await User.findOne(
-        EMAIL_REGEX.test(userId) ?
-            { 'mail.email': userId } : { user: userId }
-    ).exec()
+    const account = EMAIL_REGEX.test(userId) ?
+        await prisma.user.findUnique({
+            where: {
+                mail: {
+                    email: userId
+                }
+            }
+        }) : await prisma.user.findUnique({
+            where: {
+                user: userId
+            }
+        })
 
     if (!account) {
         return res.status(400).json({
@@ -101,16 +120,22 @@ const login = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    if (account.resigned.resign) return res.status(401).json(ACCESS_DENIED)
+    if (account.resigned?.resign) return res.status(401).json(ACCESS_DENIED)
 
     const match: boolean = await bcrypt.compare(pswd, account.password)
     if (!match) return res.status(401).json(INCORRECT_PSWD)
 
-    const token = genToken(account.user, account.roles)
+    const token: string = genToken(account.user, account.roles)
 
-    account.token = token
-    account.lastLogin = `${new Date()}`
-    await account.save()
+    await prisma.user.update({
+        where: {
+            user: account.user
+        },
+        data: {
+            token,
+            lastLogin: `${new Date()}`
+        }
+    })
 
     res.status(200).json({
         token,
@@ -128,7 +153,14 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
 
     if (!email) return res.status(400).json(INVALID_EMAIL)
 
-    const account: any = await fetchUserByEmail(email)
+    const account: any = await prisma.user.findUnique({
+        where: {
+            mail: {
+                email
+            }
+        }
+    })
+
     if (!account) {
         return res.status(400).json({
             ...ERROR,
@@ -136,12 +168,22 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    if (account.resigned.resign) return res.status(401).json(ACCESS_DENIED)
+    if (account.resigned?.resign) return res.status(401).json(ACCESS_DENIED)
 
-    account.OTP.totp = totp
-    account.OTP.totpDate = totpDate
-    account.mail.verified = false
-    await account.save()
+    await prisma.user.update({
+        where: {
+            user: account.user
+        },
+        data: {
+            otp: {
+                totp,
+                totpDate
+            },
+            mail: {
+                verified: false
+            }
+        }
+    })
 
     const transportMail: IMailer = {
         senderName: "Admin at TOOPCC",
@@ -382,7 +424,7 @@ const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
 const resigned = asyncHandler(async (req: Request, res: Response) => {
     const { user }: any = req.params
     const { resign, date }: any = req.body
-    
+
     const account: any = await fetchUserByUser(user)
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
