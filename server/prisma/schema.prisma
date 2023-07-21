@@ -48,7 +48,7 @@ type Resigned {
 
 type Avatar {
     secure_url String
-    public_url String
+    public_id  String
 }
 
 type OTP {
@@ -75,7 +75,7 @@ type Diagnosis {
 
 type Images {
     secure_url String?
-    public_url String?
+    public_id  String?
 }
 
 type Recommendation {
