@@ -16,42 +16,30 @@ model User {
     lastLogin String?
     roles     String[]  @default(["staff"])
     token     String?
-    mail      Mail?
+    mail      Mail      @unique
     resigned  Resigned?
     avatar    Avatar?
-    OTP       OTP?
+    otp       OTP?
 }
 
-model Mail {
-    id       String  @id @default(auto()) @map("_id") @db.ObjectId
-    email    String  @unique
+type Mail {
+    email    String
     verified Boolean @default(false)
-    user     User    @relation(fields: [userId], references: [id])
-    userId   String  @unique @db.ObjectId
 }
 
-model Resigned {
-    id     String  @id @default(auto()) @map("_id") @db.ObjectId
+type Resigned {
     date   String
     resign Boolean @default(false)
-    user   User    @relation(fields: [userId], references: [id])
-    userId String  @unique @db.ObjectId
 }
 
-model Avatar {
-    id         String @id @default(auto()) @map("_id") @db.ObjectId
+type Avatar {
     secure_url String
     public_url String
-    user       User   @relation(fields: [userId], references: [id])
-    userId     String @unique @db.ObjectId
 }
 
-model OTP {
-    id       String @id @default(auto()) @map("_id") @db.ObjectId
+type OTP {
     totp     String
     totpDate String
-    user     User   @relation(fields: [userId], references: [id])
-    userId   String @unique @db.ObjectId
 }
 
 model Patient {
@@ -68,74 +56,50 @@ model Patient {
     recommendation Recommendation?
 }
 
-model Death {
-    id        String  @id @default(auto()) @map("_id") @db.ObjectId
-    date      String?
-    dead      Boolean @default(false)
-    patient   Patient @relation(fields: [patientId], references: [id])
-    patientId String  @unique @db.ObjectId
+type Death {
+    date String?
+    dead Boolean @default(false)
 }
 
-model Body {
-    id        String      @id @default(auto()) @map("_id") @db.ObjectId
+type Body {
     idx       String
     date      String
     next_app  String?
     diagnosis Diagnosis[]
-    patient   Patient     @relation(fields: [patientId], references: [id])
-    patientId String      @unique @db.ObjectId
 }
 
-model Diagnosis {
-    id     String   @id @default(auto()) @map("_id") @db.ObjectId
+type Diagnosis {
     texts  String?
     images Images[]
-    body   Body     @relation(fields: [bodyId], references: [id])
-    bodyId String   @unique @db.ObjectId
 }
 
-model Images {
-    id          String    @id @default(auto()) @map("_id") @db.ObjectId
-    secure_url  String?
-    public_url  String?
-    diagnosis   Diagnosis @relation(fields: [diagnosisId], references: [id])
-    diagnosisId String    @unique @db.ObjectId
+type Images {
+    secure_url String?
+    public_url String?
 }
 
-model Recommendation {
-    id            String          @id @default(auto()) @map("_id") @db.ObjectId
+type Recommendation {
     extensions    Extensions[]
     opthamology   Opthalmology[]
     physiotherapy Physiotherapy[]
-    patient       Patient         @relation(fields: [patientId], references: [id])
-    patientId     String          @unique @db.ObjectId
 }
 
-model Opthalmology {
-    id               String          @id @default(auto()) @map("_id") @db.ObjectId
-    idx              String
-    date             String
-    next_app         String?
-    Recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
-    recommendationId String         @unique @db.ObjectId
+type Opthalmology {
+    idx      String
+    date     String
+    next_app String?
 }
 
-model Physiotherapy {
-    id               String          @id @default(auto()) @map("_id") @db.ObjectId
-    idx              String
-    date             String
-    next_app         String?
-    Recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
-    recommendationId String         @unique @db.ObjectId
+type Physiotherapy {
+    idx      String
+    date     String
+    next_app String?
 }
 
-model Extensions {
-    id               String         @id @default(auto()) @map("_id") @db.ObjectId
-    idx              String
-    date             String?
-    name             String?
-    given            Boolean?
-    occurence        Int?
-    recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
-    recommendationId String         @unique @db.ObjectId
+type Extensions {
+    idx       String
+    date      String?
+    name      String?
+    given     Boolean?
+    occurence Int?
 }
