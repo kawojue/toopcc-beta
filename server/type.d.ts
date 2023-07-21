@@ -1,3 +1,10 @@
+import type { Request } from 'express'
+
+interface IRequest extends Request {
+    user: string
+    roles: string[]
+}
+
 interface IMailer {
     senderName: string
     to: string
@@ -33,5 +40,5 @@ interface IBody {
 export {
     IMailer, IGenOTP,
     ILimiter, ICloud,
-    IBody
+    IBody, IRequest
 }
