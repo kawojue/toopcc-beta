@@ -75,13 +75,13 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     await prisma.user.create({
         data: {
             user,
+            fullname,
+            password: pswd,
+            mail: { email },
             avatar: {
                 secure_url: result?.secure_url,
                 public_id: result?.public_id
-            },
-            fullname,
-            password: pswd,
-            mail: { email }
+            }
         }
     })
 
@@ -288,7 +288,9 @@ const logout = asyncHandler(async (req: any, res: Response) => {
 
     await prisma.user.update({
         where: { token },
-        data: { token: "" }
+        data: {
+            token: ""
+        }
     })
 
     res.sendStatus(204)
@@ -348,8 +350,8 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
 
     res.status(200).json({
         ...SUCCESS,
-        verified: true,
         email,
+        verified: true,
         user: account.user
     })
 })
@@ -362,10 +364,15 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
 
     if (newPswd !== newPswd2) return res.status(400).json(PSWD_NOT_MATCH)
 
-    const account: any = await fetchUserByEmail(email)
+    const account = await prisma.user.findUnique({
+        where: {
+            mail: { email }
+        }
+    })
+
     if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
 
-    if (!verified || !account.mail.verified || account.resigned.resign) return res.status(400).json(ACCESS_DENIED)
+    if (!verified || !account.mail?.verified || account.resigned?.resign) return res.status(400).json(ACCESS_DENIED)
 
     const compare = await bcrypt.compare(newPswd, account.password)
     if (compare) return res.status(400).json(CURRENT_PSWD)
@@ -373,10 +380,18 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     const salt: string = await bcrypt.genSalt(10)
     const hasedPswd: string = await bcrypt.hash(newPswd, salt)
 
-    account.token = ""
-    account.password = hasedPswd
-    account.mail.verified = false
-    await account.save()
+    await prisma.user.update({
+        where: {
+            mail: { email }
+        },
+        data: {
+            token: "",
+            password: hasedPswd,
+            mail: {
+                verified: false
+            }
+        }
+    })
 
     res.status(200).json(PSWD_CHANGED)
 })
@@ -397,7 +412,12 @@ const editPassword = asyncHandler(async (req: any, res: Response) => {
 
     if (currentPswd === pswd) return res.status(400).json(CURRENT_PSWD)
 
-    const account: any = await fetchUserByUser(req?.user)
+    const account = await prisma.user.findUnique({
+        where: {
+            user: req?.user
+        }
+    })
+
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
     const isMatch = await bcrypt.compare(currentPswd, account.password)
@@ -406,9 +426,15 @@ const editPassword = asyncHandler(async (req: any, res: Response) => {
     const salt: string = await bcrypt.genSalt(10)
     const hashedPswd: string = await bcrypt.hash(pswd, salt)
 
-    account.token = ""
-    account.password = hashedPswd
-    await account.save()
+    await prisma.user.update({
+        where: {
+            user: req?.user
+        },
+        data: {
+            token: "",
+            password: hashedPswd
+        }
+    })
 
     res.status(200).json(PSWD_CHANGED)
 })
@@ -417,11 +443,16 @@ const changeAvatar = asyncHandler(async (req: any, res: any) => {
     const { avatar }: any = req.body
     if (!avatar) return res.status(400).json(SMTH_WENT_WRONG)
 
-    const account: any = await fetchUserByUser(req?.user)
+    const account = await prisma.user.findUnique({
+        where: {
+            user: req?.user
+        }
+    })
+
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
-    if (account.avatar.secure_url) {
-        const res = await cloudinary.uploader.destroy(account.avatar.public_id)
+    if (account.avatar?.secure_url) {
+        const res = await cloudinary.uploader.destroy(account.avatar?.public_id)
         if (!res) return res.status(400).json(SMTH_WENT_WRONG)
     }
 
@@ -429,13 +460,20 @@ const changeAvatar = asyncHandler(async (req: any, res: any) => {
         folder: `TOOPCC/Staffs/Avatars`,
         resource_type: 'image'
     })
+
     if (!result) return res.status(400).json(SMTH_WENT_WRONG)
 
-    account.avatar = {
-        secure_url: result.secure_url,
-        public_id: result.public_id
-    }
-    await account.save()
+    await prisma.user.update({
+        where: {
+            user: req?.user
+        },
+        data: {
+            avatar: {
+                secure_url: result.secure_url,
+                public_id: result.public_id
+            }
+        }
+    })
 
     res.status(200).json({
         ...SUCCESS,
@@ -444,17 +482,28 @@ const changeAvatar = asyncHandler(async (req: any, res: any) => {
 })
 
 const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
-    const account: any = await fetchUserByUser(req?.user)
+    const account = await prisma.user.findUnique({
+        where: {
+            user: req?.user
+        }
+    })
+
     if (!account) return res.status(404).json(SMTH_WENT_WRONG)
 
-    const result: any = await cloudinary.uploader.destroy(account.avatar?.public_id)
+    const result: any = await cloudinary.uploader.destroy(account.avatar?.public_id as string)
     if (!result) return res.status(400).json(SMTH_WENT_WRONG)
 
-    account.avatar = {
-        secure_url: "",
-        public_id: ""
-    }
-    await account.save()
+    await prisma.user.update({
+        where: {
+            user: req?.user
+        },
+        data: {
+            avatar: {
+                secure_url: "",
+                public_id: ""
+            }
+        }
+    })
 
     res.status(200).json({
         ...SUCCESS,
