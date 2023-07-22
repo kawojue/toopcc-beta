@@ -27,7 +27,7 @@ model Patient {
     card_no        String          @unique
     fullname       String
     age            Int
-    sex            String
+    sex            Sex
     date           String          @default("")
     phone_no       String?
     address        String?
@@ -102,4 +102,9 @@ type Extensions {
     name      String
     given     Boolean?
     occurence Int?
+}
+
+enum Sex {
+    Male
+    Female
 }
