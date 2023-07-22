@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt'
 import prisma from '../prisma'
-import User from '../models/User'
 import randomString from 'randomstring'
 import mailer from '../utilities/mailer'
 import genOTP from '../utilities/genOTP'
@@ -9,7 +8,7 @@ import { Request, Response } from 'express'
 import genToken from '../utilities/genToken'
 import cloudinary from '../configs/cloudinary'
 import full_name from '../utilities/full_name'
-import { fetchUserByUser, fetchUserByEmail } from '../utilities/getModels'
+import StatusCodes from '../utilities/StatusCodes'
 import {
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
     FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
@@ -26,14 +25,20 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     let result: any
     let { email, pswd, pswd2, fullname, avatar }: any = req.body
 
-    if (!email || !pswd || !pswd2 || !fullname) return res.status(400).json(FIELDS_REQUIRED)
+    if (!email || !pswd || !pswd2 || !fullname) {
+        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+    }
 
     fullname = full_name(fullname)
     email = email?.toLowerCase()?.trim()
 
-    if (pswd !== pswd2) return res.status(400).json(PSWD_NOT_MATCH)
+    if (pswd !== pswd2) {
+        return res.status(StatusCodes.BadRequest).json(PSWD_NOT_MATCH)
+    }
 
-    if (EMAIL_REGEX.test(email) === false) return res.status(400).json(INVALID_EMAIL)
+    if (EMAIL_REGEX.test(email) === false) {
+        return res.status(StatusCodes.BadRequest).json(INVALID_EMAIL)
+    }
 
     user = email.split('@')[0]
     const account = await prisma.user.findUnique({
@@ -43,7 +48,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
     })
 
     if (account) {
-        return res.status(409).json({
+        return res.status(StatusCodes.Conflict).json({
             ...ERROR,
             msg: "Account already exists."
         })
@@ -69,7 +74,10 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
             folder: `TOOPCC/Staffs/Avatars`,
             resource_type: 'image'
         })
-        if (!result) return res.status(404).json(SMTH_WENT_WRONG)
+
+        if (!result) {
+            return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+        }
     }
 
     await prisma.user.create({
@@ -85,7 +93,7 @@ const createUser = asyncHandler(async (req: any, res: Response) => {
         }
     })
 
-    res.status(201).json({
+    res.status(StatusCodes.Created).json({
         ...SUCCESS,
         msg: "Account creation was successful."
     })
@@ -96,7 +104,9 @@ const login = asyncHandler(async (req: Request, res: Response) => {
     let { userId, pswd }: any = req.body
     userId = userId?.toLowerCase()?.trim()
 
-    if (!userId || !pswd) return res.status(400).json(FIELDS_REQUIRED)
+    if (!userId || !pswd) {
+        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+    }
 
     const account = EMAIL_REGEX.test(userId) ?
         await prisma.user.findUnique({
@@ -112,16 +122,20 @@ const login = asyncHandler(async (req: Request, res: Response) => {
         })
 
     if (!account) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BadRequest).json({
             ...ERROR,
             msg: "Invalid User ID or Password."
         })
     }
 
-    if (account.resigned?.resign) return res.status(401).json(ACCESS_DENIED)
+    if (account.resigned?.resign) {
+        return res.status(StatusCodes.Unauthorized).json(ACCESS_DENIED)
+    }
 
     const match: boolean = await bcrypt.compare(pswd, account.password)
-    if (!match) return res.status(401).json(INCORRECT_PSWD)
+    if (!match) {
+        return res.status(StatusCodes.Unauthorized).json(INCORRECT_PSWD)
+    }
 
     const token: string = genToken(account.user, account.roles)
 
@@ -135,7 +149,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
         }
     })
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         token,
         ...SUCCESS,
         msg: "Login successful.",
@@ -149,7 +163,9 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
 
     const { totp, totpDate }: IGenOTP = genOTP()
 
-    if (!email) return res.status(400).json(INVALID_EMAIL)
+    if (!email) {
+        return res.status(StatusCodes.BadRequest).json(INVALID_EMAIL)
+    }
 
     const account: any = await prisma.user.findUnique({
         where: {
@@ -158,13 +174,15 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
     })
 
     if (!account) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BadRequest).json({
             ...ERROR,
             msg: "There is no account associated with this email."
         })
     }
 
-    if (account.resigned?.resign) return res.status(401).json(ACCESS_DENIED)
+    if (account.resigned?.resign) {
+        return res.status(StatusCodes.Unauthorized).json(ACCESS_DENIED)
+    }
 
     await prisma.user.update({
         where: {
@@ -189,9 +207,11 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
     }
 
     const sendMail: boolean = await mailer(transportMail)
-    if (!sendMail) return res.status(400).json(INVALID_EMAIL)
+    if (!sendMail) {
+        return res.status(StatusCodes.BadRequest).json(INVALID_EMAIL)
+    }
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         ...SUCCESS,
         msg: "OTP has been sent to your email."
     })
@@ -202,10 +222,12 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
     let { newUser }: any = req.body
     newUser = newUser?.trim()?.toLowerCase()
 
-    if (!newUser) return res.status(400).json(FIELDS_REQUIRED)
+    if (!newUser) {
+        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+    }
 
     if (!USER_REGEX.test(newUser)) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BadRequest).json({
             ...ERROR,
             msg: "Username is not allowed."
         })
@@ -217,7 +239,9 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
         }
     })
 
-    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
+    if (!account) {
+        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+    }
 
     const userExists: any = await prisma.user.findUnique({
         where: {
@@ -226,7 +250,7 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
     })
 
     if (userExists) {
-        return res.status(409).json({
+        return res.status(StatusCodes.Conflict).json({
             ...ERROR,
             msg: "Username has been taken."
         })
@@ -242,7 +266,7 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
         }
     })
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         ...SUCCESS,
         msg: "You've successfully changed your username."
     })
@@ -252,7 +276,9 @@ const editFullname = asyncHandler(async (req: any, res: Response) => {
     let { fullname }: any = req.body
     fullname = full_name(fullname)
 
-    if (!fullname) return res.status(400).json(FIELDS_REQUIRED)
+    if (!fullname) {
+        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+    }
 
     const account: any = await prisma.user.findUnique({
         where: {
@@ -260,7 +286,9 @@ const editFullname = asyncHandler(async (req: any, res: Response) => {
         }
     })
 
-    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
+    if (!account) {
+        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+    }
 
     await prisma.user.update({
         where: {
@@ -269,7 +297,7 @@ const editFullname = asyncHandler(async (req: any, res: Response) => {
         data: { fullname }
     })
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         ...SUCCESS,
         msg: "You've successfully changed your fullname."
     })
@@ -277,14 +305,18 @@ const editFullname = asyncHandler(async (req: any, res: Response) => {
 
 const logout = asyncHandler(async (req: any, res: Response) => {
     const authHeader = req.headers?.authorization
-    if (!authHeader || !authHeader.startsWith('Bearer')) return res.sendStatus(204)
+    if (!authHeader || !authHeader.startsWith('Bearer')) {
+        return res.sendStatus(StatusCodes.NoContent)
+    }
 
     const token: string = authHeader.split(' ')[1]
     const account = await prisma.user.findUnique({
         where: { token }
     })
 
-    if (!account) return res.sendStatus(204)
+    if (!account) {
+        return res.sendStatus(StatusCodes.NoContent)
+    }
 
     await prisma.user.update({
         where: { token },
@@ -293,14 +325,16 @@ const logout = asyncHandler(async (req: any, res: Response) => {
         }
     })
 
-    res.sendStatus(204)
+    res.sendStatus(StatusCodes.NoContent)
 })
 
 // verify OTP
 const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
     const { otp, email }: any = req.body
 
-    if (!otp || !email) return res.status(400).json(FIELDS_REQUIRED)
+    if (!otp || !email) {
+        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+    }
 
     const account = await prisma.user.findUnique({
         where: {
@@ -308,7 +342,9 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
         }
     })
 
-    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
+    if (!account) {
+        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+    }
 
     const totp: string = account.otp?.totp as string
     const totpDate: number = account.otp?.totpDate as number
@@ -323,14 +359,15 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
                 otp: {}
             }
         })
-        return res.status(400).json({
+
+        return res.status(StatusCodes.BadRequest).json({
             ...ERROR,
             msg: "OTP Expired."
         })
     }
 
     if (totp !== otp) {
-        return res.status(401).json({
+        return res.status(StatusCodes.Unauthorized).json({
             ...ERROR,
             msg: "Incorrect OTP"
         })
@@ -348,7 +385,7 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
         }
     })
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         ...SUCCESS,
         email,
         verified: true,
@@ -360,9 +397,13 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
 const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     const { verified, email, newPswd, newPswd2 }: any = req.body
 
-    if (!email || !newPswd) return res.status(400).json(FIELDS_REQUIRED)
+    if (!email || !newPswd) {
+        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+    }
 
-    if (newPswd !== newPswd2) return res.status(400).json(PSWD_NOT_MATCH)
+    if (newPswd !== newPswd2) {
+        return res.status(StatusCodes.BadRequest).json(PSWD_NOT_MATCH)
+    }
 
     const account = await prisma.user.findUnique({
         where: {
@@ -370,12 +411,18 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
         }
     })
 
-    if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
+    if (!account) {
+        return res.status(StatusCodes.NotFound).json(ACCOUNT_NOT_FOUND)
+    }
 
-    if (!verified || !account.mail?.verified || account.resigned?.resign) return res.status(400).json(ACCESS_DENIED)
+    if (!verified || !account.mail?.verified || account.resigned?.resign) {
+        return res.status(StatusCodes.BadRequest).json(ACCESS_DENIED)
+    }
 
     const compare = await bcrypt.compare(newPswd, account.password)
-    if (compare) return res.status(400).json(CURRENT_PSWD)
+    if (compare) {
+        return res.status(StatusCodes.BadRequest).json(CURRENT_PSWD)
+    }
 
     const salt: string = await bcrypt.genSalt(10)
     const hasedPswd: string = await bcrypt.hash(newPswd, salt)
@@ -393,24 +440,30 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
         }
     })
 
-    res.status(200).json(PSWD_CHANGED)
+    res.status(StatusCodes.OK).json(PSWD_CHANGED)
 })
 
 const editPassword = asyncHandler(async (req: any, res: Response) => {
     const { currentPswd, pswd, pswd2 }: any = req.body
 
-    if (!currentPswd || !pswd || !pswd2) return res.status(400).json(FIELDS_REQUIRED)
+    if (!currentPswd || !pswd || !pswd2) {
+        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+    }
 
     if (!currentPswd) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BadRequest).json({
             ...ERROR,
             msg: 'Old password is required.'
         })
     }
 
-    if (pswd !== pswd2) return res.status(400).json(PSWD_NOT_MATCH)
+    if (pswd !== pswd2) {
+        return res.status(StatusCodes.BadRequest).json(PSWD_NOT_MATCH)
+    }
 
-    if (currentPswd === pswd) return res.status(400).json(CURRENT_PSWD)
+    if (currentPswd === pswd) {
+        return res.status(StatusCodes.BadRequest).json(CURRENT_PSWD)
+    }
 
     const account = await prisma.user.findUnique({
         where: {
@@ -418,10 +471,14 @@ const editPassword = asyncHandler(async (req: any, res: Response) => {
         }
     })
 
-    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
+    if (!account) {
+        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+    }
 
     const isMatch = await bcrypt.compare(currentPswd, account.password)
-    if (!isMatch) return res.status(401).json(INCORRECT_PSWD)
+    if (!isMatch) {
+        return res.status(StatusCodes.Unauthorized).json(INCORRECT_PSWD)
+    }
 
     const salt: string = await bcrypt.genSalt(10)
     const hashedPswd: string = await bcrypt.hash(pswd, salt)
@@ -436,12 +493,14 @@ const editPassword = asyncHandler(async (req: any, res: Response) => {
         }
     })
 
-    res.status(200).json(PSWD_CHANGED)
+    res.status(StatusCodes.OK).json(PSWD_CHANGED)
 })
 
 const changeAvatar = asyncHandler(async (req: any, res: any) => {
     const { avatar }: any = req.body
-    if (!avatar) return res.status(400).json(SMTH_WENT_WRONG)
+    if (!avatar) {
+        return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+    }
 
     const account = await prisma.user.findUnique({
         where: {
@@ -449,11 +508,15 @@ const changeAvatar = asyncHandler(async (req: any, res: any) => {
         }
     })
 
-    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
+    if (!account) {
+        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+    }
 
     if (account.avatar?.secure_url) {
         const res = await cloudinary.uploader.destroy(account.avatar?.public_id)
-        if (!res) return res.status(400).json(SMTH_WENT_WRONG)
+        if (!res) {
+            return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+        }
     }
 
     const result = await cloudinary.uploader.upload(avatar, {
@@ -461,7 +524,9 @@ const changeAvatar = asyncHandler(async (req: any, res: any) => {
         resource_type: 'image'
     })
 
-    if (!result) return res.status(400).json(SMTH_WENT_WRONG)
+    if (!result) {
+        return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+    }
 
     await prisma.user.update({
         where: {
@@ -475,7 +540,7 @@ const changeAvatar = asyncHandler(async (req: any, res: any) => {
         }
     })
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         ...SUCCESS,
         msg: "Successful."
     })
@@ -488,10 +553,14 @@ const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
         }
     })
 
-    if (!account) return res.status(404).json(SMTH_WENT_WRONG)
+    if (!account) {
+        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+    }
 
     const result: any = await cloudinary.uploader.destroy(account.avatar?.public_id as string)
-    if (!result) return res.status(400).json(SMTH_WENT_WRONG)
+    if (!result) {
+        return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+    }
 
     await prisma.user.update({
         where: {
@@ -505,7 +574,7 @@ const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
         }
     })
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         ...SUCCESS,
         msg: "Successful."
     })
@@ -515,8 +584,13 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
     const { user }: any = req.params
     const { resign, date }: any = req.body
 
-    const account: any = await fetchUserByUser(user)
-    if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
+    const account: any = await prisma.user.findUnique({
+        where: { user }
+    })
+
+    if (!account) {
+        return res.status(StatusCodes.NotFound).json(ACCOUNT_NOT_FOUND)
+    }
 
     if (Boolean(resign) === false) {
         account.resigned.date = ""
@@ -528,9 +602,12 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
 
     account.resigned.date = date
     account.resigned.resign = Boolean(resign)
-    await account.save()
+    await prisma.user.update({
+        where: { user },
+        data: account
+    })
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         ...SUCCESS,
         msg: "Staff has been resigned"
     })
@@ -539,38 +616,56 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
 const changeRoles = asyncHandler(async (req: Request, res: Response) => {
     const { role }: any = req.body
     const { user }: any = req.params
-    if (!role) return res.status(400).json(CANCELED)
+    if (!role) {
+        return res.status(StatusCodes.BadRequest).json(CANCELED)
+    }
 
-    const account: any = await fetchUserByUser(user)
-    if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
+    const account = await prisma.user.findUnique({
+        where: { user }
+    })
+
+    if (!account) {
+        return res.status(StatusCodes.NotFound).json(ACCOUNT_NOT_FOUND)
+    }
 
     const roles: string[] = account.roles
     if (roles.includes(role)) {
-        return res.status(200).json({
+        return res.status(StatusCodes.OK).json({
             ...SUCCESS,
             msg: "Existing roles"
         })
     }
 
     roles.push(role)
-    account.roles = roles
-    account.token = ""
-    await account.save()
+    await prisma.user.update({
+        where: { user },
+        data: {
+            token: "",
+            roles: roles
+        }
+    })
 
-    res.status(200).json(ROLES_UPDATED)
+    res.status(StatusCodes.OK).json(ROLES_UPDATED)
 })
 
 const removeRole = asyncHandler(async (req: Request, res: Response) => {
     const { role }: any = req.body
     const { user }: any = req.params
-    if (!role) return res.status(400).json(CANCELED)
+    if (!role) {
+        return res.status(StatusCodes.BadRequest).json(CANCELED)
+    }
 
-    const account: any = await fetchUserByUser(user)
-    if (!account) return res.status(404).json(ACCOUNT_NOT_FOUND)
+    const account = await prisma.user.findUnique({
+        where: { user }
+    })
+
+    if (!account) {
+        return res.status(StatusCodes.NotFound).json(ACCOUNT_NOT_FOUND)
+    }
 
     const roles: string[] = account.roles
     if (!roles.includes(role)) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BadRequest).json({
             ...ERROR,
             msg: "Role does not exist."
         })
@@ -578,17 +673,21 @@ const removeRole = asyncHandler(async (req: Request, res: Response) => {
 
     const newRoles: string[] = roles.filter((authRole: string) => authRole !== role)
     if (newRoles.length === 0) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BadRequest).json({
             ...ERROR,
-            msg: "Empty roles! Cannot remove role."
+            msg: "Empty role! Cannot remove role."
         })
     }
 
-    account.token = ""
-    account.roles = newRoles
-    await account.save()
+    await prisma.user.update({
+        where: { user },
+        data: {
+            token: "",
+            roles: newRoles
+        }
+    })
 
-    res.status(200).json(ROLES_UPDATED)
+    res.status(StatusCodes.OK).json(ROLES_UPDATED)
 })
 
 
