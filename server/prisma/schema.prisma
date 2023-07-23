@@ -65,7 +65,7 @@ type Body {
     idx       String
     date      String
     next_app  String?
-    diagnosis Diagnosis?
+    diagnosis Diagnosis
 }
 
 type Diagnosis {
