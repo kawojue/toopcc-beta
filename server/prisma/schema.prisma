@@ -23,17 +23,17 @@ model User {
 }
 
 model Patient {
-    id             String          @id @default(auto()) @map("_id") @db.ObjectId
-    card_no        String          @unique
+    id             String         @id @default(auto()) @map("_id") @db.ObjectId
+    card_no        String         @unique
     fullname       String
     age            Int
     sex            Sex
-    date           String          @default("")
+    date           String         @default("")
     phone_no       String?
     address        String?
     death          Death?
     body           Body[]
-    recommendation Recommendation?
+    recommendation Recommendation
 }
 
 enum Sex {
@@ -85,13 +85,13 @@ type Images {
 
 type Recommendation {
     extensions    Extensions[]
-    opthalmology  Opthalmology?
-    physiotherapy Physiotherapy?
+    opthalmology  Opthalmology
+    physiotherapy Physiotherapy
 }
 
 type Medication {
-    idx      String?
-    date     String?
+    idx      String
+    date     String
     next_app String?
 }
 
@@ -107,7 +107,7 @@ type Physiotherapy {
 
 type Extensions {
     idx       String
-    date      String?
+    date      String
     name      String
     given     Boolean?
     occurence Int?
