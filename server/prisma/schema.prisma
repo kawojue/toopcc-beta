@@ -84,14 +84,14 @@ type Images {
 }
 
 type Recommendation {
-    extensions    Extensions?
+    extensions    Extensions[]
     opthalmology  Opthalmology?
     physiotherapy Physiotherapy?
 }
 
 type Medication {
-    idx      String
-    date     String
+    idx      String?
+    date     String?
     next_app String?
 }
 
