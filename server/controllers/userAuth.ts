@@ -3,12 +3,12 @@ import prisma from '../prisma'
 import randomString from 'randomstring'
 import mailer from '../utilities/mailer'
 import genOTP from '../utilities/genOTP'
-import { IMailer, IGenOTP } from '../type'
 import { Request, Response } from 'express'
 import genToken from '../utilities/genToken'
 import cloudinary from '../configs/cloudinary'
 import full_name from '../utilities/full_name'
 import StatusCodes from '../utilities/StatusCodes'
+import { IMailer, IGenOTP, IRequest } from '../type'
 import {
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
     FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
@@ -20,7 +20,7 @@ const EMAIL_REGEX: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const USER_REGEX: RegExp = /^[a-zA-Z][a-zA-Z0-9-_]{2,23}$/
 
 // handle account creation
-const createUser = asyncHandler(async (req: any, res: Response) => {
+const createUser = asyncHandler(async (req: IRequest, res: Response) => {
     let user: any
     let result: any
     let { email, pswd, pswd2, fullname, avatar }: any = req.body
@@ -218,7 +218,7 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
 })
 
 // change username
-const editUsername = asyncHandler(async (req: any, res: Response) => {
+const editUsername = asyncHandler(async (req: IRequest, res: Response) => {
     let { newUser }: any = req.body
     newUser = newUser?.trim()?.toLowerCase()
 
@@ -272,7 +272,7 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
     })
 })
 
-const editFullname = asyncHandler(async (req: any, res: Response) => {
+const editFullname = asyncHandler(async (req: IRequest, res: Response) => {
     let { fullname }: any = req.body
     fullname = full_name(fullname)
 
@@ -303,7 +303,7 @@ const editFullname = asyncHandler(async (req: any, res: Response) => {
     })
 })
 
-const logout = asyncHandler(async (req: any, res: Response) => {
+const logout = asyncHandler(async (req: IRequest, res: Response) => {
     const authHeader = req.headers?.authorization
     if (!authHeader || !authHeader.startsWith('Bearer')) {
         return res.sendStatus(StatusCodes.NoContent)
@@ -443,7 +443,7 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     res.status(StatusCodes.OK).json(PSWD_CHANGED)
 })
 
-const editPassword = asyncHandler(async (req: any, res: Response) => {
+const editPassword = asyncHandler(async (req: IRequest, res: Response) => {
     const { currentPswd, pswd, pswd2 }: any = req.body
 
     if (!currentPswd || !pswd || !pswd2) {
@@ -496,7 +496,7 @@ const editPassword = asyncHandler(async (req: any, res: Response) => {
     res.status(StatusCodes.OK).json(PSWD_CHANGED)
 })
 
-const changeAvatar = asyncHandler(async (req: any, res: any) => {
+const changeAvatar = asyncHandler(async (req: IRequest, res: any) => {
     const { avatar }: any = req.body
     if (!avatar) {
         return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
@@ -546,7 +546,7 @@ const changeAvatar = asyncHandler(async (req: any, res: any) => {
     })
 })
 
-const deleteAvatar = asyncHandler(async (req: any, res: Response) => {
+const deleteAvatar = asyncHandler(async (req: IRequest, res: Response) => {
     const account = await prisma.user.findUnique({
         where: {
             user: req?.user
