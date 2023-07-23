@@ -245,14 +245,19 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (images.length > 0) {
-        if (images.length > 3) return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+        if (images.length > 3) {
+            return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+        }
 
         images.forEach(async (image: any) => {
             imageRes = await cloudinary.uploader.upload(image, {
                 folder: `TOOPCC/${patient.id}`,
                 resource_type: 'image'
             })
-            if (!imageRes) return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+
+            if (!imageRes) {
+                return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+            }
 
             imageArr.push({
                 secure_url: imageRes.secure_url,
@@ -288,17 +293,39 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         date, texts, next_app
     }: any = req.body
 
-    const patient: any = await fetchByCardNumber(card_no, '-recommendation')
-    if (!patient) return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    const patient = await prisma.patient.findUnique({
+        where: { card_no }
+    })
 
-    const body: any = patient.body.find((body:) => body.idx === idx)
-    if (!body) return res.status(StatusCodes.NotFound).json(DIAG_NOT_EXIST)
+    if (!patient) {
+        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    }
 
-    if (texts) body.diagnosis.texts = texts.trim()
-    if (date) body.date = date
-    if (next_app) body.next_app = next_app
+    const body = patient.body.find((body) => body.idx === idx)
 
-    await patient.save()
+    if (!body) {
+        return res.status(StatusCodes.NotFound).json(DIAG_NOT_EXIST)
+    }
+
+    if (texts) {
+        body.diagnosis = {
+            texts: texts.trim(),
+            images: [...body.diagnosis.images]
+        }
+    }
+
+    if (date) {
+        body.date = date
+    }
+
+    if (next_app) {
+        body.next_app = next_app
+    }
+
+    await prisma.patient.update({
+        where: { card_no },
+        data: patient
+    })
 
     res.status(StatusCodes.OK).json(SAVED)
 })
