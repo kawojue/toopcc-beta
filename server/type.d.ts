@@ -23,22 +23,25 @@ interface ILimiter {
     msg?: string
 }
 
-interface ICloud {
-    secure_url: string
-    public_id: string
-}
-
 interface IBody {
     idx: string
-    diagnosis: {
-        images: ICloud[]
-        texts: string
-    }
-    date_visit: string
+    date: string
+    next_app?: string
+    diagnosis: Diagnosis[]
+}
+
+interface Diagnosis {
+    texts?: string
+    images: Images[]
+}
+
+interface Images {
+    secure_url?: string
+    public_id?: string
 }
 
 export {
     IMailer, IGenOTP,
-    ILimiter, ICloud,
-    IBody, IRequest
+    ILimiter, IBody,
+    IRequest, Images
 }
