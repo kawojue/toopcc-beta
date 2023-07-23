@@ -84,21 +84,25 @@ type Images {
 }
 
 type Recommendation {
-    extensions    Extensions[]
-    opthamology   Opthalmology[]
-    physiotherapy Physiotherapy[]
+    extensions    Extensions?
+    opthamology   Opthalmology?
+    physiotherapy Physiotherapy?
+}
+
+type Medication {
+    idx      String
+    date     String
+    next_app String?
 }
 
 type Opthalmology {
-    idx      String
-    date     String
-    next_app String?
+    eligible   Boolean?
+    medication Medication[]
 }
 
 type Physiotherapy {
-    idx      String
-    date     String
-    next_app String?
+    eligible   Boolean?
+    medication Medication[]
 }
 
 type Extensions {
