@@ -41,6 +41,7 @@
     "@types/uuid": "^9.0.1"
   },
   "dependencies": {
+    "@types/mongoose": "^5.11.97",
     "bcrypt": "^5.1.0",
     "cloudinary": "^1.37.0",
     "cors": "^2.8.5",
