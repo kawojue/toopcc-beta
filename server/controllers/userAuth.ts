@@ -167,7 +167,7 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
         return res.status(StatusCodes.BadRequest).json(INVALID_EMAIL)
     }
 
-    const account: any = await prisma.user.findUnique({
+    const account = await prisma.user.findUnique({
         where: {
             mail: { email }
         }
@@ -233,7 +233,7 @@ const editUsername = asyncHandler(async (req: any, res: Response) => {
         })
     }
 
-    const account: any = await prisma.user.findUnique({
+    const account = await prisma.user.findUnique({
         where: {
             user: req?.user
         }
@@ -280,7 +280,7 @@ const editFullname = asyncHandler(async (req: any, res: Response) => {
         return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
     }
 
-    const account: any = await prisma.user.findUnique({
+    const account = await prisma.user.findUnique({
         where: {
             user: req?.user
         }
@@ -584,7 +584,7 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
     const { user }: any = req.params
     const { resign, date }: any = req.body
 
-    const account: any = await prisma.user.findUnique({
+    const account = await prisma.user.findUnique({
         where: { user }
     })
 
@@ -593,15 +593,23 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (Boolean(resign) === false) {
-        account.resigned.date = ""
+        account.resigned = {
+            date: "",
+            resign: false
+        }
     }
 
     if (Boolean(resign) === true && !date) {
-        account.resigned.date = `${new Date().toISOString()}`
+        account.resigned = {
+            date: `${new Date().toISOString()}`,
+            resign: false
+        }
     }
 
-    account.resigned.date = date
-    account.resigned.resign = Boolean(resign)
+    account.resigned = {
+        date,
+        resign
+    }
     await prisma.user.update({
         where: { user },
         data: account
