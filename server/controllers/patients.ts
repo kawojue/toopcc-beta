@@ -1,7 +1,6 @@
 import prisma from '../prisma'
 import { v4 as uuid } from 'uuid'
-import { IBody, ICloud } from '../type'
-import Patient from '../models/Patient'
+import { Images, IBody } from '../type'
 import delDiag from '../utilities/delDiag'
 import { Request, Response } from 'express'
 import addMedic from '../utilities/addMedic'
@@ -9,12 +8,12 @@ import full_name from '../utilities/full_name'
 import cloudinary from '../configs/cloudinary'
 import StatusCodes from '../utilities/StatusCodes'
 import addExtension from '../utilities/addExtension'
+const asyncHandler = require('express-async-handler')
 import {
     PATIENT_NOT_EXIST, SMTH_WENT_WRONG, PATIENT_EXIST, SAVED, SUCCESS,
     DELETION_FAILED, EXT_NOT_EXIST, DIAG_NOT_EXIST, INVALID_PHONE_NO,
     ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
 } from '../utilities/modal'
-const asyncHandler = require('express-async-handler')
 
 const phoneRegex: RegExp = /^\d{11}$/
 
@@ -85,13 +84,27 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         age, death, cardNo, date
     }: any = req.body
 
-    const patient: any = await fetchByCardNumber(card_no, '-body -recommendation')
-    if (!patient) return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    const patient = await prisma.patient.findUnique({
+        where: { card_no }
+    })
+
+    if (!patient) {
+        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    }
 
     if (cardNo || cardNo?.trim()) {
         cardNo = cardNo.trim().toUpperCase()
-        const cardNoExists: any = await fetchByCardNumber(cardNo, '-body -recommendation')
-        if (cardNoExists) return res.status(StatusCodes.Conflict).json(PATIENT_EXIST)
+
+        const cardNoExists = await prisma.patient.findUnique({
+            where: {
+                card_no: cardNo
+            }
+        })
+
+        if (cardNoExists) {
+            return res.status(StatusCodes.Conflict).json(PATIENT_EXIST)
+        }
+
         patient.card_no = cardNo
     }
 
@@ -103,6 +116,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
                 msg: "Fullname is required."
             })
         }
+
         patient.fullname = fullname
     }
 
@@ -113,6 +127,7 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
                 msg: "Sex is required."
             })
         }
+
         patient.sex = sex
     }
 
@@ -120,25 +135,25 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         if (!phone_no?.trim() || !phoneRegex.test(phone_no?.trim())) {
             return res.status(StatusCodes.BadRequest).json({
                 ...ERROR,
-                msg: "Invalid phone number"
+                msg: "Invalid phone number."
             })
         }
+
         patient.phone_no = phone_no.trim()
     }
 
     if (age) {
-        age = Number(age)
         if (age > 120) {
             return res.status(StatusCodes.BadRequest).json({
                 ...ERROR,
-                msg: "Age is not valid"
+                msg: "Invalid Age specified."
             })
         }
+
         patient.age = age
     }
 
     if (death) {
-        console.log(death)
         if (death.dead === true && !death.date) {
             return res.status(StatusCodes.BadRequest).json({
                 ...ERROR,
@@ -153,10 +168,18 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
         patient.death = death
     }
 
-    if (address?.trim()) patient.address = address
-    if (date) patient.date = date
+    if (address?.trim()) {
+        patient.address = address
+    }
 
-    await patient.save()
+    if (date) {
+        patient.date = date
+    }
+
+    await prisma.patient.update({
+        where: { card_no },
+        data: patient
+    })
 
     res.status(StatusCodes.OK).json(SAVED)
 })
@@ -164,16 +187,29 @@ const edit = asyncHandler(async (req: Request, res: Response) => {
 // delete patient data
 const remove = asyncHandler(async (req: Request, res: Response) => {
     let { card_no }: any = req.params
-    if (!card_no || !card_no?.trim()) return res.status(StatusCodes.BadRequest).json(CARD_NO_REQUIRED)
 
-    const patient: any = await fetchByCardNumber(card_no)
-    if (!patient) return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    if (!card_no || !card_no?.trim()) {
+        return res.status(StatusCodes.BadRequest).json(CARD_NO_REQUIRED)
+    }
+
+    const patient = await prisma.patient.findUnique({
+        where: { card_no }
+    })
+
+    if (!patient) {
+        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    }
 
     const bodies: any[] = patient.body
     const del: boolean = await delDiag(bodies)
-    if (!del) return res.status(StatusCodes.BadRequest).json(DELETION_FAILED)
 
-    await Patient.deleteOne({ card_no }).exec()
+    if (!del) {
+        return res.status(StatusCodes.BadRequest).json(DELETION_FAILED)
+    }
+
+    await prisma.patient.delete({
+        where: { card_no }
+    })
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
@@ -183,17 +219,30 @@ const remove = asyncHandler(async (req: Request, res: Response) => {
 
 const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     let imageRes: any
-    const imageArr: ICloud[] = []
+    const imageArr: Images[] = []
     const { card_no }: any = req.params
     let {
         date, images, texts, next_app
     }: any = req.body
 
-    const patient = await fetchByCardNumber(card_no, '-recommendation')
-    if (!patient) return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    const patient = await prisma.patient.findUnique({
+        where: { card_no }
+    })
 
-    if (!date) return res.status(StatusCodes.BadRequest).json({ ...ERROR, msg: "Current date is required." })
-    if (texts || texts?.trim()) texts = texts.trim()
+    if (!patient) {
+        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    }
+
+    if (!date) {
+        return res.status(StatusCodes.BadRequest).json({
+            ...ERROR,
+            msg: "Current date is required."
+        })
+    }
+
+    if (texts || texts?.trim()) {
+        texts = texts.trim()
+    }
 
     if (images.length > 0) {
         if (images.length > 3) return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
@@ -212,19 +261,23 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    patient.body = (imageArr.length > 0 || texts) ? [
+    const body = (imageArr.length > 0 || texts) ? [
         ...patient.body,
         {
+            date,
+            next_app,
             idx: uuid(),
             diagnosis: {
                 texts,
                 images: imageArr,
             },
-            date,
-            next_app
         }
     ] : [...patient.body]
-    await patient.save()
+
+    await prisma.patient.update({
+        where: { card_no },
+        data: { body }
+    })
 
     res.status(StatusCodes.OK).json(SAVED)
 })
@@ -238,7 +291,7 @@ const editDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const patient: any = await fetchByCardNumber(card_no, '-recommendation')
     if (!patient) return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
 
-    const body: any = patient.body.find((body: IBody) => body.idx === idx)
+    const body: any = patient.body.find((body:) => body.idx === idx)
     if (!body) return res.status(StatusCodes.NotFound).json(DIAG_NOT_EXIST)
 
     if (texts) body.diagnosis.texts = texts.trim()
@@ -356,9 +409,9 @@ const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
     const body: any = bodies.find((body: IBody) => body.idx === idx)
     if (!body) return res.status(StatusCodes.NotFound).json(DIAG_NOT_EXIST)
 
-    const images: ICloud[] = body.diagnosis.images
+    const images: Images[] = body.diagnosis.images
     if (images.length > 0) {
-        images.forEach(async (image: ICloud) => {
+        images.forEach(async (image: Images) => {
             const result: any = await cloudinary.uploader.destroy(image.public_id)
             if (!result) return res.status(StatusCodes.BadRequest).json(DELETION_FAILED)
         })
