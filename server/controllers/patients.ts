@@ -244,12 +244,8 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         texts = texts.trim()
     }
 
-    if (images.length > 0) {
-        if (images.length > 3) {
-            return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
-        }
-
-        images.forEach(async (image: any) => {
+    if (images.length > 0 && images.length <= 3) {
+        images.forEach(async (image: string) => {
             imageRes = await cloudinary.uploader.upload(image, {
                 folder: `TOOPCC/${patient.id}`,
                 resource_type: 'image'
@@ -266,7 +262,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    const body = (imageArr.length > 0 || texts) ? [
+    patient.body = (imageArr.length > 0 || texts) ? [
         ...patient.body,
         {
             date,
@@ -281,7 +277,7 @@ const addDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
     await prisma.patient.update({
         where: { card_no },
-        data: { body }
+        data: patient
     })
 
     res.status(StatusCodes.OK).json(SAVED)
@@ -337,35 +333,47 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
         eligOpthal, eligPhysio
     }: any = req.body
 
-    const patient: any = await fetchByCardNumber(card_no, '-body')
-    if (!patient) return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    const patient = await prisma.patient.findUnique({
+        where: { card_no }
+    })
 
-    const rec: any = patient.recommendation
-    const opthalmology: any = rec.opthalmology
-    const physiotherapy: any = rec.physiotherapy
+    if (!patient) {
+        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    }
+
+    let extensions = patient.recommendation?.extensions
+    const opthalmology = patient.recommendation?.opthalmology
+    const physiotherapy = patient.recommendation?.physiotherapy
 
     if (opthal && opthal?.date) {
-        const opthalMedic: any[] = opthalmology.medication
-        const newMedics: any[] = addMedic(opthal, opthalMedic)
-        opthalmology.medication = newMedics
+        const opthalMedic = opthalmology?.medication
+        const newMedics = addMedic(opthal, opthalMedic as any[])
+        opthalmology!.medication = newMedics
     }
 
     if (physio && physio?.date) {
-        const physioMedic: any[] = physiotherapy.medication
-        const newMedics: any[] = addMedic(physio, physioMedic)
-        physiotherapy.medication = newMedics
+        const physioMedic = physiotherapy?.medication
+        const newMedics: any[] = addMedic(physio, physioMedic as any[])
+        physiotherapy!.medication = newMedics
     }
 
     if (extension && extension?.name?.trim()) {
-        const ext: any[] = rec.extensions
-        const newExtensions: any[] = addExtension(ext, extension)
-        rec.extensions = newExtensions
+        const ext = extensions
+        const newExtensions = addExtension(ext as any, extension)
+        extensions = newExtensions as any
     }
 
-    if (eligOpthal) opthalmology.eligible = Boolean(eligOpthal)
-    if (eligPhysio) physiotherapy.eligible = Boolean(eligPhysio)
+    if (eligOpthal) {
+        patient.recommendation?.opthalmology?.eligible = Boolean(eligOpthal)
+    }
+    if (eligPhysio) {
+        physiotherapy.eligible = Boolean(eligPhysio)
+    }
 
-    await patient.save()
+    await prisma.patient.update({
+        where: { card_no },
+        data: patient
+    })
 
     res.status(StatusCodes.OK).json(SAVED)
 })
@@ -373,21 +381,27 @@ const addRecommendation = asyncHandler(async (req: Request, res: Response) => {
 const deleteRecommendation = asyncHandler(async (req: Request, res: Response) => {
     const { type }: any = req.query
     const { card_no, idx }: any = req.params
-    const patient: any = await fetchByCardNumber(card_no, '-body')
-    if (!patient) return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    const patient = await prisma.patient.findUnique({
+        where: { card_no }
+    })
 
-    const rec: any = patient.recommendation
-    const originalRec: any[] = type === "opthal" ?
-        rec.opthalmology.medication : type === "physio" ?
-            rec.physiotherapy.medication : []
-    const newRec: any[] = originalRec.filter((medic: any) => medic.idx !== idx)
-
-    if (newRec.length === 0) {
-        type === "opthal" ? rec.opthalmology.eligible = false :
-            type === "physio" ? rec.physiotherapy.eligible = false : null
+    if (!patient) {
+        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
-    type === "opthal" ? rec.opthalmology.medication = newRec :
-        type === "physio" ? rec.physiotherapy.medication = newRec : null
+
+    const rec = patient.recommendation
+    const originalRec = type === "opthal" ?
+        rec!.opthalmology?.medication : type === "physio" ?
+            rec!.physiotherapy?.medication : []
+    const newRec = originalRec?.filter((medic) => medic.idx !== idx)
+
+    if (newRec?.length === 0) {
+        type === "opthal" ? rec!.opthalmology!.eligible = false :
+            type === "physio" ? rec!.physiotherapy!.eligible = false : null
+    }
+    type === "opthal" ? rec!.opthalmology!.medication = newRec :
+        type === "physio" ? rec!.physiotherapy!.medication = newRec : null
+
     await patient.save()
 
     res.status(StatusCodes.OK).json(SAVED)
@@ -395,14 +409,19 @@ const deleteRecommendation = asyncHandler(async (req: Request, res: Response) =>
 
 const deletExtension = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
-    const patient: any = await fetchByCardNumber(card_no, '-body')
-    if (!patient) return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    const patient = await prisma.patient.findUnique({
+        where: { card_no }
+    })
 
-    const extensions: any[] = patient.recommendation.extensions
-    const ext: any = extensions.find((element: any) => element.idx === idx)
+    if (!patient) {
+        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    }
+
+    const extensions = patient.recommendation?.extensions
+    const ext: any = extensions?.find((element: any) => element.idx === idx)
     if (!ext) return res.status(StatusCodes.NotFound).json(EXT_NOT_EXIST)
 
-    patient.recommendation.extensions = extensions.filter((element: any) => element.idx !== idx)
+    patient.recommendation?.extensions = extensions?.filter((element: any) => element.idx !== idx)
     await patient.save()
 
     res.status(StatusCodes.OK).json(SAVED)
@@ -429,22 +448,37 @@ const editExtension = asyncHandler(async (req: Request, res: Response) => {
 const deleteDianosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
 
-    const patient: any = await fetchByCardNumber(card_no, '-recommendation')
-    if (!patient) return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    const patient = await prisma.patient.findUnique({
+        where: { card_no }
+    })
 
-    const bodies: IBody[] = patient.body
-    const body: any = bodies.find((body: IBody) => body.idx === idx)
-    if (!body) return res.status(StatusCodes.NotFound).json(DIAG_NOT_EXIST)
+    if (!patient) {
+        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+    }
+
+    const bodies = patient.body
+    const body = bodies.find((body) => body.idx === idx)
+
+    if (!body) {
+        return res.status(StatusCodes.NotFound).json(DIAG_NOT_EXIST)
+    }
 
     const images: Images[] = body.diagnosis.images
     if (images.length > 0) {
         images.forEach(async (image: Images) => {
-            const result: any = await cloudinary.uploader.destroy(image.public_id)
-            if (!result) return res.status(StatusCodes.BadRequest).json(DELETION_FAILED)
+            const result: any = await cloudinary.uploader.destroy(image.public_id as string)
+
+            if (!result) {
+                return res.status(StatusCodes.BadRequest).json(DELETION_FAILED)
+            }
         })
     }
-    patient.body = bodies.filter((body: IBody) => body.idx !== idx)
-    await patient.save()
+
+    patient.body = bodies.filter((body) => body.idx !== idx)
+    await prisma.patient.update({
+        where: { card_no },
+        data: patient
+    })
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
