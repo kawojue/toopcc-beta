@@ -36,14 +36,19 @@ model Patient {
     recommendation Recommendation?
 }
 
+enum Sex {
+    Male
+    Female
+}
+
 type Mail {
     email    String?
     verified Boolean @default(false)
 }
 
 type Resigned {
-    date   String
-    resign Boolean @default(false)
+    date   String?
+    resign Boolean? @default(false)
 }
 
 type Avatar {
@@ -102,9 +107,4 @@ type Extensions {
     name      String
     given     Boolean?
     occurence Int?
-}
-
-enum Sex {
-    Male
-    Female
 }
