@@ -23,25 +23,13 @@ interface ILimiter {
     msg?: string
 }
 
-interface IBody {
-    idx: string
-    date: string
-    next_app?: string
-    diagnosis: Diagnosis[]
-}
-
-interface Diagnosis {
-    texts?: string
-    images: Images[]
-}
-
 interface Images {
-    secure_url?: string
-    public_id?: string
+    secure_url: string | null
+    public_id: string | null
 }
 
 export {
+    Images,
     IMailer, IGenOTP,
-    ILimiter, IBody,
-    IRequest, Images
+    ILimiter, IRequest,
 }
