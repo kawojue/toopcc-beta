@@ -1,6 +1,6 @@
 import prisma from '../prisma'
+import { Images } from '../type'
 import { v4 as uuid } from 'uuid'
-import { Images, IBody } from '../type'
 import delDiag from '../utilities/delDiag'
 import { Request, Response } from 'express'
 import addMedic from '../utilities/addMedic'
