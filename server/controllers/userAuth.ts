@@ -602,7 +602,7 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
     if (Boolean(resign) === true && !date) {
         account.resigned = {
             date: `${new Date().toISOString()}`,
-            resign: false
+            resign: true
         }
     }
 
