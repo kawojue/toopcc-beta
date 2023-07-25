@@ -23,7 +23,7 @@ const USER_REGEX: RegExp = /^[a-zA-Z][a-zA-Z0-9-_]{2,23}$/
 const createUser = asyncHandler(async (req: IRequest, res: Response) => {
     let user: any
     let result: any
-    let { email, pswd, pswd2, fullname, avatar }: any = req.body
+    let { email, pswd, pswd2, fullname, avatar } = req.body
 
     if (!email || !pswd || !pswd2 || !fullname) {
         return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
@@ -101,7 +101,7 @@ const createUser = asyncHandler(async (req: IRequest, res: Response) => {
 
 // handle Login
 const login = asyncHandler(async (req: Request, res: Response) => {
-    let { userId, pswd }: any = req.body
+    let { userId, pswd } = req.body
     userId = userId?.toLowerCase()?.trim()
 
     if (!userId || !pswd) {
@@ -158,7 +158,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
 
 // send otp to user
 const otpHandler = asyncHandler(async (req: Request, res: Response) => {
-    let { email }: any = req.body
+    let { email } = req.body
     email = email?.trim()?.toLowerCase()
 
     const { totp, totpDate }: IGenOTP = genOTP()
@@ -219,7 +219,7 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
 
 // change username
 const editUsername = asyncHandler(async (req: IRequest, res: Response) => {
-    let { newUser }: any = req.body
+    let { newUser } = req.body
     newUser = newUser?.trim()?.toLowerCase()
 
     if (!newUser) {
@@ -273,7 +273,7 @@ const editUsername = asyncHandler(async (req: IRequest, res: Response) => {
 })
 
 const editFullname = asyncHandler(async (req: IRequest, res: Response) => {
-    let { fullname }: any = req.body
+    let { fullname } = req.body
     fullname = full_name(fullname)
 
     if (!fullname) {
@@ -330,7 +330,7 @@ const logout = asyncHandler(async (req: IRequest, res: Response) => {
 
 // verify OTP
 const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
-    const { otp, email }: any = req.body
+    const { otp, email } = req.body
 
     if (!otp || !email) {
         return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
@@ -395,7 +395,7 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
 
 // reset password
 const resetpswd = asyncHandler(async (req: Request, res: Response) => {
-    const { verified, email, newPswd, newPswd2 }: any = req.body
+    const { verified, email, newPswd, newPswd2 } = req.body
 
     if (!email || !newPswd) {
         return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
@@ -444,7 +444,7 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const editPassword = asyncHandler(async (req: IRequest, res: Response) => {
-    const { currentPswd, pswd, pswd2 }: any = req.body
+    const { currentPswd, pswd, pswd2 } = req.body
 
     if (!currentPswd || !pswd || !pswd2) {
         return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
@@ -497,7 +497,7 @@ const editPassword = asyncHandler(async (req: IRequest, res: Response) => {
 })
 
 const changeAvatar = asyncHandler(async (req: IRequest, res: any) => {
-    const { avatar }: any = req.body
+    const { avatar } = req.body
     if (!avatar) {
         return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
     }
@@ -581,8 +581,8 @@ const deleteAvatar = asyncHandler(async (req: IRequest, res: Response) => {
 })
 
 const resigned = asyncHandler(async (req: Request, res: Response) => {
-    const { user }: any = req.params
-    const { resign, date }: any = req.body
+    const { user } = req.params
+    const { resign, date } = req.body
 
     const account = await prisma.user.findUnique({
         where: { user }
@@ -622,8 +622,8 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const changeRoles = asyncHandler(async (req: Request, res: Response) => {
-    const { role }: any = req.body
-    const { user }: any = req.params
+    const { role } = req.body
+    const { user } = req.params
     if (!role) {
         return res.status(StatusCodes.BadRequest).json(CANCELED)
     }
@@ -657,8 +657,8 @@ const changeRoles = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const removeRole = asyncHandler(async (req: Request, res: Response) => {
-    const { role }: any = req.body
-    const { user }: any = req.params
+    const { role } = req.body
+    const { user } = req.params
     if (!role) {
         return res.status(StatusCodes.BadRequest).json(CANCELED)
     }
