@@ -70,7 +70,7 @@ const getDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
 const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients = await prisma.patient.findMany()
-    const opthals = patients.filter((opthal) => opthal.recommendation.opthalmology.eligible === true)
+    const opthals = patients.filter((opthal) => opthal.recommendation?.opthalmology.eligible === true)
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
@@ -81,7 +81,7 @@ const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) =>
 
 const getAllPhysioPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients = await prisma.patient.findMany()
-    const physios = patients.filter((physio) => physio.recommendation.physiotherapy.eligible === true)
+    const physios = patients.filter((physio) => physio.recommendation?.physiotherapy.eligible === true)
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
@@ -119,12 +119,12 @@ const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
 
     const all = patients.map((ext) => {
         let obj: any
-        const extensions = ext.recommendation.extensions
-        if (extensions.length > 0) {
+        const extensions = ext.recommendation?.extensions
+        if (extensions!.length > 0) {
             obj = {
                 fullname: ext.fullname,
                 extensions: extensions,
-                date: extensions[extensions.length - 1].date,
+                date: extensions![extensions?.length! - 1].date,
                 card_no: ext.card_no,
                 phone_no: ext.phone_no,
             }
@@ -149,7 +149,7 @@ const getExtension = asyncHandler(async (req: Request, res: Response) => {
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
 
-    const extensions = patient.recommendation.extensions
+    const extensions = patient.recommendation?.extensions
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
@@ -159,8 +159,8 @@ const getExtension = asyncHandler(async (req: Request, res: Response) => {
             phone_no: patient.phone_no,
             address: patient.address
         },
-        length: extensions.length,
-        extensions: sortByDates(extensions)
+        length: extensions?.length,
+        extensions: sortByDates(extensions!)
     })
 })
 
@@ -174,12 +174,12 @@ const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => 
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
 
-    const medications = patient.recommendation.physiotherapy.medication
+    const medications = patient.recommendation?.physiotherapy.medication
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
-        length: medications.length,
-        medications: sortByDates(medications)
+        length: medications?.length,
+        medications: sortByDates(medications!)
     })
 })
 
@@ -193,12 +193,12 @@ const getOpthalMedication = asyncHandler(async (req: Request, res: Response) => 
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
 
-    const medications = patient.recommendation.opthalmology.medication
+    const medications = patient.recommendation?.opthalmology.medication
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
-        length: medications.length,
-        medications: sortByDates(medications)
+        length: medications?.length,
+        medications: sortByDates(medications!)
     })
 })
 
