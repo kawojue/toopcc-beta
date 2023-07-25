@@ -85,8 +85,8 @@ type Images {
 
 type Recommendation {
     extensions    Extensions[]
-    opthalmology  Opthalmology?
-    physiotherapy Physiotherapy?
+    opthalmology  Opthalmology
+    physiotherapy Physiotherapy
 }
 
 type Medication {
@@ -96,12 +96,12 @@ type Medication {
 }
 
 type Opthalmology {
-    eligible   Boolean?
+    eligible   Boolean
     medication Medication[]
 }
 
 type Physiotherapy {
-    eligible   Boolean?
+    eligible   Boolean
     medication Medication[]
 }
 
