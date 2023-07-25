@@ -4,21 +4,23 @@ import { Response } from 'express'
 import { SUCCESS } from '../utilities/modal'
 const expressAsyncHandler = require('express-async-handler')
 
+const selected = {
+    id: true,
+    user: true,
+    mail: true,
+    avatar: true,
+    fullname: true,
+    resigned: true,
+    createdAt: true,
+    lastLogin: true
+}
+
 const getProfile = expressAsyncHandler(async (req: IRequest, res: Response) => {
     const profile = await prisma.user.findUnique({
         where: {
             user: req.user
         },
-        select: {
-            id: true,
-            user: true,
-            mail: true,
-            avatar: true,
-            fullname: true,
-            resigned: true,
-            createdAt: true,
-            lastLogin: true
-        }
+        select: selected
     })
 
     res.status(200).json({ ...SUCCESS, profile })
@@ -41,16 +43,7 @@ const getUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
         where: {
             user: userParam
         },
-        select: {
-            id: true,
-            user: true,
-            mail: true,
-            avatar: true,
-            fullname: true,
-            resigned: true,
-            createdAt: true,
-            lastLogin: true
-        }
+        select: selected
     })
 
     res.status(200).json({ ...SUCCESS, user })
