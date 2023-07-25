@@ -70,7 +70,7 @@ const getDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
 const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients = await prisma.patient.findMany()
-    const opthals = patients.filter((opthal) => opthal.recommendation?.opthalmology.eligible === true)
+    const opthals = patients.filter((opthal) => opthal.recommendation?.opthalmology?.eligible === true)
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
@@ -81,7 +81,7 @@ const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) =>
 
 const getAllPhysioPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients = await prisma.patient.findMany()
-    const physios = patients.filter((physio) => physio.recommendation?.physiotherapy.eligible === true)
+    const physios = patients.filter((physio) => physio.recommendation?.physiotherapy?.eligible === true)
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
@@ -174,7 +174,7 @@ const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => 
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
 
-    const medications = patient.recommendation?.physiotherapy.medication
+    const medications = patient.recommendation?.physiotherapy?.medication
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
@@ -193,7 +193,7 @@ const getOpthalMedication = asyncHandler(async (req: Request, res: Response) => 
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
 
-    const medications = patient.recommendation?.opthalmology.medication
+    const medications = patient.recommendation?.opthalmology?.medication
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
