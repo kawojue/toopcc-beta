@@ -16,7 +16,7 @@ model User {
     lastLogin String?
     roles     String[]  @default(["staff"])
     token     String?   @unique
-    mail      Mail      @unique
+    mail      Mail?
     resigned  Resigned?
     avatar    Avatar?
     otp       OTP?
@@ -41,74 +41,115 @@ enum Sex {
     Female
 }
 
-type Mail {
-    email    String?
+model Mail {
+    id       String  @id @default(auto()) @map("_id") @db.ObjectId
+    email    String  @unique
     verified Boolean @default(false)
+    user     User    @relation(fields: [userId], references: [id])
+    userId   String  @unique @db.ObjectId
 }
 
-type Resigned {
-    date   String?
-    resign Boolean? @default(false)
+model Resigned {
+    id      String   @id @default(auto()) @map("_id") @db.ObjectId
+    date    String?
+    resined Boolean? @default(false)
+    user    User     @relation(fields: [userId], references: [id])
+    userId  String   @unique @db.ObjectId
 }
 
-type Avatar {
-    secure_url String
-    public_id  String
+model Avatar {
+    id         String  @id @default(auto()) @map("_id") @db.ObjectId
+    secure_url String?
+    public_id  String?
+    user       User    @relation(fields: [userId], references: [id])
+    userId     String  @unique @db.ObjectId
 }
 
-type OTP {
+model OTP {
+    id       String @id @default(auto()) @map("_id") @db.ObjectId
     totp     String
     totpDate Int
+    user     User   @relation(fields: [userId], references: [id])
+    userId   String @unique @db.ObjectId
 }
 
-type Death {
-    date String?
-    dead Boolean @default(false)
+model Death {
+    id        String  @id @default(auto()) @map("_id") @db.ObjectId
+    date      String?
+    dead      Boolean @default(false)
+    patient   Patient @relation(fields: [patientId], references: [id])
+    patientId String  @unique @db.ObjectId
 }
 
-type Body {
+model Body {
+    id        String     @id @default(auto()) @map("_id") @db.ObjectId
     idx       String
     date      String
     next_app  String?
-    diagnosis Diagnosis
+    diagnosis Diagnosis?
+    patient   Patient    @relation(fields: [patientId], references: [id])
+    patientId String     @unique @db.ObjectId
 }
 
-type Diagnosis {
+model Diagnosis {
+    id     String   @id @default(auto()) @map("_id") @db.ObjectId
     texts  String?
     images Images[]
+    body   Body     @relation(fields: [bodyId], references: [id])
+    bodyId String   @unique @db.ObjectId
 }
 
-type Images {
-    secure_url String?
-    public_id  String?
+model Images {
+    id          String    @id @default(auto()) @map("_id") @db.ObjectId
+    secure_url  String?
+    public_id   String?
+    diagnosis   Diagnosis @relation(fields: [diagnosisId], references: [id])
+    diagnosisId String    @unique @db.ObjectId
 }
 
-type Recommendation {
-    extensions    Extensions[]
-    opthalmology  Opthalmology
-    physiotherapy Physiotherapy
+model Recommendation {
+    id              String         @id @default(auto()) @map("_id") @db.ObjectId
+    extensions      Extensions[]
+    patient         Patient        @relation(fields: [patientId], references: [id])
+    opthalmology    Opthalmology?  @relation(fields: [opthalmologyId], references: [id])
+    physiotherapy   Physiotherapy? @relation(fields: [physiotherapyId], references: [id])
+    patientId       String         @unique @db.ObjectId
+    opthalmologyId  String?        @unique @db.ObjectId
+    physiotherapyId String?        @unique @db.ObjectId
 }
 
-type Medication {
-    idx      String
-    date     String
-    next_app String?
+model Medication {
+    id              String         @id @default(auto()) @map("_id") @db.ObjectId
+    idx             String
+    date            String
+    next_app        String?
+    opthalmology    Opthalmology?  @relation(fields: [opthalmologyId], references: [id])
+    opthalmologyId  String         @unique @db.ObjectId
+    physiotherapy   Physiotherapy? @relation(fields: [physiotherapyId], references: [id])
+    physiotherapyId String         @unique @db.ObjectId
 }
 
-type Opthalmology {
-    eligible   Boolean
-    medication Medication[]
+model Opthalmology {
+    id             String           @id @default(auto()) @map("_id") @db.ObjectId
+    eligible       Boolean
+    medication     Medication[]
+    Recommendation Recommendation[]
 }
 
-type Physiotherapy {
-    eligible   Boolean
-    medication Medication[]
+model Physiotherapy {
+    id             String           @id @default(auto()) @map("_id") @db.ObjectId
+    eligible       Boolean
+    medication     Medication[]
+    Recommendation Recommendation[]
 }
 
-type Extensions {
-    idx       String
-    date      String
-    name      String
-    given     Boolean?
-    occurence Int?
+model Extensions {
+    id               String         @id @default(auto()) @map("_id") @db.ObjectId
+    idx              String
+    date             String
+    name             String
+    given            Boolean?
+    occurence        Int?
+    recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
+    recommendationId String         @unique @db.ObjectId
 }
