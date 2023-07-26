@@ -81,12 +81,9 @@ const createUser = asyncHandler(async (req: IRequest, res: Response) => {
     await prisma.user.create({
         data: {
             user,
+            email,
             fullname,
             password: pswd,
-
-            mail: {
-                create: { email }
-            },
             avatar: {
                 create: {
                     secure_url: result?.secure_url,
@@ -111,26 +108,16 @@ const login = asyncHandler(async (req: Request, res: Response) => {
         return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
     }
 
-    const findByUserId = EMAIL_REGEX.test(userId) ?
-        await prisma.mail.findUnique({
+    const account = EMAIL_REGEX.test(userId) ?
+        await prisma.user.findUnique({
             where: {
                 email: userId
             }
-        }).then((res) => {
-            return res?.userId
         }) : await prisma.user.findUnique({
             where: {
                 user: userId
             }
-        }).then((res) => {
-            return res?.id
         })
-
-    const account = await prisma.user.findUnique({
-        where: {
-            id: findByUserId
-        }
-    })
 
     if (!account) {
         return res.status(StatusCodes.BadRequest).json({
@@ -184,14 +171,8 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
         return res.status(StatusCodes.BadRequest).json(INVALID_EMAIL)
     }
 
-    const findByEmail = await prisma.mail.findUnique({
-        where: { email }
-    })
-
     const account = await prisma.user.findUnique({
-        where: {
-            id: findByEmail?.userId
-        }
+        where: { email }
     })
 
     if (!account) {
@@ -228,17 +209,9 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
             user: account.user
         },
         data: {
-            mail: {
-                update: {
-                    verified: false
-                }
-            },
-            otp: {
-                update: {
-                    totp,
-                    totpDate
-                }
-            }
+            totp,
+            totp_date: totpDate,
+            email_verified: false,
         }
     })
 
@@ -368,26 +341,23 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
     }
 
     const account = await prisma.user.findUnique({
-        where: {
-            mail: { email }
-        }
+        where: { email }
     })
 
     if (!account) {
         return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
     }
 
-    const totp: string = account.otp?.totp as string
-    const totpDate: number = account.otp?.totpDate as number
-    const expiry: number = totpDate as number + (60 * 60 * 1000) // after 1hr
+    const totp: string = account.totp!
+    const totpDate: number = account.totp_date!
+    const expiry: number = totpDate + (60 * 60 * 1000) // after 1hr
 
     if (expiry < Date.now()) {
         await prisma.user.update({
-            where: {
-                mail: { email }
-            },
+            where: { email },
             data: {
-                otp: {}
+                totp: null,
+                totp_date: null
             }
         })
 
@@ -405,14 +375,11 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
     }
 
     await prisma.user.update({
-        where: {
-            mail: { email }
-        },
+        where: { email },
         data: {
-            otp: {},
-            mail: {
-                verified: true
-            }
+            totp: null,
+            totp_date: null,
+            email_verified: true
         }
     })
 
