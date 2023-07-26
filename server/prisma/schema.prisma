@@ -8,18 +8,19 @@ datasource db {
 }
 
 model User {
-    id        String    @id @default(auto()) @map("_id") @db.ObjectId
-    user      String    @unique
-    password  String
-    fullname  String
-    createdAt DateTime  @default(now())
-    lastLogin String?
-    roles     String[]  @default(["staff"])
-    token     String?   @unique
-    mail      Mail?
-    resigned  Resigned?
-    avatar    Avatar?
-    otp       OTP?
+    id             String    @id @default(auto()) @map("_id") @db.ObjectId
+    user           String    @unique
+    password       String
+    fullname       String
+    email          String    @unique
+    email_verified Boolean   @default(false)
+    createdAt      DateTime  @default(now())
+    lastLogin      String?
+    roles          String[]  @default(["staff"])
+    token          String?   @unique
+    resigned       Resigned?
+    avatar         Avatar?
+    otp            OTP?
 }
 
 model Patient {
@@ -39,14 +40,6 @@ model Patient {
 enum Sex {
     Male
     Female
-}
-
-model Mail {
-    id       String  @id @default(auto()) @map("_id") @db.ObjectId
-    email    String  @unique
-    verified Boolean @default(false)
-    user     User    @relation(fields: [userId], references: [id])
-    userId   String  @unique @db.ObjectId
 }
 
 model Resigned {
