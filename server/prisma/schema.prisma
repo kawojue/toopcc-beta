@@ -19,7 +19,7 @@ model User {
     roles          String[]  @default(["staff"])
     token          String?   @unique
     totp           String?
-    totp_date      BigInt?
+    totp_date      Int?
     avatar         Avatar?
     resigned       Resigned?
 }
