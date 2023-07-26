@@ -41,10 +41,8 @@ const createUser = asyncHandler(async (req: IRequest, res: Response) => {
     }
 
     user = email.split('@')[0]
-    const account = await prisma.user.findUnique({
-        where: {
-            mail: { email }
-        }
+    const account = await prisma.mail.findUnique({
+        where: { email }
     })
 
     if (account) {
@@ -54,11 +52,11 @@ const createUser = asyncHandler(async (req: IRequest, res: Response) => {
         })
     }
 
-    const isUserExists: any = await prisma.user.findUnique({
+    const userExists = await prisma.user.findUnique({
         where: { user }
     })
 
-    if (!USER_REGEX.test(user) || isUserExists) {
+    if (!USER_REGEX.test(user) || userExists) {
         const rand: string = randomString.generate({
             length: parseInt('657'[Math.floor(Math.random() * 3)]),
             charset: 'alphabetic'
@@ -85,10 +83,15 @@ const createUser = asyncHandler(async (req: IRequest, res: Response) => {
             user,
             fullname,
             password: pswd,
-            mail: { email },
+
+            mail: {
+                create: { email }
+            },
             avatar: {
-                secure_url: result?.secure_url,
-                public_id: result?.public_id
+                create: {
+                    secure_url: result?.secure_url,
+                    public_id: result?.public_id
+                }
             }
         }
     })
@@ -108,27 +111,41 @@ const login = asyncHandler(async (req: Request, res: Response) => {
         return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
     }
 
-    const account = EMAIL_REGEX.test(userId) ?
-        await prisma.user.findUnique({
+    const findByUserId = EMAIL_REGEX.test(userId) ?
+        await prisma.mail.findUnique({
             where: {
-                mail: {
-                    email: userId
-                }
+                email: userId
             }
+        }).then((res) => {
+            return res?.userId
         }) : await prisma.user.findUnique({
             where: {
                 user: userId
             }
+        }).then((res) => {
+            return res?.id
         })
+
+    const account = await prisma.user.findUnique({
+        where: {
+            id: findByUserId
+        }
+    })
 
     if (!account) {
         return res.status(StatusCodes.BadRequest).json({
             ...ERROR,
             msg: "Invalid User ID or Password."
         })
-    }
+    };
 
-    if (account.resigned?.resign) {
+    const getResignation = await prisma.resigned.findUnique({
+        where: {
+            userId: account.id
+        }
+    })
+
+    if (getResignation?.resined) {
         return res.status(StatusCodes.Unauthorized).json(ACCESS_DENIED)
     }
 
@@ -167,9 +184,13 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
         return res.status(StatusCodes.BadRequest).json(INVALID_EMAIL)
     }
 
+    const findByEmail = await prisma.mail.findUnique({
+        where: { email }
+    })
+
     const account = await prisma.user.findUnique({
         where: {
-            mail: { email }
+            id: findByEmail?.userId
         }
     })
 
@@ -180,24 +201,15 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    if (account.resigned?.resign) {
-        return res.status(StatusCodes.Unauthorized).json(ACCESS_DENIED)
-    }
-
-    await prisma.user.update({
+    const getResignation = await prisma.resigned.findUnique({
         where: {
-            user: account.user
-        },
-        data: {
-            otp: {
-                totp,
-                totpDate
-            },
-            mail: {
-                verified: false
-            }
+            userId: account.id
         }
     })
+
+    if (getResignation?.resined) {
+        return res.status(StatusCodes.Unauthorized).json(ACCESS_DENIED)
+    }
 
     const transportMail: IMailer = {
         senderName: "Admin at TOOPCC",
@@ -210,6 +222,25 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
     if (!sendMail) {
         return res.status(StatusCodes.BadRequest).json(INVALID_EMAIL)
     }
+
+    await prisma.user.update({
+        where: {
+            user: account.user
+        },
+        data: {
+            mail: {
+                update: {
+                    verified: false
+                }
+            },
+            otp: {
+                update: {
+                    totp,
+                    totpDate
+                }
+            }
+        }
+    })
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
@@ -243,7 +274,7 @@ const editUsername = asyncHandler(async (req: IRequest, res: Response) => {
         return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
     }
 
-    const userExists: any = await prisma.user.findUnique({
+    const userExists = await prisma.user.findUnique({
         where: {
             user: newUser
         }
