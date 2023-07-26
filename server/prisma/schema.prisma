@@ -18,9 +18,10 @@ model User {
     lastLogin      String?
     roles          String[]  @default(["staff"])
     token          String?   @unique
-    resigned       Resigned?
+    totp           String?
+    totp_date      BigInt?
     avatar         Avatar?
-    otp            OTP?
+    resigned       Resigned?
 }
 
 model Patient {
@@ -56,14 +57,6 @@ model Avatar {
     public_id  String?
     user       User    @relation(fields: [userId], references: [id])
     userId     String  @unique @db.ObjectId
-}
-
-model OTP {
-    id       String @id @default(auto()) @map("_id") @db.ObjectId
-    totp     String
-    totpDate Int
-    user     User   @relation(fields: [userId], references: [id])
-    userId   String @unique @db.ObjectId
 }
 
 model Death {
