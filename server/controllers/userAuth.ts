@@ -41,7 +41,7 @@ const createUser = asyncHandler(async (req: IRequest, res: Response) => {
     }
 
     user = email.split('@')[0]
-    const account = await prisma.mail.findUnique({
+    const account = await prisma.user.findUnique({
         where: { email }
     })
 
@@ -126,13 +126,13 @@ const login = asyncHandler(async (req: Request, res: Response) => {
         })
     };
 
-    const getResignation = await prisma.resigned.findUnique({
+    const resignation = await prisma.resigned.findUnique({
         where: {
             userId: account.id
         }
     })
 
-    if (getResignation?.resined) {
+    if (resignation?.resign) {
         return res.status(StatusCodes.Unauthorized).json(ACCESS_DENIED)
     }
 
@@ -182,13 +182,13 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
         })
     }
 
-    const getResignation = await prisma.resigned.findUnique({
+    const resignation = await prisma.resigned.findUnique({
         where: {
             userId: account.id
         }
     })
 
-    if (getResignation?.resined) {
+    if (resignation?.resign) {
         return res.status(StatusCodes.Unauthorized).json(ACCESS_DENIED)
     }
 
@@ -404,16 +404,20 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     }
 
     const account = await prisma.user.findUnique({
-        where: {
-            mail: { email }
-        }
+        where: { email }
     })
 
     if (!account) {
         return res.status(StatusCodes.NotFound).json(ACCOUNT_NOT_FOUND)
     }
 
-    if (!verified || !account.mail?.verified || account.resigned?.resign) {
+    const resignation = await prisma.resigned.findUnique({
+        where: {
+            userId: account.id
+        }
+    })
+
+    if (!verified || !account.email_verified || resignation?.resign) {
         return res.status(StatusCodes.BadRequest).json(ACCESS_DENIED)
     }
 
@@ -426,15 +430,11 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     const hasedPswd: string = await bcrypt.hash(newPswd, salt)
 
     await prisma.user.update({
-        where: {
-            mail: { email }
-        },
+        where: { email },
         data: {
             token: "",
             password: hasedPswd,
-            mail: {
-                verified: false
-            }
+            email_verified: false
         }
     })
 
@@ -506,12 +506,18 @@ const changeAvatar = asyncHandler(async (req: IRequest, res: any) => {
         }
     })
 
+    const auth_avatar = await prisma.avatar.findUnique({
+        where: {
+            userId: account?.id
+        }
+    })
+
     if (!account) {
         return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
     }
 
-    if (account.avatar?.secure_url) {
-        const res = await cloudinary.uploader.destroy(account.avatar?.public_id)
+    if (auth_avatar?.secure_url) {
+        const res = await cloudinary.uploader.destroy(auth_avatar?.public_id!)
         if (!res) {
             return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
         }
@@ -532,8 +538,10 @@ const changeAvatar = asyncHandler(async (req: IRequest, res: any) => {
         },
         data: {
             avatar: {
-                secure_url: result.secure_url,
-                public_id: result.public_id
+                update: {
+                    secure_url: result.secure_url,
+                    public_id: result.public_id
+                }
             }
         }
     })
@@ -555,7 +563,13 @@ const deleteAvatar = asyncHandler(async (req: IRequest, res: Response) => {
         return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
     }
 
-    const result: any = await cloudinary.uploader.destroy(account.avatar?.public_id as string)
+    const auth_avatar = await prisma.avatar.findUnique({
+        where: {
+            userId: account?.id
+        }
+    })
+
+    const result: any = await cloudinary.uploader.destroy(auth_avatar?.public_id as string)
     if (!result) {
         return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
     }
@@ -566,8 +580,10 @@ const deleteAvatar = asyncHandler(async (req: IRequest, res: Response) => {
         },
         data: {
             avatar: {
-                secure_url: "",
-                public_id: ""
+                update: {
+                    secure_url: "",
+                    public_id: ""
+                }
             }
         }
     })
@@ -590,27 +606,40 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
         return res.status(StatusCodes.NotFound).json(ACCOUNT_NOT_FOUND)
     }
 
+    const resignation = await prisma.resigned.findUnique({
+        where: {
+            userId: account.id
+        }
+    })
+
+    let setResignation = {}
+
     if (Boolean(resign) === false) {
-        account.resigned = {
+        setResignation = {
             date: "",
             resign: false
         }
     }
 
     if (Boolean(resign) === true && !date) {
-        account.resigned = {
+        setResignation = {
             date: `${new Date().toISOString()}`,
             resign: true
         }
     }
 
-    account.resigned = {
+    setResignation = {
         date,
         resign
     }
+
     await prisma.user.update({
         where: { user },
-        data: account
+        data: {
+            resigned: {
+                update: { ...setResignation }
+            }
+        }
     })
 
     res.status(StatusCodes.OK).json({
