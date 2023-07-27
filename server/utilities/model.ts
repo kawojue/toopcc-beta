@@ -50,6 +50,7 @@ const fetchPatients = async (omit?: string) => {
 }
 
 export {
+    User, Patient,
     fetchByUser, fetchByEmail, fetchByToken,
     fetchByCardNo, fetchUsers, fetchPatients
 }
