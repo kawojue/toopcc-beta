@@ -44,19 +44,19 @@ enum Sex {
 }
 
 model Resigned {
-    id      String   @id @default(auto()) @map("_id") @db.ObjectId
-    date    String?
-    resined Boolean? @default(false)
-    user    User     @relation(fields: [userId], references: [id])
-    userId  String   @unique @db.ObjectId
+    id     String   @id @default(auto()) @map("_id") @db.ObjectId
+    date   String?
+    resign Boolean? @default(false)
+    user   User     @relation(fields: [userId], references: [id])
+    userId String   @unique @db.ObjectId
 }
 
 model Avatar {
-    id         String  @id @default(auto()) @map("_id") @db.ObjectId
-    secure_url String?
-    public_id  String?
-    user       User    @relation(fields: [userId], references: [id])
-    userId     String  @unique @db.ObjectId
+    id         String @id @default(auto()) @map("_id") @db.ObjectId
+    secure_url String @default("")
+    public_id  String @default("")
+    user       User   @relation(fields: [userId], references: [id])
+    userId     String @unique @db.ObjectId
 }
 
 model Death {
