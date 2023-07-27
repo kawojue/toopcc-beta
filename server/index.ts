@@ -5,6 +5,7 @@ dotenv.config()
 import cors from 'cors'
 import logger from 'morgan'
 import mongoose from 'mongoose'
+import connectDB from './configs/connectDB'
 import corsOption from './configs/corsOption'
 import express, { Application } from 'express'
 import credentials from './middlewares/credentials'
@@ -14,6 +15,8 @@ import root from './routes/root'
 
 const app: Application = express()
 const PORT: unknown = process.env.PORT || 1002
+
+connectDB(process.env.DATABASE_URL!)
 
 // set middlewares
 app.use(credentials)
