@@ -1,7 +1,7 @@
 import User from '../model/User'
 import Patient from '../model/Patient'
 
-const fetchByUser = async (user: string, omit?: string) => {
+const findByUser = async (user: string, omit?: string) => {
     if (omit) {
         return await User.findOne({ user }).select(omit).exec()
     } else {
@@ -9,7 +9,7 @@ const fetchByUser = async (user: string, omit?: string) => {
     }
 }
 
-const fetchByEmail = async (email: string, omit?: string) => {
+const findByEmail = async (email: string, omit?: string) => {
     if (omit) {
         return await User.findOne({ email }).select(omit).exec()
     } else {
@@ -17,7 +17,7 @@ const fetchByEmail = async (email: string, omit?: string) => {
     }
 }
 
-const fetchByToken = async (token: string, omit?: string) => {
+const findByToken = async (token: string, omit?: string) => {
     if (omit) {
         return await User.findOne({ token }).select(omit).exec()
     } else {
@@ -25,7 +25,7 @@ const fetchByToken = async (token: string, omit?: string) => {
     }
 }
 
-const fetchByCardNo = async (card_no: string, omit?: string) => {
+const findByCardNo = async (card_no: string, omit?: string) => {
     if (omit) {
         return await Patient.findOne({ card_no }).select(omit).exec()
     } else {
@@ -51,6 +51,6 @@ const fetchPatients = async (omit?: string) => {
 
 export {
     User, Patient,
-    fetchByUser, fetchByEmail, fetchByToken,
-    fetchByCardNo, fetchUsers, fetchPatients
+    findByUser, findByEmail, findByToken,
+    findByCardNo, fetchUsers, fetchPatients
 }
