@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { IRequest } from '../type'
 import { Response, NextFunction } from 'express'
-import { fetchByToken } from '../utilities/model'
+import { findByToken } from '../utilities/model'
 import StatusCodes from '../utilities/StatusCodes'
 import { ACCESS_DENIED } from '../utilities/modal'
 const expressAsyncHandler = require('express-async-handler')
@@ -21,7 +21,7 @@ const jwtVerify = expressAsyncHandler(async (req: IRequest, res: Response, next:
                 return res.status(StatusCodes.Forbidden).json(ACCESS_DENIED)
             }
 
-            const account = await fetchByToken(token)
+            const account = await findByToken(token)
 
             if (!account) {
                 return res.status(StatusCodes.Forbidden).json(ACCESS_DENIED)
