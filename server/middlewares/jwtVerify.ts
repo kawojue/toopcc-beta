@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
-import prisma from '../prisma'
 import { IRequest } from '../type'
 import { Response, NextFunction } from 'express'
+import { fetchByToken } from '../utilities/model'
 import StatusCodes from '../utilities/StatusCodes'
 import { ACCESS_DENIED } from '../utilities/modal'
 const expressAsyncHandler = require('express-async-handler')
@@ -21,11 +21,7 @@ const jwtVerify = expressAsyncHandler(async (req: IRequest, res: Response, next:
                 return res.status(StatusCodes.Forbidden).json(ACCESS_DENIED)
             }
 
-            const account = await prisma.user.findUnique({
-                where: {
-                    user: decoded.user
-                }
-            })
+            const account = await fetchByToken(token)
 
             if (!account) {
                 return res.status(StatusCodes.Forbidden).json(ACCESS_DENIED)
@@ -36,14 +32,9 @@ const jwtVerify = expressAsyncHandler(async (req: IRequest, res: Response, next:
             const authRoles: string[] = account.roles
 
             if (account.resigned?.resign || roles.length !== authRoles.length) {
-                await prisma.user.update({
-                    where: {
-                        user: decoded.user
-                    },
-                    data: {
-                        token: ""
-                    }
-                })
+                account.user = decoded.user
+                account.token = ""
+                await account.save()
                 return res.status(StatusCodes.Forbidden).json(ACCESS_DENIED)
             }
 
