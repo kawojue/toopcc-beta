@@ -4,6 +4,7 @@ dotenv.config()
 // import utilities
 import cors from 'cors'
 import logger from 'morgan'
+import mongoose from 'mongoose'
 import corsOption from './configs/corsOption'
 import express, { Application } from 'express'
 import credentials from './middlewares/credentials'
@@ -25,4 +26,7 @@ app.use(express.urlencoded({
 
 app.use('/', root)
 
-app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
+mongoose.connection.once('open', () => {
+    console.log("Connected to MongoDB!")
+    app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
+})
