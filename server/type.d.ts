@@ -24,12 +24,12 @@ interface ILimiter {
 }
 
 interface Images {
-    secure_url: string | null
-    public_id: string | null
+    secure_url?: string
+    public_id?: string
 }
 
 export {
-    Images,
     IMailer, IGenOTP,
     ILimiter, IRequest,
+    Images, ApiResponse,
 }
