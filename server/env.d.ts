@@ -2,7 +2,7 @@ declare namespace NodeJS {
     interface ProcessEnv {
         NODE_ENV: 'development' | 'production'
         EMAIL: string
-        DB_URI: string
+        DATABASE_URL: string
         EMAIL_PSWD: string
         JWT_SECRET: string
         CLOUD_NAME: string
