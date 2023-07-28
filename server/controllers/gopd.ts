@@ -3,25 +3,25 @@ import {
     DIAG_NOT_EXIST, SUCCESS,
 } from '../utilities/modal'
 import {
+    fetchPatients, findByCardNo
+} from '../utilities/model'
+import {
     sortByCardNumbers, sortByDates
 } from '../utilities/sorting'
-import prisma from '../prisma'
 import { Request, Response } from 'express'
 import StatusCodes from '../utilities/StatusCodes'
 const asyncHandler = require('express-async-handler')
 
 const allPatients = asyncHandler(async (req: Request, res: Response) => {
-    const patients = await prisma.patient.findMany()
+    const patients = await fetchPatients('-body -recommendation')
 
     res.status(StatusCodes.OK).json({ patients: sortByCardNumbers(patients) })
 })
 
 const getPatient = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
-    const patient = await prisma.patient.findUnique({
-        where: { card_no }
-    })
 
+    const patient = await findByCardNo(card_no, '-body -recommendation')
     if (!patient) {
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
@@ -31,10 +31,8 @@ const getPatient = asyncHandler(async (req: Request, res: Response) => {
 
 const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
-    const patient = await prisma.patient.findUnique({
-        where: { card_no }
-    })
 
+    const patient = await findByCardNo(card_no, '-body')
     if (!patient) {
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
@@ -48,28 +46,26 @@ const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
 const getDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no, idx }: any = req.params
-    const patient = await prisma.patient.findUnique({
-        where: { card_no }
-    })
 
+    const patient = await findByCardNo(card_no, '-recommendation')
     if (!patient) {
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
 
     const bodies = patient.body
-    const diagnosis = bodies.find((body) => body.idx === idx)
+    const diagnosis = bodies.find((body: any) => body.idx === idx)
     if (!diagnosis) {
         return res.status(StatusCodes.NotFound).json(DIAG_NOT_EXIST)
     }
 
     res.status(StatusCodes.OK).json({
         ...SUCCESS,
-        diagnosis
+        diagnosis: sortByDates(diagnosis)
     })
 })
 
 const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) => {
-    const patients = await prisma.patient.findMany()
+    const patients = await fetchPatients('-body')
     const opthals = patients.filter((opthal) => opthal.recommendation?.opthalmology?.eligible === true)
 
     res.status(StatusCodes.OK).json({
@@ -80,7 +76,7 @@ const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) =>
 })
 
 const getAllPhysioPatients = asyncHandler(async (req: Request, res: Response) => {
-    const patients = await prisma.patient.findMany()
+    const patients = await fetchPatients('-body')
     const physios = patients.filter((physio) => physio.recommendation?.physiotherapy?.eligible === true)
 
     res.status(StatusCodes.OK).json({
@@ -90,32 +86,8 @@ const getAllPhysioPatients = asyncHandler(async (req: Request, res: Response) =>
     })
 })
 
-const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
-    const patients = await prisma.patient.findMany()
-
-    const deads = patients.filter((dead) => {
-        let obj: any
-        if (dead.death?.dead === true) {
-            const { fullname, age, card_no, address, phone_no } = dead
-            obj = {
-                fullname, age, card_no,
-                phone_no, address,
-                date_vist: dead.date,
-                date: dead.death.date
-            }
-        }
-        return obj
-    })
-
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
-        length: deads.length,
-        deaths: sortByDates(deads)
-    })
-})
-
 const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
-    const patients = await prisma.patient.findMany()
+    const patients = await fetchPatients('-body')
 
     const all = patients.map((ext) => {
         let obj: any
@@ -139,12 +111,34 @@ const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
     })
 })
 
-const getExtension = asyncHandler(async (req: Request, res: Response) => {
-    const { card_no }: any = req.params
-    const patient = await prisma.patient.findUnique({
-        where: { card_no }
+const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
+    const patients = await fetchPatients('-body -recommendation')
+
+    const deads = patients.filter((dead) => {
+        let obj: any
+        if (dead.death?.dead === true) {
+            const { fullname, age, card_no, address, phone_no } = dead
+            obj = {
+                fullname, age, card_no,
+                phone_no, address,
+                date_vist: dead.date,
+                date: dead.death.date
+            }
+        }
+        return obj
     })
 
+    res.status(StatusCodes.OK).json({
+        ...SUCCESS,
+        length: deads.length,
+        deaths: sortByDates(deads)
+    })
+})
+
+const getExtension = asyncHandler(async (req: Request, res: Response) => {
+    const { card_no }: any = req.params
+
+    const patient = await findByCardNo(card_no, '-body')
     if (!patient) {
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
@@ -160,16 +154,14 @@ const getExtension = asyncHandler(async (req: Request, res: Response) => {
             address: patient.address
         },
         length: extensions?.length,
-        extensions: sortByDates(extensions!)
+        extensions: sortByDates(extensions)
     })
 })
 
 const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
-    const patient = await prisma.patient.findUnique({
-        where: { card_no }
-    })
 
+    const patient = await findByCardNo(card_no, '-body')
     if (!patient) {
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
@@ -185,10 +177,8 @@ const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => 
 
 const getOpthalMedication = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
-    const patient = await prisma.patient.findUnique({
-        where: { card_no }
-    })
 
+    const patient = await findByCardNo(card_no, '-body')
     if (!patient) {
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
