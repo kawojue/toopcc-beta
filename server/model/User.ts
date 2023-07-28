@@ -28,6 +28,10 @@ const UserModel: Schema = new Schema({
         type: String,
         default: `${new Date().toISOString()}`
     },
+    totp: String,
+    totp_date: Number,
+    lastLogin: String,
+    token: String,
     resigned: {
         date: String,
         resign: {
@@ -43,12 +47,6 @@ const UserModel: Schema = new Schema({
         secure_url: String,
         public_id: String
     },
-    OTP: {
-        totp: String,
-        totpDate: Number
-    },
-    token: String,
-    lastLogin: String,
 })
 
 const User = mongoose.model('User', UserModel) || UserModel
