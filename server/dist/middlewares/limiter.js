@@ -13,8 +13,10 @@ function limiterFunc({ max, timerArr, msg = "Too many requests sent." }) {
             message: msg
         },
         handler: (req, res, next, options) => {
-            var _a;
-            res.status(options.statusCode).json(Object.assign(Object.assign({}, modal_1.ERROR), { msg: (_a = options.message) === null || _a === void 0 ? void 0 : _a.message }));
+            res.status(options.statusCode).json({
+                ...modal_1.ERROR,
+                msg: options.message?.message
+            });
         },
         legacyHeaders: false,
         standardHeaders: true,

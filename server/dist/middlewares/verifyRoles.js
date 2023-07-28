@@ -7,7 +7,7 @@ const checkRoles_1 = __importDefault(require("../utilities/checkRoles"));
 const modal_1 = require("../utilities/modal");
 const verifyRoles = (...roles) => {
     return (req, res, next) => {
-        if (!(req === null || req === void 0 ? void 0 : req.roles))
+        if (!req?.roles)
             return res.status(401).json(modal_1.ACCESS_DENIED);
         const authRoles = req.roles;
         const allowedRoles = [...roles];
