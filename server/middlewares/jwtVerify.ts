@@ -22,7 +22,6 @@ const jwtVerify = expressAsyncHandler(async (req: IRequest, res: Response, next:
             }
 
             const account = await findByToken(token)
-
             if (!account) {
                 return res.status(StatusCodes.Forbidden).json(ACCESS_DENIED)
             }
