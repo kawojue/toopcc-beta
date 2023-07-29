@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid'
 import formatName from './full_name'
 import lastNextApp from './genNextApp'
 
-function addExtension(extensions: any[], ext: any) {
+function addExtension(extensions: any[], ext: any): any {
     const formattedName: string = formatName(ext.name)
     const findByName = extensions.find((extension: any) => extension.name === formattedName)
     if (findByName) return [...extensions]
@@ -19,7 +19,7 @@ function addExtension(extensions: any[], ext: any) {
     return newExtensions
 }
 
-function addMedic(recc: any, medics: any[]) {
+function addMedic(recc: any, medics: any[]): any {
     return recc?.date ? [
         ...medics,
         {
