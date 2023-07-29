@@ -25,7 +25,7 @@ const getPatient = asyncHandler(async (req, res) => {
 exports.getPatient = getPatient;
 const getAllDiagnosis = asyncHandler(async (req, res) => {
     const { card_no } = req.params;
-    const patient = await (0, model_1.findByCardNo)(card_no, '-body');
+    const patient = await (0, model_1.findByCardNo)(card_no, '-recommendation');
     if (!patient) {
         return res.status(StatusCodes_1.default.NotFound).json(modal_1.PATIENT_NOT_EXIST);
     }
