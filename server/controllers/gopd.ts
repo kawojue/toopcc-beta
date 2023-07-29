@@ -32,7 +32,7 @@ const getPatient = asyncHandler(async (req: Request, res: Response) => {
 const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
     const { card_no }: any = req.params
 
-    const patient = await findByCardNo(card_no, '-body')
+    const patient = await findByCardNo(card_no, '-recommendation')
     if (!patient) {
         return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
     }
