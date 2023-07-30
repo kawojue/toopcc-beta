@@ -1,27 +1,43 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { useEffect } from "react"
-import useAuth from "@/hooks/useAuth"
+import notify from "@/utils/notify"
+import axios from "@/app/api/instance"
 import { handleFile } from "@/utils/file"
 import { inter } from "@/public/font/font"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import throwError from "@/utils/throwError"
 import { useAuthStore } from "@/utils/store"
 import PswdButton from "@/components/PswdBtn"
 import SubmitBtn from "@/components/SubmitBtn"
+import { AxiosResponse, AxiosError } from "axios"
 
 const page = () => {
     const router = useRouter()
-    const { handleSignup }: any = useAuth()
+    const [loading, setLoading] = useState<boolean>(false)
     const {
         email, setEmail, avatar, setAvatar, auth,
         pswd, pswd2, setPswd, setPswd2, pswdBtn,
-        setPswdBtn, fullname, setFullname
+        setPswdBtn, fullname, setFullname, resetStates
     } = useAuthStore()
 
     useEffect(() => {
         if (auth) router.push('/staff/profile')
     }, [auth, router])
+
+    const handleSignup = async (): Promise<void> => {
+        setLoading(true)
+        await axios.post('/auth/signup', JSON.stringify({
+            fullname, avatar, email, pswd, pswd2
+        })).then((res: AxiosResponse) => {
+            resetStates()
+            notify("success", res.data?.msg)
+            setTimeout(() => {
+                router.push('/staff/login')
+            }, 500)
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
+    }
 
     return (
         <section className="section-form">
@@ -62,7 +78,7 @@ const page = () => {
                         value={pswd2} onChange={(e) => setPswd2(e.target.value)}
                         className={inter.className} />
                 </article>
-                <SubmitBtn texts="Sign Up" handler={handleSignup} />
+                <SubmitBtn texts="Sign Up" handler={handleSignup} loading={loading} />
             </form>
         </section>
     )
