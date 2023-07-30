@@ -7,7 +7,7 @@ interface ISubmitBtn {
     loading?: boolean
     texts: string
     styles?: string
-    handler: () => Promise<void>
+    handler?: () => Promise<void>
 }
 
 interface JWT { roles: string[]; user: string }
