@@ -1,10 +1,11 @@
 import './globals.css'
-import { Toaster } from "react-hot-toast"
+import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from '@/hooks/useAuth'
+import QueryProvider from '@/components/QueryProvider'
 
 export const metadata = {
   title: 'TOOPCC',
-  description: 'Thani-Oladunjoye Old People Care Centre',
+  description: '___',
 }
 
 export default function RootLayout({
@@ -16,10 +17,12 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Toaster
-        position="top-center"
-        reverseOrder={false} />
+          position="top-center"
+          reverseOrder={false} />
         <AuthProvider>
-          {children}
+          <QueryProvider>
+            {children}
+          </QueryProvider>
         </AuthProvider>
       </body>
     </html>
