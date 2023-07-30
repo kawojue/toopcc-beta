@@ -1,21 +1,42 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import Link from "next/link"
-import { useEffect } from "react"
-import useAuth from "@/hooks/useAuth"
+import notify from "@/utils/notify"
+import axios from "@/app/api/instance"
 import { inter } from "@/public/font/font"
+import { useEffect, useState } from "react"
+import throwError from "@/utils/throwError"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/utils/store"
 import PswdButton from "@/components/PswdBtn"
 import SubmitBtn from "@/components/SubmitBtn"
+import { AxiosResponse, AxiosError } from "axios"
 
 const page = () => {
     const router = useRouter()
+    const [loading, setLoading] = useState<boolean>(false)
     const {
         pswd, auth, userId, setPswd,
-        setUserId, pswdBtn, setPswdBtn
+        setUserId, pswdBtn, setPswdBtn,
+        resetStates, setAuth, setToken
     } = useAuthStore()
-    const { handleLogin }: any = useAuth()
+
+    const handleLogin = async (): Promise<void> => {
+        setLoading(true)
+        await axios.post('/auth/login', JSON.stringify({
+            userId, pswd
+        })).then((res: AxiosResponse) => {
+            const token: string = res.data.token
+            setAuth(true)
+            setToken(token)
+            localStorage.setItem('token', JSON.stringify(token))
+            notify("success", res.data.msg)
+            resetStates()
+            setTimeout(() => {
+                router.push('/staff/profile')
+            }, 500)
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
+    }
 
     useEffect(() => {
         if (auth) router.push('/staff/profile')
@@ -43,7 +64,7 @@ const page = () => {
                         Forgot Password?
                     </Link>
                 </article>
-                <SubmitBtn texts="Log In" handler={handleLogin} />
+                <SubmitBtn texts="Log In" handler={handleLogin} loading={loading} />
             </form>
         </section>
     )
