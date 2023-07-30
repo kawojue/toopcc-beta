@@ -1,5 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client"
+import {
+    createContext, Context,
+    useEffect, useContext, useReducer
+} from "react"
 import useToken from "./useToken"
 import notify from "@/utils/notify"
 import axios from "@/app/api/instance"
@@ -8,10 +12,6 @@ import { useAuthStore } from "@/utils/store"
 import modalReducer from "@/utils/modalReducers"
 import { AxiosError, AxiosResponse } from "axios"
 import { useRouter, usePathname } from "next/navigation"
-import {
-    createContext, Context,
-    useEffect, useContext, useReducer
-} from "react"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context"
 
 const Auth: Context<{}> = createContext({})
