@@ -19,11 +19,11 @@ export default function RootLayout({
         <Toaster
           position="top-center"
           reverseOrder={false} />
-        <AuthProvider>
-          <QueryProvider>
+        <QueryProvider>
+          <AuthProvider>
             {children}
-          </QueryProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   )
