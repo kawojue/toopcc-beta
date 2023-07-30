@@ -69,36 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).finally(() => setLoadProf(false))
     }
 
-    const handleSignup = async (): Promise<void> => {
-        setLoading(true)
-        await axios.post('/auth/signup', JSON.stringify({
-            fullname, avatar, email, pswd, pswd2
-        })).then((res: AxiosResponse) => {
-            resetStates()
-            notify(res.data?.action, res.data?.msg)
-            setTimeout(() => {
-                router.push('/staff/login')
-            }, 500)
-        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
-    }
-
-    const handleLogin = async (): Promise<void> => {
-        setLoading(true)
-        await axios.post('/auth/login', JSON.stringify({
-            userId, pswd
-        })).then((res: AxiosResponse) => {
-            const token: string = res.data.token
-            setAuth(true)
-            setToken(token)
-            localStorage.setItem('token', JSON.stringify(token))
-            notify(res.data.action, res.data.msg)
-            resetStates()
-            setTimeout(() => {
-                router.push('/staff/profile')
-            }, 500)
-        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
-    }
-
     const handleOTPRequest = async (): Promise<void> => {
         await axios.post('/auth/otp/request', JSON.stringify({ email }))
             .then((res: any) => notify(res.data?.action, res.data?.msg))
@@ -236,8 +206,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return (
         <Auth.Provider value={{
-            handleSignup, handleLogin, handleLogout, handleOTPRequest, state,
-            handlePswdReset, handleIdVerification, dispatch, handleUsername,
+            state, dispatch, handleLogout, handleOTPRequest,
+            handlePswdReset, handleIdVerification, handleUsername,
             handleFullname, handleEditPswd, resetStates, delAvatar, changeAvatar
         }}>
             {children}
