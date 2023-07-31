@@ -7,11 +7,12 @@ import cloudinary from '../configs/cloudinary'
 import StatusCodes from '../utilities/StatusCodes'
 import { Patient, findByCardNo } from '../utilities/model'
 const expressAsyncHandler = require('express-async-handler')
+import { sendError, sendSuccess } from '../utilities/sendResponse'
 import { addExtension, addMedic } from '../utilities/recommendation'
 import {
-    PATIENT_NOT_EXIST, SMTH_WENT_WRONG, PATIENT_EXIST, SAVED, SUCCESS,
+    FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
+    PATIENT_NOT_EXIST, SMTH_WENT_WRONG, PATIENT_EXIST, SAVED,
     DELETION_FAILED, EXT_NOT_EXIST, DIAG_NOT_EXIST, INVALID_PHONE_NO,
-    ERROR, FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
 } from '../utilities/modal'
 
 const phoneRegex: RegExp = /^\d{11}$/
@@ -28,37 +29,31 @@ const add = expressAsyncHandler(async (req: Request, res: Response) => {
     card_no = card_no?.trim()?.toUpperCase()
 
     if (!card_no || !fullname || !sex || !age) {
-        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+        sendError(res, StatusCodes.BadRequest, FIELDS_REQUIRED)
+        return
     }
 
-    if (/^\d/.test(age)) {
-        age = Number(age)
+    if (!/^\d/.test(age) || age > 120) {
+        sendError(res, StatusCodes.BadRequest, INVALID_AGE)
+        return
     }
 
     if (!/^[a-zA-Z0-9]+$/.test(card_no)) {
-        return res.status(StatusCodes.BadRequest).json({
-            ...ERROR,
-            msg: "Invalid card number."
-        })
+        sendError(res, StatusCodes.BadRequest, "Invalid card number.")
+        return
     }
 
     if (phone_no?.trim()) {
         if (!phoneRegex.test(phone_no?.trim())) {
-            return res.status(StatusCodes.BadRequest).json(INVALID_PHONE_NO)
+            sendError(res, StatusCodes.BadRequest, INVALID_PHONE_NO)
+            return
         }
-    }
-
-    if (age > 120) {
-        return res.status(StatusCodes.BadRequest).json(INVALID_AGE)
-    }
-
-    if (date) {
-        date = date
     }
 
     const patient = await findByCardNo(card_no)
     if (patient) {
-        return res.status(StatusCodes.Conflict).json(PATIENT_EXIST)
+        sendError(res, StatusCodes.Conflict, PATIENT_EXIST)
+        return
     }
 
     await Patient.create({
@@ -67,7 +62,7 @@ const add = expressAsyncHandler(async (req: Request, res: Response) => {
         phone_no, age: age,
     })
 
-    res.status(StatusCodes.Created).json(SAVED)
+    sendSuccess(res, StatusCodes.Created, { msg: SAVED })
 })
 
 // edit patient data
@@ -80,7 +75,8 @@ const edit = expressAsyncHandler(async (req: Request, res: Response) => {
 
     const patient = await findByCardNo(card_no)
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     if (cardNo || cardNo?.trim()) {
@@ -88,54 +84,42 @@ const edit = expressAsyncHandler(async (req: Request, res: Response) => {
 
         const cardNoExists = await findByCardNo(cardNo)
         if (cardNoExists) {
-            return res.status(StatusCodes.Conflict).json(PATIENT_EXIST)
+            sendError(res, StatusCodes.Conflict, PATIENT_EXIST)
+            return
         }
-
         patient.card_no = cardNo
     }
 
     if (fullname) {
         fullname = full_name(fullname)
         if (!fullname) {
-            return res.status(StatusCodes.BadRequest).json({
-                ...ERROR,
-                msg: "Fullname is required."
-            })
+            sendError(res, StatusCodes.BadRequest, "Fullname is required.")
+            return
         }
-
         patient.fullname = fullname
     }
 
     if (sex) {
         if (sex !== "Male" && sex !== "Female") {
-            return res.status(StatusCodes.BadRequest).json({
-                ...ERROR,
-                msg: "Sex is required."
-            })
+            sendError(res, StatusCodes.BadRequest, "Sex is required.")
+            return
         }
-
         patient.sex = sex
     }
 
     if (phone_no) {
         if (!phone_no?.trim() || !phoneRegex.test(phone_no?.trim())) {
-            return res.status(StatusCodes.BadRequest).json({
-                ...ERROR,
-                msg: "Invalid phone number."
-            })
+            sendError(res, StatusCodes.BadRequest, "Invalid phone number.")
+            return
         }
-
         patient.phone_no = phone_no.trim()
     }
 
     if (age) {
         if (age > 120) {
-            return res.status(StatusCodes.BadRequest).json({
-                ...ERROR,
-                msg: "Invalid Age specified."
-            })
+            sendError(res, StatusCodes.BadRequest, "Invalid age specified.")
+            return
         }
-
         patient.age = age
     }
 
@@ -161,7 +145,7 @@ const edit = expressAsyncHandler(async (req: Request, res: Response) => {
 
     await patient.save()
 
-    res.status(StatusCodes.OK).json(SAVED)
+    sendSuccess(res, StatusCodes.OK, { msg: SAVED })
 })
 
 // delete patient data
@@ -169,26 +153,26 @@ const remove = expressAsyncHandler(async (req: Request, res: Response) => {
     let { card_no } = req.params
 
     if (!card_no || !card_no?.trim()) {
-        return res.status(StatusCodes.BadRequest).json(CARD_NO_REQUIRED)
+        sendError(res, StatusCodes.BadRequest, CARD_NO_REQUIRED)
+        return
     }
 
     const patient = await findByCardNo(card_no)
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
-    const bodies = await patient.body
+    const bodies = patient.body
     const del: boolean = await delDiag(bodies)
     if (!del) {
-        return res.status(StatusCodes.BadRequest).json(DELETION_FAILED)
+        sendError(res, StatusCodes.BadRequest, DELETION_FAILED)
+        return
     }
 
     await patient.deleteOne()
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
-        msg: "Patient data has been deleted."
-    })
+    sendSuccess(res, StatusCodes.OK, { msg: "Patient data has been deleted." })
 })
 
 const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -201,14 +185,13 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
 
     const patient = await findByCardNo(card_no)
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     if (!date) {
-        return res.status(StatusCodes.BadRequest).json({
-            ...ERROR,
-            msg: "Current date is required."
-        })
+        sendError(res, StatusCodes.BadRequest, "Date is required.")
+        return
     }
 
     if (texts || texts?.trim()) {
@@ -223,7 +206,8 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
             })
 
             if (!imageRes) {
-                return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+                sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
+                return
             }
 
             imageArr.push({
@@ -249,7 +233,7 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
 
     await patient.save()
 
-    res.status(StatusCodes.OK).json(SAVED)
+    sendSuccess(res, StatusCodes.OK, { msg: SAVED })
 })
 
 const editDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -260,12 +244,14 @@ const editDiagnosis = expressAsyncHandler(async (req: Request, res: Response) =>
 
     const patient = await findByCardNo(card_no)
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     const body = patient.body.find((body: any) => body.idx === idx)
     if (!body) {
-        return res.status(StatusCodes.NotFound).json(DIAG_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, DIAG_NOT_EXIST)
+        return
     }
 
     if (texts) {
@@ -282,7 +268,7 @@ const editDiagnosis = expressAsyncHandler(async (req: Request, res: Response) =>
 
     await patient.save()
 
-    res.status(StatusCodes.OK).json(SAVED)
+    sendSuccess(res, StatusCodes.OK, { msg: SAVED })
 })
 
 const addRecommendation = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -294,7 +280,8 @@ const addRecommendation = expressAsyncHandler(async (req: Request, res: Response
 
     const patient = await findByCardNo(card_no)
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     let extensions = patient.recommendation?.extensions
@@ -310,7 +297,7 @@ const addRecommendation = expressAsyncHandler(async (req: Request, res: Response
     if (physio && physio?.date) {
         const physioMedic = physiotherapy?.medication
         const newMedics = addMedic(physio, physioMedic as any[])
-        physiotherapy!.medication = newMedics
+        physiotherapy.medication = newMedics
     }
 
     if (extension && extension?.name?.trim()) {
@@ -327,7 +314,7 @@ const addRecommendation = expressAsyncHandler(async (req: Request, res: Response
 
     await patient.save()
 
-    res.status(StatusCodes.OK).json(SAVED)
+    sendSuccess(res, StatusCodes.OK, { msg: SAVED })
 })
 
 const deleteRecommendation = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -336,7 +323,8 @@ const deleteRecommendation = expressAsyncHandler(async (req: Request, res: Respo
 
     const patient = await findByCardNo(card_no)
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     const rec = patient.recommendation
@@ -354,7 +342,7 @@ const deleteRecommendation = expressAsyncHandler(async (req: Request, res: Respo
 
     await patient.save()
 
-    res.status(StatusCodes.OK).json(SAVED)
+    sendSuccess(res, StatusCodes.OK, { msg: SAVED })
 })
 
 const deletExtension = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -362,14 +350,16 @@ const deletExtension = expressAsyncHandler(async (req: Request, res: Response) =
 
     const patient = await findByCardNo(card_no)
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     let extensions = patient.recommendation?.extensions
     const ext: any = extensions?.find((element: any) => element.idx === idx)
 
     if (!ext) {
-        return res.status(StatusCodes.NotFound).json(EXT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, EXT_NOT_EXIST)
+        return
     }
 
     extensions = extensions?.filter((element: any) => element.idx !== idx)
@@ -377,7 +367,7 @@ const deletExtension = expressAsyncHandler(async (req: Request, res: Response) =
     patient.recommendation.extensions = extensions
     await patient.save()
 
-    res.status(StatusCodes.OK).json(SAVED)
+    sendSuccess(res, StatusCodes.OK, { msg: SAVED })
 })
 
 const editExtension = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -386,14 +376,16 @@ const editExtension = expressAsyncHandler(async (req: Request, res: Response) =>
 
     const patient = await findByCardNo(card_no)
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     let extensions = patient.recommendation?.extensions
     const extt = extensions?.find((element: any) => element.idx === idx)
 
     if (!extt) {
-        return res.status(StatusCodes.NotFound).json(EXT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, EXT_NOT_EXIST)
+        return
     }
 
     extensions = extensions?.map((ext: any) => ext.idx === idx ? {
@@ -403,7 +395,7 @@ const editExtension = expressAsyncHandler(async (req: Request, res: Response) =>
     patient.recommendation.extensions = extensions
     await patient.save()
 
-    res.status(StatusCodes.OK).json(SAVED)
+    sendSuccess(res, StatusCodes.OK, { msg: SAVED })
 })
 
 const deleteDianosis = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -411,13 +403,15 @@ const deleteDianosis = expressAsyncHandler(async (req: Request, res: Response) =
 
     const patient = await findByCardNo(card_no)
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     const bodies = patient.body
     const body = bodies.find((body: any) => body.idx === idx)
     if (!body) {
-        return res.status(StatusCodes.NotFound).json(DIAG_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, DIAG_NOT_EXIST)
+        return
     }
 
     const images: Images[] = body.diagnosis.images
@@ -425,23 +419,17 @@ const deleteDianosis = expressAsyncHandler(async (req: Request, res: Response) =
         images.forEach(async (image: Images) => {
             const result: any = await cloudinary.uploader.destroy(image.public_id as string)
             if (!result) {
-                return res.status(StatusCodes.BadRequest).json(DELETION_FAILED)
+                sendError(res, StatusCodes.BadRequest, DELETION_FAILED)
             }
         })
     }
     patient.body = bodies.filter((body: any) => body.idx !== idx)
-
     await patient.save()
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
-        msg: "Deleted successfully"
-    })
+    sendSuccess(res, StatusCodes.OK, { msg: "Deleted successfully" })
 })
 
 export {
-    add, edit, addDiagnosis, remove,
-    deleteDianosis, editDiagnosis,
-    addRecommendation, editExtension,
-    deletExtension, deleteRecommendation
+    edit, remove, deleteDianosis, editDiagnosis, deleteRecommendation,
+    add, addRecommendation, editExtension, deletExtension, addDiagnosis,
 }
