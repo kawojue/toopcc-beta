@@ -8,7 +8,6 @@ import notify from '@/utils/notify'
 import axios from '@/app/api/instance'
 import { useRouter } from 'next/navigation'
 import throwError from '@/utils/throwError'
-import formatCardNo from '@/utils/formatCardNo'
 import { usePatientStore } from '@/utils/store'
 import { AxiosError, AxiosResponse } from 'axios'
 import patientReducer from '@/utils/patientReducer'
@@ -39,39 +38,6 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const [state, dispatch] = useReducer(patientReducer, initialStates)
 
-    const getAllPatients = async (token: string) => {
-        setLoading(true)
-        await axios.get(`/api/patients`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }).then((res: AxiosResponse) => {
-            const pts: any[] = res.data?.patients || []
-            const formattedPatients = pts.map((pt: any) => {
-                return formatCardNo(pt)
-            })
-            setPatients(formattedPatients)
-        }).catch((err: AxiosError) => {
-            throwError(err)
-            setTimeout(() => {
-                router.push('/staff/profile')
-            }, 500)
-        }).finally(() => setLoading(false))
-    }
-
-    const handlePatient = async (card_no: string) => {
-        setLoading(true)
-        await axios.get(
-            `/api/patients/patient/${card_no}`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
-        ).then((res: AxiosResponse) => setPatient(formatCardNo(res.data.patient)))
-            .catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
-    }
-
     const handleDelPatient = async (card_no: string) => {
         setBtnLoad(true)
         await axios.delete(
@@ -87,8 +53,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     return (
         <Patient.Provider value={{
-            state, dispatch, handlePatient,
-            handleDelPatient, getAllPatients,
+            state, dispatch, handleDelPatient,
         }}>
             {children}
         </Patient.Provider>
