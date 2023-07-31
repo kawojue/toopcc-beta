@@ -2,24 +2,49 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import { useEffect } from 'react'
+import axios from '@/app/api/instance'
 import useToken from '@/hooks/useToken'
-import usePatient from '@/hooks/usePatient'
+import throwError from '@/utils/throwError'
+import { useRouter } from 'next/navigation'
 import Patients from '@/components/Patients'
-import { usePatientStore } from '@/utils/store'
+import formatCardNo from '@/utils/formatCardNo'
+import { useQuery } from '@tanstack/react-query'
+import { AxiosError, AxiosResponse } from 'axios'
 import { SpinnerTwo } from '@/components/Spinner'
 
 const page = () => {
+    const router = useRouter()
     const token: string = useToken()
-    const { getAllPatients }: any = usePatient()
-    const { loading, patients } = usePatientStore()
+    const { isLoading, data, refetch } = useQuery({
+        queryKey: ['patients'],
+        queryFn: async () => {
+            return await axios.get(`/api/patients`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }).then((res: AxiosResponse) => {
+                const pts: any[] = res.data?.patients || []
+                const formattedPatients = pts.map((pt: any) => {
+                    return formatCardNo(pt)
+                })
+                return formattedPatients
+            }).catch((err: AxiosError) => {
+                throwError(err)
+                setTimeout(() => {
+                    router.push('/staff/profile')
+                }, 500)
+            })
+        },
+        enabled: false
+    })
 
     useEffect(() => {
-        if (token) (async () => await getAllPatients(token))()
+        if (token) refetch()
     }, [token])
 
-    if (loading) return <SpinnerTwo />
+    if (isLoading) return <SpinnerTwo />
 
-    return <Patients patients={patients} />
+    return <Patients patients={data || []} />
 }
 
 export default page
