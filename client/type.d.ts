@@ -119,15 +119,9 @@ interface AuthStore {
 }
 
 interface PatientStore {
-    patient: any
     search: string
-    patients: any[]
     btnLoad: boolean
-    loading: boolean
-    setPatient: (patient: any) => void
     setSearch: (search: string) => void
-    setPatients: (patients: any[]) => void
-    setLoading: (loading: boolean) => void
     setBtnLoad: (btnLoad: boolean) => void
 }
 
