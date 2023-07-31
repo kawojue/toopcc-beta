@@ -44,7 +44,6 @@ const initialStore = {
 
 const useAuthStore = create<AuthStore>()((set) => ({
     token: '',
-    staff: {},
     staffs: [],
     auth: false,
     profile: {},
@@ -56,7 +55,6 @@ const useAuthStore = create<AuthStore>()((set) => ({
     setUser: (user: string) => set({ user }),
     setPswd: (pswd: string) => set({ pswd }),
     setAuth: (auth: boolean) => set({ auth }),
-    setStaff: (staff: any[]) => set({ staff }),
     setPswd2: (pswd2: string) => set({ pswd2 }),
     setToken: (token: string) => set({ token }),
     setEmail: (email: string) => set({ email }),
