@@ -6,7 +6,6 @@ import {
 import useToken from './useToken'
 import notify from '@/utils/notify'
 import axios from '@/app/api/instance'
-import { useRouter } from 'next/navigation'
 import throwError from '@/utils/throwError'
 import { usePatientStore } from '@/utils/store'
 import { AxiosError, AxiosResponse } from 'axios'
@@ -28,14 +27,8 @@ const initialStates: PatientStates = {
 }
 
 export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const router = useRouter()
     const token: string = useToken()
-
-    const {
-        setBtnLoad, setLoading,
-        setPatient, setPatients,
-    } = usePatientStore()
-
+    const { setBtnLoad } = usePatientStore()
     const [state, dispatch] = useReducer(patientReducer, initialStates)
 
     const handleDelPatient = async (card_no: string) => {
@@ -47,7 +40,7 @@ export const PatientProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     'Authorization': `Bearer ${token}`
                 }
             }
-        ).then((res: AxiosResponse) => notify(res.data?.action, res.data?.msg))
+        ).then((res: AxiosResponse) => notify("success", res.data?.msg))
             .catch((err: AxiosError) => throwError(err)).finally(() => setBtnLoad(false))
     }
 
