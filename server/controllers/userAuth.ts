@@ -1,4 +1,7 @@
 import bcrypt from 'bcrypt'
+import {
+    sendError, sendSuccess
+} from '../utilities/sendResponse'
 import randomString from 'randomstring'
 import mailer from '../utilities/mailer'
 import genOTP from '../utilities/genOTP'
@@ -13,42 +16,43 @@ import StatusCodes from '../utilities/StatusCodes'
 import { IMailer, IGenOTP, IRequest } from '../type'
 import {
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
-    FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
-    PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR, CANCELED, ROLES_UPDATED,
+    FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, CANCELED,
+    PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ROLES_UPDATED,
 } from '../utilities/modal'
-const asyncHandler = require('express-async-handler')
+const expressAsyncHandler = require('express-async-handler')
 
 const EMAIL_REGEX: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const USER_REGEX: RegExp = /^[a-zA-Z][a-zA-Z0-9-_]{2,23}$/
 
 // handle account creation
-const createUser = asyncHandler(async (req: IRequest, res: Response) => {
+const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
     let user: any
     let result: any
     let { email, pswd, pswd2, fullname, avatar } = req.body
 
     if (!email || !pswd || !pswd2 || !fullname) {
-        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+        sendError(res, StatusCodes.BadRequest, FIELDS_REQUIRED)
+        return
     }
 
     fullname = full_name(fullname)
     email = email?.toLowerCase()?.trim()
 
     if (pswd !== pswd2) {
-        return res.status(StatusCodes.BadRequest).json(PSWD_NOT_MATCH)
+        sendError(res, StatusCodes.BadRequest, PSWD_NOT_MATCH)
+        return
     }
 
     if (EMAIL_REGEX.test(email) === false) {
-        return res.status(StatusCodes.BadRequest).json(INVALID_EMAIL)
+        sendError(res, StatusCodes.BadRequest, INVALID_EMAIL)
+        return
     }
 
     user = email.split('@')[0]
     const account = await findByEmail(email)
     if (account) {
-        return res.status(StatusCodes.Conflict).json({
-            ...ERROR,
-            msg: "Account already exists."
-        })
+        sendError(res, StatusCodes.Conflict, "Account already exists.")
+        return
     }
 
     const userExists = await findByUser(user)
@@ -70,7 +74,8 @@ const createUser = asyncHandler(async (req: IRequest, res: Response) => {
         })
 
         if (!result) {
-            return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+            sendError(res, StatusCodes.NotFound, SMTH_WENT_WRONG)
+            return
         }
     }
 
@@ -85,36 +90,34 @@ const createUser = asyncHandler(async (req: IRequest, res: Response) => {
         }
     })
 
-    res.status(StatusCodes.Created).json({
-        ...SUCCESS,
-        msg: "Account creation was successful."
-    })
+    sendSuccess(res, StatusCodes.Created, { msg: "Account creation was successful." })
 })
 
 // handle Login
-const login = asyncHandler(async (req: Request, res: Response) => {
+const login = expressAsyncHandler(async (req: Request, res: Response) => {
     let { userId, pswd } = req.body
     userId = userId?.toLowerCase()?.trim()
 
     if (!userId || !pswd) {
-        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+        sendError(res, StatusCodes.BadRequest, FIELDS_REQUIRED)
+        return
     }
 
     const account = EMAIL_REGEX.test(userId) ? await findByEmail(userId) : await findByUser(userId)
     if (!account) {
-        return res.status(StatusCodes.BadRequest).json({
-            ...ERROR,
-            msg: "Invalid User ID or Password."
-        })
+        sendError(res, StatusCodes.BadRequest, "Invalid User ID or Password.")
+        return
     }
 
     if (account.resigned?.resign) {
-        return res.status(StatusCodes.Unauthorized).json(ACCESS_DENIED)
+        sendError(res, StatusCodes.Unauthorized, ACCESS_DENIED)
+        return
     }
 
     const match: boolean = await bcrypt.compare(pswd, account.password)
     if (!match) {
-        return res.status(StatusCodes.Unauthorized).json(INCORRECT_PSWD)
+        sendError(res, StatusCodes.Unauthorized, INCORRECT_PSWD)
+        return
     }
 
     const token: string = genToken(account.user, account.roles)
@@ -123,34 +126,33 @@ const login = asyncHandler(async (req: Request, res: Response) => {
     account.lastLogin = `${new Date().toISOString()}`
     await account.save()
 
-    res.status(StatusCodes.OK).json({
+    sendSuccess(res, StatusCodes.OK, {
         token,
-        ...SUCCESS,
-        msg: "Login successful.",
+        msg: "Login successful."
     })
 })
 
 // send otp to user
-const otpHandler = asyncHandler(async (req: Request, res: Response) => {
+const otpHandler = expressAsyncHandler(async (req: Request, res: Response) => {
     let { email } = req.body
     email = email?.trim()?.toLowerCase()
 
     const { totp, totpDate }: IGenOTP = genOTP()
 
     if (!email) {
-        return res.status(StatusCodes.BadRequest).json(INVALID_EMAIL)
+        sendError(res, StatusCodes.BadRequest, INVALID_EMAIL)
+        return
     }
 
     const account = await findByEmail(email)
     if (!account) {
-        return res.status(StatusCodes.BadRequest).json({
-            ...ERROR,
-            msg: "There is no account associated with this email."
-        })
+        sendError(res, StatusCodes.NotFound, "There is no account associated with this email.")
+        return
     }
 
     if (account.resigned?.resign) {
-        return res.status(StatusCodes.Unauthorized).json(ACCESS_DENIED)
+        sendError(res, StatusCodes.Unauthorized, ACCESS_DENIED)
+        return
     }
 
     const transportMail: IMailer = {
@@ -162,7 +164,8 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
 
     const sendMail: boolean = await mailer(transportMail)
     if (!sendMail) {
-        return res.status(StatusCodes.BadRequest).json(INVALID_EMAIL)
+        sendError(res, StatusCodes.BadRequest, INVALID_EMAIL)
+        return
     }
 
     account.totp = totp
@@ -170,74 +173,65 @@ const otpHandler = asyncHandler(async (req: Request, res: Response) => {
     account.email_verified = false
     await account.save()
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
-        msg: "OTP has been sent to your email."
-    })
+    sendSuccess(res, StatusCodes.OK, { msg: "OTP has been sent to your email." })
 })
 
 // change username
-const editUsername = asyncHandler(async (req: IRequest, res: Response) => {
+const editUsername = expressAsyncHandler(async (req: IRequest, res: Response) => {
     let { newUser } = req.body
     newUser = newUser?.trim()?.toLowerCase()
 
     if (!newUser) {
-        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+        sendError(res, StatusCodes.BadRequest, FIELDS_REQUIRED)
+        return
     }
 
     if (!USER_REGEX.test(newUser)) {
-        return res.status(StatusCodes.BadRequest).json({
-            ...ERROR,
-            msg: "Username is not allowed."
-        })
+        sendError(res, StatusCodes.BadRequest, "Username is not allowed.")
+        return
     }
 
     const account = await findByUser(req.user)
     if (!account) {
-        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+        sendError(res, StatusCodes.NotFound, SMTH_WENT_WRONG)
+        return
     }
 
     const userExists = await findByUser(newUser)
     if (userExists) {
-        return res.status(StatusCodes.Conflict).json({
-            ...ERROR,
-            msg: "Username has been taken."
-        })
+        sendError(res, StatusCodes.Conflict, "Username has been taken.")
+        return
     }
 
     account.token = ""
     account.user = newUser
     await account.save()
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
-        msg: "You've successfully changed your username."
-    })
+    sendSuccess(res, StatusCodes.OK, { msg: "You've successfully changed your username." })
 })
 
-const editFullname = asyncHandler(async (req: IRequest, res: Response) => {
+const editFullname = expressAsyncHandler(async (req: IRequest, res: Response) => {
     let { fullname } = req.body
     fullname = full_name(fullname)
 
     if (!fullname) {
-        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+        sendError(res, StatusCodes.BadRequest, FIELDS_REQUIRED)
+        return
     }
 
     const account = await findByUser(req.user)
     if (!account) {
-        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+        sendError(res, StatusCodes.NotFound, SMTH_WENT_WRONG)
+        return
     }
 
     account.fullname = fullname
     await account.save()
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
-        msg: "You've successfully changed your fullname."
-    })
+    sendSuccess(res, StatusCodes.OK, { msg: "You've successfully changed your fullname." })
 })
 
-const logout = asyncHandler(async (req: IRequest, res: Response) => {
+const logout = expressAsyncHandler(async (req: IRequest, res: Response) => {
     const authHeader = req.headers?.authorization
     if (!authHeader || !authHeader.startsWith('Bearer')) {
         return res.sendStatus(StatusCodes.NoContent)
@@ -256,16 +250,18 @@ const logout = asyncHandler(async (req: IRequest, res: Response) => {
 })
 
 // verify OTP
-const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
+const verifyOTP = expressAsyncHandler(async (req: Request, res: Response) => {
     const { otp, email } = req.body
 
     if (!otp || !email) {
-        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+        sendError(res, StatusCodes.BadRequest, FIELDS_REQUIRED)
+        return
     }
 
     const account = await findByEmail(email)
     if (!account) {
-        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+        sendError(res, StatusCodes.NotFound, SMTH_WENT_WRONG)
+        return
     }
 
     const totp: string = account.totp
@@ -273,30 +269,25 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
     const expiry: number = totpDate + (60 * 60 * 1000) // after 1hr
 
     if (expiry < Date.now()) {
-        account.totp = null
+        account.totp = ""
         account.totp_date = null
         account.email_verified = false
 
-        return res.status(StatusCodes.BadRequest).json({
-            ...ERROR,
-            msg: "OTP has expired."
-        })
+        sendError(res, StatusCodes.BadRequest, "OTP has expired.")
+        return
     }
 
     if (totp !== otp) {
-        return res.status(StatusCodes.Unauthorized).json({
-            ...ERROR,
-            msg: "Incorrect OTP."
-        })
+        sendError(res, StatusCodes.Unauthorized, "Incorrecr OTP")
+        return
     }
 
-    account.totp = null
+    account.totp = ""
     account.totp_date = null
     account.email_verified = false
     await account.save()
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
+    sendSuccess(res, StatusCodes.OK, {
         email,
         verified: true,
         user: account.user
@@ -304,29 +295,34 @@ const verifyOTP = asyncHandler(async (req: Request, res: Response) => {
 })
 
 // reset password
-const resetpswd = asyncHandler(async (req: Request, res: Response) => {
+const resetpswd = expressAsyncHandler(async (req: Request, res: Response) => {
     const { verified, email, newPswd, newPswd2 } = req.body
 
     if (!email || !newPswd) {
-        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+        sendError(res, StatusCodes.BadRequest, FIELDS_REQUIRED)
+        return
     }
 
     if (newPswd !== newPswd2) {
-        return res.status(StatusCodes.BadRequest).json(PSWD_NOT_MATCH)
+        sendError(res, StatusCodes.BadRequest, PSWD_NOT_MATCH)
+        return
     }
 
     const account = await findByEmail(email)
     if (!account) {
-        return res.status(StatusCodes.NotFound).json(ACCOUNT_NOT_FOUND)
+        sendError(res, StatusCodes.NotFound, ACCOUNT_NOT_FOUND)
+        return
     }
 
     if (!verified || !account.email_verified || account.resigned?.resign) {
-        return res.status(StatusCodes.BadRequest).json(ACCESS_DENIED)
+        sendError(res, StatusCodes.Unauthorized, ACCESS_DENIED)
+        return
     }
 
     const compare = await bcrypt.compare(newPswd, account.password)
     if (compare) {
-        return res.status(StatusCodes.BadRequest).json(CURRENT_PSWD)
+        sendError(res, StatusCodes.BadRequest, CURRENT_PSWD)
+        return
     }
 
     const salt: string = await bcrypt.genSalt(10)
@@ -337,39 +333,42 @@ const resetpswd = asyncHandler(async (req: Request, res: Response) => {
     account.email_verified = false
     await account.save()
 
-    res.status(StatusCodes.OK).json(PSWD_CHANGED)
+    sendSuccess(res, StatusCodes.OK, { msg: PSWD_CHANGED })
 })
 
-const editPassword = asyncHandler(async (req: IRequest, res: Response) => {
+const editPassword = expressAsyncHandler(async (req: IRequest, res: Response) => {
     const { currentPswd, pswd, pswd2 } = req.body
 
     if (!currentPswd || !pswd || !pswd2) {
-        return res.status(StatusCodes.BadRequest).json(FIELDS_REQUIRED)
+        sendError(res, StatusCodes.BadRequest, FIELDS_REQUIRED)
+        return
     }
 
     if (!currentPswd) {
-        return res.status(StatusCodes.BadRequest).json({
-            ...ERROR,
-            msg: 'Old password is required.'
-        })
+        sendError(res, StatusCodes.BadRequest, "Old password is required.")
+        return
     }
 
     if (pswd !== pswd2) {
-        return res.status(StatusCodes.BadRequest).json(PSWD_NOT_MATCH)
+        sendError(res, StatusCodes.BadRequest, PSWD_NOT_MATCH)
+        return
     }
 
     if (currentPswd === pswd) {
-        return res.status(StatusCodes.BadRequest).json(CURRENT_PSWD)
+        sendError(res, StatusCodes.BadRequest, CURRENT_PSWD)
+        return
     }
 
     const account = await findByUser(req.user)
     if (!account) {
-        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+        sendError(res, StatusCodes.NotFound, SMTH_WENT_WRONG)
+        return
     }
 
     const isMatch = await bcrypt.compare(currentPswd, account.password)
     if (!isMatch) {
-        return res.status(StatusCodes.Unauthorized).json(INCORRECT_PSWD)
+        sendError(res, StatusCodes.Unauthorized, INCORRECT_PSWD)
+        return
     }
 
     const salt: string = await bcrypt.genSalt(10)
@@ -379,24 +378,27 @@ const editPassword = asyncHandler(async (req: IRequest, res: Response) => {
     account.password = hashedPswd
     await account.save()
 
-    res.status(StatusCodes.OK).json(PSWD_CHANGED)
+    sendSuccess(res, StatusCodes.OK, { msg: PSWD_CHANGED })
 })
 
-const changeAvatar = asyncHandler(async (req: IRequest, res: any) => {
+const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
     const { avatar } = req.body
     if (!avatar) {
-        return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+        sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
+        return
     }
 
     const account = await findByUser(req.user)
     if (!account) {
-        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+        sendError(res, StatusCodes.NotFound, SMTH_WENT_WRONG)
+        return
     }
 
     if (account.avartar?.secure_url) {
         const res = await cloudinary.uploader.destroy(account.avartar?.public_id)
         if (!res) {
-            return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+            sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
+            return
         }
     }
 
@@ -406,47 +408,49 @@ const changeAvatar = asyncHandler(async (req: IRequest, res: any) => {
     })
 
     if (!result) {
-        return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+        sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
+        return
     }
 
-    account.secure_url = result.secure_url,
-        account.public_id = result.public_id
+    account.avatar = {
+        secure_url: result.secure_url,
+        public_id: result.public_id
+    }
     await account.save()
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
-        msg: "Successful."
-    })
+    sendSuccess(res, StatusCodes.OK, { msg: "Successful." })
 })
 
-const deleteAvatar = asyncHandler(async (req: IRequest, res: Response) => {
+const deleteAvatar = expressAsyncHandler(async (req: IRequest, res: Response) => {
     const account = await findByUser(req.user)
     if (!account) {
-        return res.status(StatusCodes.NotFound).json(SMTH_WENT_WRONG)
+        sendError(res, StatusCodes.NotFound, SMTH_WENT_WRONG)
+        return
     }
 
     const result: any = await cloudinary.uploader.destroy(account.avartar?.public_id)
     if (!result) {
-        return res.status(StatusCodes.BadRequest).json(SMTH_WENT_WRONG)
+        sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
+        return
     }
 
-    account.secure_url = null,
-        account.public_id = null
+    account.avatar = {
+        secure_url: "",
+        public_id: ""
+    }
     await account.save()
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
-        msg: "Successful."
-    })
+    sendSuccess(res, StatusCodes.OK, { msg: "Successful." })
 })
 
-const resigned = asyncHandler(async (req: Request, res: Response) => {
+const resigned = expressAsyncHandler(async (req: Request, res: Response) => {
     const { user } = req.params
     const { resign, date } = req.body
 
     const account = await findByUser(user)
     if (!account) {
-        return res.status(StatusCodes.NotFound).json(ACCOUNT_NOT_FOUND)
+        sendError(res, StatusCodes.NotFound, ACCOUNT_NOT_FOUND)
+        return
     }
 
     if (Boolean(resign) === false) {
@@ -466,30 +470,27 @@ const resigned = asyncHandler(async (req: Request, res: Response) => {
     account.resigned = { date, resign }
     await account.save()
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
-        msg: "Staff has been resigned"
-    })
+    sendSuccess(res, StatusCodes.OK, { msg: "Staff has been resigned." })
 })
 
-const changeRoles = asyncHandler(async (req: Request, res: Response) => {
+const changeRoles = expressAsyncHandler(async (req: Request, res: Response) => {
     const { role } = req.body
     const { user } = req.params
     if (!role) {
-        return res.status(StatusCodes.BadRequest).json(CANCELED)
+        sendError(res, StatusCodes.BadRequest, CANCELED)
+        return
     }
 
     const account = await findByUser(user)
     if (!account) {
-        return res.status(StatusCodes.NotFound).json(ACCOUNT_NOT_FOUND)
+        sendError(res, StatusCodes.NotFound, ACCOUNT_NOT_FOUND)
+        return
     }
 
     const roles: string[] = account.roles
     if (roles.includes(role)) {
-        return res.status(StatusCodes.OK).json({
-            ...SUCCESS,
-            msg: "Existing roles"
-        })
+        sendSuccess(res, StatusCodes.OK, "Existing Role.")
+        return
     }
 
     roles.push(role)
@@ -497,41 +498,39 @@ const changeRoles = asyncHandler(async (req: Request, res: Response) => {
     account.roles = roles
     await account.save()
 
-    res.status(StatusCodes.OK).json(ROLES_UPDATED)
+    sendSuccess(res, StatusCodes.OK, { msg: ROLES_UPDATED })
 })
 
-const removeRole = asyncHandler(async (req: Request, res: Response) => {
+const removeRole = expressAsyncHandler(async (req: Request, res: Response) => {
     const { role } = req.body
     const { user } = req.params
     if (!role) {
-        return res.status(StatusCodes.BadRequest).json(CANCELED)
+        sendError(res, StatusCodes.BadRequest, CANCELED)
+        return
     }
 
     const account = await findByUser(user)
     if (!account) {
-        return res.status(StatusCodes.NotFound).json(ACCOUNT_NOT_FOUND)
+        sendError(res, StatusCodes.NotFound, ACCOUNT_NOT_FOUND)
+        return
     }
 
     const roles: string[] = account.roles
     if (!roles.includes(role)) {
-        return res.status(StatusCodes.BadRequest).json({
-            ...ERROR,
-            msg: "Role does not exist."
-        })
+        sendError(res, StatusCodes.NotFound, "Role does not exist.")
+        return
     }
 
     const newRoles: string[] = roles.filter((authRole: string) => authRole !== role)
     if (newRoles.length === 0) {
-        return res.status(StatusCodes.BadRequest).json({
-            ...ERROR,
-            msg: "Empty role! Cannot remove role."
-        })
+        sendError(res, StatusCodes.BadRequest, "Empty role! Cannot remove role.")
+        return
     }
 
     account.token = ""
     account.roles = newRoles
 
-    res.status(StatusCodes.OK).json(ROLES_UPDATED)
+    sendSuccess(res, StatusCodes.OK, { msg: ROLES_UPDATED })
 })
 
 
