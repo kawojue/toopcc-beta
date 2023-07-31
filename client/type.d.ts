@@ -88,7 +88,6 @@ interface AuthStore {
     otp: string
     user: string
     pswd: string
-    staffs: any[]
     auth: boolean
     token: string
     pswd2: string
@@ -108,7 +107,6 @@ interface AuthStore {
     setToken: (token: string) => void
     setPswd2: (pswd2: string) => void
     setEmail: (email: string) => void
-    setStaffs: (staffs: any[]) => void
     setUserId: (userId: string) => void
     setAvatar: (avatar: string) => void
     setPswdBtn: (pswdBtn: boolean) => void
