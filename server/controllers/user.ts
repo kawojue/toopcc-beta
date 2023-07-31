@@ -1,13 +1,14 @@
 import { IRequest } from '../type'
 import { Response } from 'express'
-import { SUCCESS } from '../utilities/modal'
+import StatusCodes from '../utilities/StatusCodes'
+import { sendSuccess } from '../utilities/sendResponse'
 import { findByUser, fetchUsers } from '../utilities/model'
 const expressAsyncHandler = require('express-async-handler')
 
 const getProfile = expressAsyncHandler(async (req: IRequest, res: Response) => {
-    const profile = await fetchUsers('-totp -email_verified -totp_date -token -password')
+    const profile = await findByUser(req.user, '-totp -email_verified -totp_date -token -password')
 
-    res.status(200).json({ ...SUCCESS, profile })
+    sendSuccess(res, StatusCodes.OK, { profile })
 })
 
 const getUsers = expressAsyncHandler(async (req: IRequest, res: Response) => {
@@ -17,7 +18,7 @@ const getUsers = expressAsyncHandler(async (req: IRequest, res: Response) => {
         return { username: user.user, fullname: user.fullname }
     })
 
-    res.status(200).json({ ...SUCCESS, names })
+    sendSuccess(res, StatusCodes.OK, { names })
 })
 
 const getUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
@@ -25,7 +26,7 @@ const getUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
 
     const user: any = await findByUser(userParam, '-totp -email_verified -totp_date -token -password')
 
-    res.status(200).json({ ...SUCCESS, user })
+    sendSuccess(res, StatusCodes.OK, { user })
 })
 
 export { getProfile, getUser, getUsers }
