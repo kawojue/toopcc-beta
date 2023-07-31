@@ -2,24 +2,41 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import { useEffect } from 'react'
+import axios from '@/app/api/instance'
 import useToken from '@/hooks/useToken'
 import Patient from '@/components/Patient'
-import usePatient from '@/hooks/usePatient'
-import { usePatientStore } from '@/utils/store'
+import throwError from '@/utils/throwError'
+import formatCardNo from '@/utils/formatCardNo'
+import { useQuery } from '@tanstack/react-query'
 import { SpinnerTwo } from '@/components/Spinner'
+import { AxiosError, AxiosResponse } from 'axios'
 
 const page = ({ params: { patientId } }: IPt) => {
     const token: string = useToken()
-    const { handlePatient }: any = usePatient()
-    const { loading, patient } = usePatientStore()
+    const { data, refetch, isLoading } = useQuery({
+        queryKey: ['patient'],
+        queryFn: async () => {
+            return await axios.get(
+                `/api/patients/patient/${patientId}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            ).then((res: AxiosResponse) => {
+                return formatCardNo(res.data.patient)
+            }).catch((err: AxiosError) => throwError(err))
+        },
+        enabled: false
+    })
 
     useEffect(() => {
-        if (token) (async () => await handlePatient(patientId))()
-    }, [token])
+        if (token && patientId) refetch()
+    }, [token, patientId])
 
-    if (loading) return <SpinnerTwo />
+    if (isLoading) return <SpinnerTwo />
 
-    return <Patient patient={patient} />
+    return <Patient patient={data || {}} />
 }
 
 export default page
