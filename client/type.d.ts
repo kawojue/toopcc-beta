@@ -87,7 +87,6 @@ interface PhotoState {
 interface AuthStore {
     staff: any
     otp: string
-    profile: any
     user: string
     pswd: string
     staffs: any[]
@@ -100,7 +99,6 @@ interface AuthStore {
     loading: boolean
     pswdBtn: boolean
     fullname: string
-    loadProf: boolean
     verified: boolean
     currentPswd: string
     resetStates: () => void
@@ -113,13 +111,11 @@ interface AuthStore {
     setPswd2: (pswd2: string) => void
     setEmail: (email: string) => void
     setStaffs: (staffs: any[]) => void
-    setProfile: (profile: any) => void
     setUserId: (userId: string) => void
     setAvatar: (avatar: string) => void
     setPswdBtn: (pswdBtn: boolean) => void
     setLoading: (loading: boolean) => void
     setFullname: (fullname: string) => void
-    setLoadProf: (loadProf: boolean) => void
     setVerified: (verified: boolean) => void
     setCurrentPswd: (currentPswd: string) => void
 }
