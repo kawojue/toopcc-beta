@@ -2,7 +2,7 @@
 "use client"
 import {
     createContext, Context,
-    useEffect, useContext, useReducer
+    useContext, useReducer
 } from "react"
 import useToken from "./useToken"
 import notify from "@/utils/notify"
@@ -26,48 +26,16 @@ const initialStates: ModalStates = {
 }
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const getToken: string = useToken()
-    const pathName: string = usePathname()
     const router: AppRouterInstance = useRouter()
 
     const {
-        resetStates, token, setToken, setLoading,
-        setAuth, setLoadProf, fullname, avatar, email,
-        pswd, pswd2, otp, userId, verified, currentPswd,
-        user, setOTP, setVerified, setProfile,
+        resetStates, token, setLoading,
+        setAuth, fullname, avatar, email,
+        pswd, pswd2, otp, verified, currentPswd,
+        user, setOTP, setVerified,
     } = useAuthStore()
 
     const [state, dispatch] = useReducer(modalReducer, initialStates)
-
-    useEffect(() => {
-        setToken(getToken)
-    }, [getToken])
-
-    useEffect(() => {
-        if (pathName === '/staff/profile' && token) {
-            (async () => await handleProfile(token))()
-        }
-    }, [token, pathName, router])
-
-    const handleProfile = async (token: string): Promise<void> => {
-        setLoadProf(true)
-        await axios.get('/api/users/profile', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }).then((res: AxiosResponse) => {
-            setAuth(true)
-            setProfile(res.data?.profile)
-        }).catch((err: AxiosError) => {
-            const statusCode: unknown = err.response?.status
-            if (statusCode === 401 || statusCode === 403) {
-                setAuth(false)
-            } else {
-                setAuth(true)
-                throwError(err)
-            }
-        }).finally(() => setLoadProf(false))
-    }
 
     const handleOTPRequest = async (): Promise<void> => {
         await axios.post('/auth/otp/request', JSON.stringify({ email }))
