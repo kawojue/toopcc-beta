@@ -70,15 +70,9 @@ const useAuthStore = create<AuthStore>()((set) => ({
 
 const usePatientStore = create<PatientStore>()((set) => ({
     search: '',
-    patient: {},
-    patients: [],
     btnLoad: false,
-    loading: false,
     setSearch: (search: string) => set({ search }),
-    setPatient: (patient: any) => set({ patient }),
-    setLoading: (loading: boolean) => set({ loading }),
     setBtnLoad: (btnLoad: boolean) => set({ btnLoad }),
-    setPatients: (patients: any[]) => set({ patients }),
 }))
 
 export {
