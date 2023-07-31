@@ -85,7 +85,6 @@ interface PhotoState {
 }
 
 interface AuthStore {
-    staff: any
     otp: string
     user: string
     pswd: string
@@ -103,7 +102,6 @@ interface AuthStore {
     currentPswd: string
     resetStates: () => void
     setOTP: (otp: string) => void
-    setStaff: (staffs: any) => void
     setUser: (user: string) => void
     setPswd: (pswd: string) => void
     setAuth: (auth: boolean) => void
