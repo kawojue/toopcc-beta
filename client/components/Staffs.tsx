@@ -6,36 +6,32 @@ import axios from '@/app/api/instance'
 import { SpinnerTwo } from './Spinner'
 import useToken from '@/hooks/useToken'
 import throwError from '@/utils/throwError'
-import { useAuthStore } from '@/utils/store'
 import { Disclosure } from '@headlessui/react'
+import { useQuery } from '@tanstack/react-query'
 import { AxiosResponse, AxiosError } from 'axios'
 import { ChevronUpIcon } from '@heroicons/react/24/solid'
 
 const Staffs: FC = () => {
     const token: string = useToken()
-    const {
-        staffs, setStaffs,
-        loading, setLoading
-    } = useAuthStore()
-
-    const handleStaffs = async (): Promise<void> => {
-        setLoading(true)
-        await axios.get('/api/users', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }).then((res: AxiosResponse) => setStaffs(res.data?.names))
-            .catch((err: AxiosError) => throwError(err))
-            .finally(() => setLoading(false))
-    }
+    const { isLoading, refetch, data } = useQuery({
+        queryKey: ['staffs_list'],
+        queryFn: async () => {
+            return await axios.get('/api/users', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }).then((res: AxiosResponse) => {
+                return res.data?.names
+            }).catch((err: AxiosError) => throwError(err))
+        },
+        enabled: false
+    })
 
     useEffect(() => {
-        if (token) (async () => await handleStaffs())()
+        if (token) refetch()
     }, [token])
 
-    if (loading) {
-        return <SpinnerTwo />
-    }
+    if (isLoading) return <SpinnerTwo />
 
     return (
         <div className="mx-auto w-full rounded-2xl bg-white p-2">
@@ -51,7 +47,7 @@ const Staffs: FC = () => {
                         </Disclosure.Button>
                         <Disclosure.Panel className="disclosure-panel">
                             <article className="staff-lists">
-                                {staffs?.map((staff: any, index: number) => (
+                                {data?.map((staff: any, index: number) => (
                                     <Link href={`/staff/profile/${staff.username}`}
                                         key={index} target='_blank' className='staff-url md:text-[1.125rem]'>
                                         {index + 1} - {staff.fullname}
@@ -59,7 +55,7 @@ const Staffs: FC = () => {
                                 ))}
                             </article>
                             <p className="total-staffs">
-                                Total Staffs: {staffs?.length}
+                                Total Staffs: {data?.length}
                             </p>
                         </Disclosure.Panel>
                     </>
