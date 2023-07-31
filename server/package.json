@@ -28,7 +28,6 @@
   },
   "homepage": "https://github.com/kawojue/TOOPCC#readme",
   "devDependencies": {
-    "@prisma/client": "^5.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",
     "@types/dotenv": "^8.2.0",
