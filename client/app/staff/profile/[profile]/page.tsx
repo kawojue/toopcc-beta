@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import { useEffect } from "react"
-import axios from "@/app/api/instance"
-import useToken from "@/hooks/useToken"
-import Profile from "@/components/Profile"
-import { useRouter } from "next/navigation"
-import throwError from "@/utils/throwError"
-import { useQuery } from "@tanstack/react-query"
-import { SpinnerTwo } from "@/components/Spinner"
-import { AxiosError, AxiosResponse } from "axios"
+import { useEffect } from 'react'
+import axios from '@/app/api/instance'
+import useToken from '@/hooks/useToken'
+import Profile from '@/components/Profile'
+import { useRouter } from 'next/navigation'
+import throwError from '@/utils/throwError'
+import { useQuery } from '@tanstack/react-query'
+import { SpinnerTwo } from '@/components/Spinner'
+import { AxiosError, AxiosResponse } from 'axios'
 
 const page = ({ params: { profile } }: IProfile) => {
     const router = useRouter()
