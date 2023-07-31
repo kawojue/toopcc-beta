@@ -1,13 +1,15 @@
 import {
-    PATIENT_NOT_EXIST,
-    DIAG_NOT_EXIST, SUCCESS,
-} from '../utilities/modal'
-import {
     fetchPatients, findByCardNo
 } from '../utilities/model'
 import {
+    sendError, sendSuccess
+} from '../utilities/sendResponse'
+import {
     sortByCardNumbers, sortByDates
 } from '../utilities/sorting'
+import {
+    PATIENT_NOT_EXIST, DIAG_NOT_EXIST,
+} from '../utilities/modal'
 import { Request, Response } from 'express'
 import StatusCodes from '../utilities/StatusCodes'
 const asyncHandler = require('express-async-handler')
@@ -15,7 +17,7 @@ const asyncHandler = require('express-async-handler')
 const allPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients = await fetchPatients('-body -recommendation')
 
-    res.status(StatusCodes.OK).json({ patients: sortByCardNumbers(patients) })
+    sendSuccess(res, StatusCodes.OK, { patients: sortByCardNumbers(patients) })
 })
 
 const getPatient = asyncHandler(async (req: Request, res: Response) => {
@@ -23,10 +25,11 @@ const getPatient = asyncHandler(async (req: Request, res: Response) => {
 
     const patient = await findByCardNo(card_no, '-body -recommendation')
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
-    res.status(StatusCodes.OK).json({ patient })
+    sendSuccess(res, StatusCodes.OK, { patient })
 })
 
 const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
@@ -34,11 +37,11 @@ const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
     const patient = await findByCardNo(card_no, '-recommendation')
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
+    sendSuccess(res, StatusCodes.OK, {
         length: patient.body.length,
         diagnosis: sortByDates(patient.body)
     })
@@ -49,27 +52,25 @@ const getDiagnosis = asyncHandler(async (req: Request, res: Response) => {
 
     const patient = await findByCardNo(card_no, '-recommendation')
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     const bodies = patient.body
     const diagnosis = bodies.find((body: any) => body.idx === idx)
     if (!diagnosis) {
-        return res.status(StatusCodes.NotFound).json(DIAG_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, DIAG_NOT_EXIST)
+        return
     }
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
-        diagnosis: sortByDates(diagnosis)
-    })
+    sendSuccess(res, StatusCodes.OK, { diagnosis: sortByDates(diagnosis) })
 })
 
 const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients = await fetchPatients('-body')
     const opthals = patients.filter((opthal) => opthal.recommendation?.opthalmology?.eligible === true)
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
+    sendSuccess(res, StatusCodes.OK, {
         length: opthals.length,
         patients: sortByCardNumbers(opthals)
     })
@@ -79,8 +80,7 @@ const getAllPhysioPatients = asyncHandler(async (req: Request, res: Response) =>
     const patients = await fetchPatients('-body')
     const physios = patients.filter((physio) => physio.recommendation?.physiotherapy?.eligible === true)
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
+    sendSuccess(res, StatusCodes.OK, {
         length: physios.length,
         patients: sortByCardNumbers(physios)
     })
@@ -104,8 +104,7 @@ const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
         return obj
     })
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
+    sendSuccess(res, StatusCodes.OK, {
         length: all.length,
         extensions: sortByDates(all)
     })
@@ -128,8 +127,7 @@ const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
         return obj
     })
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
+    sendSuccess(res, StatusCodes.OK, {
         length: deads.length,
         deaths: sortByDates(deads)
     })
@@ -140,13 +138,13 @@ const getExtension = asyncHandler(async (req: Request, res: Response) => {
 
     const patient = await findByCardNo(card_no, '-body')
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     const extensions = patient.recommendation?.extensions
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
+    sendSuccess(res, StatusCodes.OK, {
         patient: {
             fullname: patient.fullname,
             card_no: patient.card_no,
@@ -163,15 +161,15 @@ const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => 
 
     const patient = await findByCardNo(card_no, '-body')
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     const medications = patient.recommendation?.physiotherapy?.medication
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
+    sendSuccess(res, StatusCodes.OK, {
         length: medications?.length,
-        medications: sortByDates(medications!)
+        medications: sortByDates(medications)
     })
 })
 
@@ -180,15 +178,15 @@ const getOpthalMedication = asyncHandler(async (req: Request, res: Response) => 
 
     const patient = await findByCardNo(card_no, '-body')
     if (!patient) {
-        return res.status(StatusCodes.NotFound).json(PATIENT_NOT_EXIST)
+        sendError(res, StatusCodes.NotFound, PATIENT_NOT_EXIST)
+        return
     }
 
     const medications = patient.recommendation?.opthalmology?.medication
 
-    res.status(StatusCodes.OK).json({
-        ...SUCCESS,
+    sendSuccess(res, StatusCodes.OK, {
         length: medications?.length,
-        medications: sortByDates(medications!)
+        medications: sortByDates(medications)
     })
 })
 
