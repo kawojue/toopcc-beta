@@ -1,55 +1,48 @@
-const ERROR = { success: false, action: "error" }
+const ACCESS_DENIED = "Access Denied."
 
-const SUCCESS = { success: true, action: "success" }
+const INVALID_EMAIL = "Invalid Email."
 
-const ACCESS_DENIED = { ...ERROR, msg: "Access Denied" }
+const INCORRECT_PSWD = "Incorrect Password."
 
-const INVALID_EMAIL = { ...ERROR, msg: "Invalid Email" }
+const SMTH_WENT_WRONG = "Something went wrong."
 
-const INCORRECT_PSWD = { ...ERROR, msg: "Incorrect Password" }
+const FIELDS_REQUIRED = "All fields are required"
 
-const SMTH_WENT_WRONG = { ...ERROR, msg: "Something went wrong. "}
+const ACCOUNT_NOT_FOUND = "Account does not exist."
 
-const FIELDS_REQUIRED = { ...ERROR, msg: "All fields are required" }
+const PSWD_NOT_MATCH = "Password does not match."
 
-const ACCOUNT_NOT_FOUND = { ...ERROR, msg: "Account does not exist." }
+const CURRENT_PSWD = "Not saved! Same password."
 
-const PSWD_NOT_MATCH = { ...ERROR, msg: "Password does not match." }
+const SEX_REQUIRED = "Sex is required."
 
-const CURRENT_PSWD = { ...ERROR, msg: "Not saved! Same password." }
+const PATIENT_NOT_EXIST = "Patient does not exist."
 
-const SEX_REQUIRED = { ...ERROR, msg: "Sex is required." }
+const CARD_NO_REQUIRED = "Card number is required."
 
-const PATIENT_NOT_EXIST = { ...ERROR, msg: "Patient does not exist." }
+const INVALID_PHONE_NO = "Invalid phone number."
 
-const CARD_NO_REQUIRED = { ...ERROR, msg: "Card number is required."}
+const INVALID_AGE = "Age is not valid."
 
-const INVALID_PHONE_NO = { ...ERROR, msg: "Invalid phone number" }
+const PSWD_CHANGED = "Password updated successfully."
 
-const INVALID_AGE = { ...ERROR, msg: "Age is not valid" }
+const SAVED = "Saved!"
 
-const PSWD_CHANGED = { ...SUCCESS, msg: "Password updated successfully." }
+const PATIENT_EXIST = "Patient with card number already exists."
 
-const SAVED = { ...SUCCESS, msg: "Saved!" }
+const DELETION_FAILED = "Failed to delete!"
 
-const PATIENT_EXIST = { ...ERROR, msg: "Patient with card number already exists." }
+const CANCELED = "Canceled."
 
-const DELETION_FAILED = {...ERROR, msg: "Failed to delete!" }
+const EXT_NOT_EXIST = "Extension does not exist. "
 
-const CANCELED = { ...ERROR, msg: "Canceled." }
+const ROLES_UPDATED = "Roles has been updated."
 
-const EXT_NOT_EXIST = { ...ERROR, msg: "Extension does not exist. "}
-
-const ROLES_UPDATED = { ...SUCCESS, msg: "Roles has been updated." }
-
-const DIAG_NOT_EXIST = { ...ERROR, msg: "Diagnosis does not exist." }
+const DIAG_NOT_EXIST = "Diagnosis does not exist."
 
 export {
-    FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, SUCCESS,
-    PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ERROR,
-    CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED,
-    SMTH_WENT_WRONG, SEX_REQUIRED, CARD_NO_REQUIRED,
-    INVALID_AGE, INVALID_PHONE_NO, PATIENT_NOT_EXIST,
-    PATIENT_EXIST, SAVED, DELETION_FAILED, DIAG_NOT_EXIST,
-    CANCELED, ROLES_UPDATED, EXT_NOT_EXIST
+    FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND,
+    CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG, SEX_REQUIRED,
+    CARD_NO_REQUIRED, INVALID_AGE, INVALID_PHONE_NO, PATIENT_NOT_EXIST, PATIENT_EXIST,
+    SAVED, DELETION_FAILED, DIAG_NOT_EXIST, CANCELED, ROLES_UPDATED, EXT_NOT_EXIST,
 }
