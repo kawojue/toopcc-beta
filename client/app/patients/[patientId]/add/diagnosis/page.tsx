@@ -50,7 +50,7 @@ const page = ({ params: { patientId } }: IPt) => {
                 'Authorization': `Bearer ${token}`
             }
         })
-            .then((res: AxiosResponse) => notify(res.data?.action, res.data?.msg))
+            .then((res: AxiosResponse) => notify("success", res.data?.msg))
             .catch((err: AxiosError) => throwError(err))
             .finally(() => setIsLoading(false))
     }
