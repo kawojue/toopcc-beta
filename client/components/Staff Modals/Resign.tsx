@@ -28,7 +28,7 @@ const ResignModal: FC<IModal> = ({ state, dispatch, profile }) => {
                 }
             }
         ).then((res: AxiosResponse) => {
-            notify(res.data?.action, "Successful.")
+            notify("success", "Successful.")
             dispatch({ type: "RESIG" })
             setTimeout(() => {
                 document.location.reload()
