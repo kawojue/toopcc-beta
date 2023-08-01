@@ -95,15 +95,15 @@ input[type="radio"]:checked {
 }
 
 .editor-box {
-    @apply outline-none h-[150px] px-1 py-0.5 rounded-lg text-lg text-clr-2 overflow-y-auto border-[1px] border-clr-3
+    @apply outline-none p-1.5 text-lg text-clr-3 min-h-[120px] tracking-wide
 }
 
 .editor-btn {
-    @apply text-clr-3 rounded-md p-0.5 bg-clr-5 trans
+    @apply  rounded-md p-1 text-clr-3 trans
 }
 
 .editor-btn.active, .editor-btn:hover {
-    @apply text-clr-8 bg-clr-0
+    @apply bg-clr-7
 }
 
 @keyframes slick {
