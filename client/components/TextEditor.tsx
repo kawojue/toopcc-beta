@@ -19,8 +19,8 @@ const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
     }
 
     return (
-        <article className="my-5">
-            <div className="w-full flex items-center justify-end gap-4 mb-2 pr-5">
+        <section className="rounded-md border-[0.1325rem] border-clr-7 focus:border-clr-4">
+            <div className="border-b-[0.125rem] py-2 flex gap-5 pl-5">
                 <button type="button" title='Bold'
                     className={`${isBold && 'active'} editor-btn`}
                     onClick={() => exec('bold', isBold, setIsBold)}>
@@ -37,9 +37,8 @@ const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
                     <FaUnderline />
                 </button>
             </div>
-            <div ref={textEditorRef} contentEditable="true"
-                className="editor-box focus:border-2 focus:border-clr-2 focus:bg-clr-5" />
-        </article>
+            <div ref={textEditorRef} contentEditable="true" className="editor-box" />
+        </section>
     )
 }
 
