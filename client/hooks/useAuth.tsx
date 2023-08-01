@@ -4,14 +4,13 @@ import {
     createContext, Context,
     useContext, useReducer
 } from "react"
-import useToken from "./useToken"
 import notify from "@/utils/notify"
 import axios from "@/app/api/instance"
+import { useRouter } from "next/navigation"
 import throwError from "@/utils/throwError"
 import { useAuthStore } from "@/utils/store"
 import modalReducer from "@/utils/modalReducers"
 import { AxiosError, AxiosResponse } from "axios"
-import { useRouter, usePathname } from "next/navigation"
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context"
 
 const Auth: Context<{}> = createContext({})
@@ -39,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const handleOTPRequest = async (): Promise<void> => {
         await axios.post('/auth/otp/request', JSON.stringify({ email }))
-            .then((res: any) => notify(res.data?.action, res.data?.msg))
+            .then((res: any) => notify("success", res.data?.msg))
             .catch((err: any) => throwError(err))
     }
 
@@ -49,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .then((res: AxiosResponse) => {
                 setOTP("")
                 setVerified(res.data?.verified)
-                notify(res.data?.action, "Verification successful")
+                notify("success", "Verification successful")
                 setTimeout(() => {
                     router.push('/staff/password/reset')
                 }, 500)
@@ -63,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             verified, newPswd: pswd
         })).then(async (res: AxiosResponse) => {
             resetStates()
-            notify(res.data?.action, res.data?.msg)
+            notify("success", res.data?.msg)
             setTimeout(async () => {
                 await handleLogout()
                 router.push('/staff/login')
@@ -91,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         }).then((res: AxiosResponse) => {
             resetStates()
-            notify(res.data?.action, res.data?.msg)
+            notify("success", res.data?.msg)
             dispatch({ type: "FULLNAME" })
             document.location.reload()
         }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
@@ -109,7 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         ).then((res: AxiosResponse) => {
             resetStates()
-            notify(res.data?.action, res.data?.msg)
+            notify("success", res.data?.msg)
             dispatch({ type: "USERNAME" })
             setTimeout(() => {
                 (async () => await handleLogout())()
@@ -129,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         ).then((res: AxiosResponse) => {
             resetStates()
-            notify(res.data?.action, res.data?.msg)
+            notify("success", res.data?.msg)
             dispatch({ type: "PSWD" })
             setTimeout(() => {
                 (async () => await handleLogout())()
@@ -144,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         }).then((res: AxiosResponse) => {
             resetStates()
-            notify(res.data?.action, res.data?.msg)
+            notify("success", res.data?.msg)
             dispatch({ type: "AVATAR" })
             setTimeout(() => {
                 document.location.reload()
@@ -164,7 +163,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         ).then((res: AxiosResponse) => {
             resetStates()
-            notify(res.data?.action, res.data?.msg)
+            notify("success", res.data?.msg)
             dispatch({ type: "AVATAR" })
             setTimeout(() => {
                 document.location.reload()
