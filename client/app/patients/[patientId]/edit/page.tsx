@@ -16,7 +16,7 @@ import { AxiosResponse, AxiosError } from 'axios'
 const page = ({ params: { patientId } }: IPt) => {
     const router = useRouter()
     const token: string = useToken()
-    const { loading, setLoading } = usePatientStore()
+    const { btnLoad, setBtnLoad } = usePatientStore()
     const { state, dispatch }: IPatient = usePatient()
 
     const death = {
@@ -34,7 +34,7 @@ const page = ({ params: { patientId } }: IPt) => {
             }
         }
 
-        setLoading(true)
+        setBtnLoad(true)
         await axios.put(
             `/patients/patient/${patientId}`,
             JSON.stringify({
@@ -54,7 +54,7 @@ const page = ({ params: { patientId } }: IPt) => {
             setTimeout(() => {
                 router.push(`/patients/${patientId}`)
             }, 230);
-        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setBtnLoad(false))
     }
 
     return (
@@ -138,7 +138,7 @@ const page = ({ params: { patientId } }: IPt) => {
                 </article>
                 <button type="submit"
                     className="submit-btn hover:bg-clr-6 hover: text-clr-5">
-                    {loading ? <SpinnerOne /> : 'Submit'}
+                    {btnLoad ? <SpinnerOne /> : 'Submit'}
                 </button>
             </form>
         </section>
