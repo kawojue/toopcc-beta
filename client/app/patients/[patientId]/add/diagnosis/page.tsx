@@ -19,7 +19,7 @@ const page = ({ params: { patientId } }: IPt) => {
         isLoading, setIsLoading,
         photoArray, setPhotoArray,
         currentDate, setCurrentDate,
-        nextAppDate, setNextAppDate
+        nextAppDate, setNextAppDate,
     } = useDiagnosis()
     const textEditorRef = useRef<HTMLDivElement>(null)
 
@@ -37,8 +37,6 @@ const page = ({ params: { patientId } }: IPt) => {
 
         setIsLoading(true)
         if (!textEditorRef.current) return
-
-        console.log(textEditorRef.current.innerHTML)
 
         await axios.post(
             `/patients/diagnosis/${patientId}`,
