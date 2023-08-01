@@ -55,7 +55,7 @@ const page = ({ params: { patientId } }: IPt) => {
 
     return (
         <form onSubmit={async (e) => await handleSubmit(e)}
-            className="form-section">
+            className="">
             <article className="flex justify-between">
                 <div className="flex flex-col gap-2">
                     <label>Current Date</label>
@@ -70,9 +70,12 @@ const page = ({ params: { patientId } }: IPt) => {
             </article>
             <TextEditor textEditorRef={textEditorRef} />
             <PhotoUpload />
-            <button type='submit' onClick={handleSubmit}>
-                Submit
-            </button>
+            <div className="w-full">
+                <button type='submit' onClick={handleSubmit}
+                    className="px-2 py-1 bg-clr-4 text-clr-0 hover:bg-clr-1 hover:text-clr-9 rounded-lg tracking-widest font-semibold text-xl w-full">
+                    Save
+                </button>
+            </div>
         </form>
     )
 }
