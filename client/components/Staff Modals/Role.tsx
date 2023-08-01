@@ -31,7 +31,7 @@ const RoleModal: FC<IModal> = ({ state, dispatch, profile }) => {
                 }
             },
         ).then((res: any) => {
-            notify(res.data?.action, res.data?.msg)
+            notify("success", res.data?.msg)
             dispatch({ type: "ROLES" })
             setTimeout(() => {
                 document.location.reload()
