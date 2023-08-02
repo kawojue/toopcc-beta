@@ -1,10 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import {
-    FaUnderline,
-    FaItalic, FaBold,
-} from '@/public/icons/ico'
 import { useTextEditor } from '@/utils/store'
+import { FaUnderline, FaItalic, FaBold } from '@/public/icons/ico'
 
 const TextEditor: React.FC<{ textEditorRef: any }> = ({ textEditorRef }) => {
     const {
