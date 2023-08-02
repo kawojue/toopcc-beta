@@ -22,7 +22,7 @@ const page = ({ params: { profile } }: IProfile) => {
                     'Authorization': `Bearer ${token}`
                 }
             }).then((res: AxiosResponse) => {
-                return res.data?.user
+                return res.data
             }).catch((err: AxiosError) => {
                 if (err.response?.status === 401) {
                     router.push('/staff/profile')
@@ -40,7 +40,7 @@ const page = ({ params: { profile } }: IProfile) => {
 
     if (isLoading) return <SpinnerTwo />
 
-    return <Profile profile={data || {}} />
+    return <Profile profile={data?.user || {}} />
 }
 
 export default page
