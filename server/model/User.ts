@@ -24,14 +24,11 @@ const UserModel: Schema = new Schema({
         type: String,
         required: true
     },
-    createdAt: {
-        type: String,
-        default: `${new Date().toISOString()}`
-    },
     totp: String,
+    token: String,
     totp_date: Number,
     lastLogin: String,
-    token: String,
+    avatar_path: String,
     resigned: {
         date: String,
         resign: {
@@ -43,9 +40,9 @@ const UserModel: Schema = new Schema({
         type: Array,
         default: ["staff"]
     },
-    avatar: {
-        secure_url: String,
-        public_id: String
+    createdAt: {
+        type: String,
+        default: new Date().toISOString()
     },
 })
 
