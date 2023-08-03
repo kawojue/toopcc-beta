@@ -77,7 +77,7 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
     if (req.file) {
         const file = handleFile(res, req.file)
         // format image
-        const image = await sharp(file.buffer)
+        const image: Buffer = await sharp(file.buffer)
             .resize({ height: 600, width: 600, fit: "cover" })
             .toBuffer()
         result = `Staffs/Avatar/${uuid()}.${file.extension}`
@@ -406,27 +406,34 @@ const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
             Bucket: process.env.BUCKET_NAME!
         }
         const command: DeleteObjectCommand = new DeleteObjectCommand(params)
-        await s3.send(command)
+        const res = await s3.send(command)
+
         if (!res) {
             sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
             return
         }
     }
 
-    const result = await cloudinary.uploader.upload(avatar, {
-        folder: `TOOPCC/Staffs/Avatars`,
-        resource_type: 'image'
-    })
+    const image: Buffer = await sharp(file.buffer)
+        .resize({ height: 600, width: 600, fit: "cover" })
+        .toBuffer()
+    const result = `Staffs/Avatar/${uuid()}.${file.extension}`
+    // upload to s3 bucket
+    const params: PutObjectCommandInput = {
+        Key: result,
+        Bucket: process.env.BUCKET_NAME!,
+        Body: image,
+        ContentType: file.mimetype
+    }
+    const command: PutObjectCommand = new PutObjectCommand(params)
+    await s3.send(command)
 
     if (!result) {
         sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
         return
     }
 
-    account.avatar = {
-        secure_url: result.secure_url,
-        public_id: result.public_id
-    }
+    account.avatar_path = result
     await account.save()
 
     sendSuccess(res, StatusCodes.OK, { msg: "Successful." })
@@ -443,9 +450,9 @@ const deleteAvatar = expressAsyncHandler(async (req: IRequest, res: Response) =>
         Key: account.avatar_path,
         Bucket: process.env.BUCKET_NAME!
     }
-
     const command: DeleteObjectCommand = new DeleteObjectCommand(params)
     const result = await s3.send(command)
+
     if (!result) {
         sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
         return
