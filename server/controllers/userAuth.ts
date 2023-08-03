@@ -1,10 +1,13 @@
+import sharp from 'sharp'
 import bcrypt from 'bcrypt'
+import { v4 as uuid } from 'uuid'
 import {
     sendError, sendSuccess
 } from '../utilities/sendResponse'
 import randomString from 'randomstring'
 import mailer from '../utilities/mailer'
 import genOTP from '../utilities/genOTP'
+import handleFile from '../utilities/file'
 import { Request, Response } from 'express'
 import genToken from '../utilities/genToken'
 import cloudinary from '../configs/cloudinary'
@@ -13,6 +16,10 @@ import {
     findByEmail, findByToken, findByUser, User
 } from '../utilities/model'
 import StatusCodes from '../utilities/StatusCodes'
+import s3, {
+    DeleteObjectCommand, DeleteObjectCommandInput,
+    PutObjectCommand, PutObjectCommandInput,
+} from '../configs/s3'
 import { IMailer, IGenOTP, IRequest } from '../type'
 import {
     CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
@@ -28,7 +35,7 @@ const USER_REGEX: RegExp = /^[a-zA-Z][a-zA-Z0-9-_]{2,23}$/
 const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
     let user: any
     let result: any
-    let { email, pswd, pswd2, fullname, avatar } = req.body
+    let { email, pswd, pswd2, fullname } = req.body
 
     if (!email || !pswd || !pswd2 || !fullname) {
         sendError(res, StatusCodes.BadRequest, FIELDS_REQUIRED)
@@ -67,16 +74,22 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
     const salt: string = await bcrypt.genSalt(10)
     pswd = await bcrypt.hash(pswd, salt)
 
-    if (avatar) {
-        result = await cloudinary.uploader.upload(avatar, {
-            folder: `TOOPCC/Staffs/Avatars`,
-            resource_type: 'image'
-        })
-
-        if (!result) {
-            sendError(res, StatusCodes.NotFound, SMTH_WENT_WRONG)
-            return
+    if (req.file) {
+        const file = handleFile(res, req.file)
+        // format image
+        const image = await sharp(file.buffer)
+            .resize({ height: 480, width: 480, fit: "cover" })
+            .toBuffer()
+        result = `${uuid()}`
+        // upload to s3 bucket
+        const params: PutObjectCommandInput = {
+            Key: result,
+            Bucket: process.env.BUCKET_NAME as string,
+            Body: image,
+            ContentType: file.mimeType
         }
+        const command: PutObjectCommand = new PutObjectCommand(params)
+        await s3.send(command)
     }
 
     await User.create({
@@ -84,10 +97,7 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
         email,
         fullname,
         password: pswd,
-        avatar: {
-            secure_url: result?.secure_url,
-            public_id: result?.public_id
-        }
+        avatar_url: result
     })
 
     sendSuccess(res, StatusCodes.Created, { msg: "Account creation was successful." })
