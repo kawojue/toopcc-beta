@@ -10,7 +10,6 @@ import genOTP from '../utilities/genOTP'
 import handleFile from '../utilities/file'
 import { Request, Response } from 'express'
 import genToken from '../utilities/genToken'
-import cloudinary from '../configs/cloudinary'
 import full_name from '../utilities/full_name'
 import {
     findByEmail, findByToken, findByUser, User
