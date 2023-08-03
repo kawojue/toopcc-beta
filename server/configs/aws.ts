@@ -8,10 +8,10 @@ const awsAccessKey = process.env.AWS_ACCESS_KEY
 
 const awsCredentials = {
     credentials: {
-        accessKeyId: awsAccessKey as string,
-        secretAccessKey: awsSecretKey as string
+        accessKeyId: awsAccessKey!,
+        secretAccessKey: awsSecretKey!
     },
-    region: bucketRegion as string
+    region: bucketRegion!
 }
 
 export default awsCredentials
