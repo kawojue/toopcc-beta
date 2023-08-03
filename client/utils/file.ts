@@ -13,7 +13,7 @@ const checkFile = (file: any): boolean => {
     return false
 }
 
-const handleFile = (e: any, set: (get: string) => void): void => {
+const blob = (e: any, set: (get: string) => void): void => {
     const file: any = e.target.files[0]
     const reader: FileReader = new FileReader()
     if (checkFile(file)) {
@@ -26,4 +26,4 @@ const handleFile = (e: any, set: (get: string) => void): void => {
     }
 }
 
-export { handleFile }
+export default blob
