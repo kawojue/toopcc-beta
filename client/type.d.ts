@@ -93,7 +93,7 @@ interface AuthStore {
     pswd2: string
     email: string
     userId: string
-    avatar: string
+    avatar: any
     loading: boolean
     pswdBtn: boolean
     fullname: string
@@ -104,11 +104,11 @@ interface AuthStore {
     setUser: (user: string) => void
     setPswd: (pswd: string) => void
     setAuth: (auth: boolean) => void
+    setAvatar: (avatar: any) => void
     setToken: (token: string) => void
     setPswd2: (pswd2: string) => void
     setEmail: (email: string) => void
     setUserId: (userId: string) => void
-    setAvatar: (avatar: string) => void
     setPswdBtn: (pswdBtn: boolean) => void
     setLoading: (loading: boolean) => void
     setFullname: (fullname: string) => void
