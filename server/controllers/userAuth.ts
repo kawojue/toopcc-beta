@@ -78,15 +78,15 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
         const file = handleFile(res, req.file)
         // format image
         const image = await sharp(file.buffer)
-            .resize({ height: 480, width: 480, fit: "cover" })
+            .resize({ height: 600, width: 600, fit: "cover" })
             .toBuffer()
-        result = `${uuid()}`
+        result = `Staffs/Avatar/${uuid()}.${file.extension}`
         // upload to s3 bucket
         const params: PutObjectCommandInput = {
             Key: result,
-            Bucket: process.env.BUCKET_NAME as string,
+            Bucket: process.env.BUCKET_NAME!,
             Body: image,
-            ContentType: file.mimeType
+            ContentType: file.mimetype
         }
         const command: PutObjectCommand = new PutObjectCommand(params)
         await s3.send(command)
@@ -97,7 +97,7 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
         email,
         fullname,
         password: pswd,
-        avatar_url: result
+        avatar_path: result
     })
 
     sendSuccess(res, StatusCodes.Created, { msg: "Account creation was successful." })
@@ -392,11 +392,7 @@ const editPassword = expressAsyncHandler(async (req: IRequest, res: Response) =>
 })
 
 const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
-    const { avatar } = req.body
-    if (!avatar) {
-        sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
-        return
-    }
+    const file = handleFile(res, req.file)
 
     const account = await findByUser(req.user)
     if (!account) {
@@ -404,8 +400,13 @@ const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
         return
     }
 
-    if (account.avartar?.secure_url) {
-        const res = await cloudinary.uploader.destroy(account.avartar?.public_id)
+    if (account.avatar_path) {
+        const params: DeleteObjectCommandInput = {
+            Key: account.avatar_path,
+            Bucket: process.env.BUCKET_NAME!
+        }
+        const command: DeleteObjectCommand = new DeleteObjectCommand(params)
+        await s3.send(command)
         if (!res) {
             sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
             return
@@ -438,16 +439,19 @@ const deleteAvatar = expressAsyncHandler(async (req: IRequest, res: Response) =>
         return
     }
 
-    const result: any = await cloudinary.uploader.destroy(account.avartar?.public_id)
+    const params: DeleteObjectCommandInput = {
+        Key: account.avatar_path,
+        Bucket: process.env.BUCKET_NAME!
+    }
+
+    const command: DeleteObjectCommand = new DeleteObjectCommand(params)
+    const result = await s3.send(command)
     if (!result) {
         sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
         return
     }
 
-    account.avatar = {
-        secure_url: "",
-        public_id: ""
-    }
+    account.avatar_path = ""
     await account.save()
 
     sendSuccess(res, StatusCodes.OK, { msg: "Successful." })
