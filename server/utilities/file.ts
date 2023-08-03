@@ -6,7 +6,8 @@ const handleFile = (res: Response, file: any) => {
     const maxSize: number = 5242880
     const size: number = file.size
     if (size < maxSize) {
-        return file
+        const extension = file.originalname.split('.').pop()
+        return { ...file, extension }
     } else {
         sendError(res, StatusCodes.PayloadTooLarge, 'Image size is too large < 5MB.')
         return
