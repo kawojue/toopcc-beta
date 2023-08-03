@@ -8,9 +8,13 @@ import {
 } from '../../controllers/userAuth'
 import { ILimiter } from '../../type'
 import limiter from '../../middlewares/limiter'
+import multer, { StorageEngine, Multer } from 'multer'
 
 
 const auth: Router = Router()
+
+const storage: StorageEngine = multer.memoryStorage()
+const upload: Multer = multer({ storage })
 
 auth.use('/otp', otp)
 auth.use('/edit', edit)
@@ -24,9 +28,9 @@ const loginLimiter: ILimiter = {
 }
 
 auth.get('/logout', logout)
-auth.post('/signup', createUser)
 auth.post('/password/reset', resetpswd)
 auth.post('/login', limiter(loginLimiter), login)
+auth.post('/signup', upload.single('avatar'), createUser)
 
 
 export default auth
