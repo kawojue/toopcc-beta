@@ -1,21 +1,22 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
+import blob from "@/utils/file"
 import notify from "@/utils/notify"
 import axios from "@/app/api/instance"
-import { handleFile } from "@/utils/file"
 import { inter } from "@/public/font/font"
-import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import throwError from "@/utils/throwError"
 import { useAuthStore } from "@/utils/store"
 import PswdButton from "@/components/PswdBtn"
 import SubmitBtn from "@/components/SubmitBtn"
 import { AxiosResponse, AxiosError } from "axios"
+import { useEffect, useState, ChangeEvent } from "react"
 
 const page = () => {
     const router = useRouter()
     const [loading, setLoading] = useState<boolean>(false)
+    const [avatarPreview, setAvatarPreview] = useState<string>("")
     const {
         email, setEmail, avatar, setAvatar, auth,
         pswd, pswd2, setPswd, setPswd2, pswdBtn,
@@ -26,17 +27,30 @@ const page = () => {
         if (auth) router.push('/staff/profile')
     }, [auth, router])
 
+    const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
+        blob(e, setAvatarPreview)
+        setAvatar(e.target.files![0])
+    }
+
     const handleSignup = async (): Promise<void> => {
         setLoading(true)
-        await axios.post('/auth/signup', JSON.stringify({
-            fullname, avatar, email, pswd, pswd2
-        })).then((res: AxiosResponse) => {
+        const payload = { pswd, pswd2, email, avatar, fullname }
+        const formData: FormData = new FormData()
+        for (const key in payload) {
+            formData.append(key, payload[key as keyof typeof payload])
+        }
+        await axios.post('/auth/signup', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then((res: AxiosResponse) => {
             resetStates()
             notify("success", res.data?.msg)
             setTimeout(() => {
                 router.push('/staff/login')
             }, 500)
-        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
+        }).catch((err: AxiosError) => throwError(err))
+            .finally(() => setLoading(false))
     }
 
     return (
@@ -45,12 +59,12 @@ const page = () => {
                 className="form">
                 <article className="form-group avatar">
                     <div className="avatar-container">
-                        <img src={`${avatar ? avatar : 'https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp'}`} alt="avatar" />
+                        <img src={`${avatarPreview ? avatarPreview : 'https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp'}`} alt="avatar" />
                     </div>
                     <button className="avatar-btn">
                         <label htmlFor="avatar">Choose photo</label>
                         <input type="file" accept="image/*" id="avatar"
-                            onChange={(e) => handleFile(e, setAvatar)} className="hidden" />
+                            onChange={(e) => handleFile(e)} className="hidden" />
                     </button>
                 </article>
                 <article className="form-group">
