@@ -1,26 +1,25 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
-import blob from "@/utils/file"
-import notify from "@/utils/notify"
-import axios from "@/app/api/instance"
-import { inter } from "@/public/font/font"
-import { useRouter } from "next/navigation"
-import throwError from "@/utils/throwError"
-import { useAuthStore } from "@/utils/store"
-import PswdButton from "@/components/PswdBtn"
-import SubmitBtn from "@/components/SubmitBtn"
-import { AxiosResponse, AxiosError } from "axios"
-import { useEffect, useState, ChangeEvent } from "react"
+import blob from '@/utils/file'
+import notify from '@/utils/notify'
+import axios from '@/app/api/instance'
+import { inter } from '@/public/font/font'
+import { useRouter } from 'next/navigation'
+import throwError from '@/utils/throwError'
+import { useAuthStore } from '@/utils/store'
+import PswdButton from '@/components/PswdBtn'
+import SubmitBtn from '@/components/SubmitBtn'
+import { useEffect, ChangeEvent } from 'react'
+import { AxiosResponse, AxiosError } from 'axios'
 
 const page = () => {
     const router = useRouter()
-    const [loading, setLoading] = useState<boolean>(false)
-    const [avatarPreview, setAvatarPreview] = useState<string>("")
     const {
-        email, setEmail, avatar, setAvatar, auth,
         pswd, pswd2, setPswd, setPswd2, pswdBtn,
-        setPswdBtn, fullname, setFullname, resetStates
+        email, setEmail, avatar, setAvatar, auth,
+        setPswdBtn, fullname, setFullname, resetStates,
+        avatarPreview, setAvatarPreview, loading, setLoading
     } = useAuthStore()
 
     useEffect(() => {
