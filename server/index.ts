@@ -20,11 +20,11 @@ connectDB(process.env.DATABASE_URL!)
 
 // set middlewares
 app.use(credentials)
-app.use(express.json({ limit: '19mb' }))
+app.use(express.json({ limit: '23mb' }))
 app.use(logger('dev'))
 app.use(cors(corsOption))
 app.use(express.urlencoded({
-    limit: '19mb', extended: true
+    limit: '23mb', extended: true
 }))
 
 app.use('/', root)
