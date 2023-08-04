@@ -10,23 +10,14 @@ const useTextEditor = create<TextEditorState>()((set) => ({
 }))
 
 const useDiagnosis = create<DiagnosisState>()((set) => ({
-    photoArray: [],
+    picture: [],
+    loading: false,
     currentDate: '',
     nextAppDate: '',
-    isLoading: false,
-    setIsLoading: (isLoading: boolean) => set({ isLoading }),
-    setPhotoArray: (photoArray: string[]) => set({ photoArray }),
+    setPicture: (picture: any) => set({ picture }),
+    setLoading: (loading: boolean) => set({ loading }),
     setCurrentDate: (currentDate: string) => set({ currentDate }),
     setNextAppDate: (nextAppDate: string) => set({ nextAppDate })
-}))
-
-const usePhoto = create<PhotoState>()((set) => ({
-    photo1: '',
-    photo2: '',
-    photo3: '',
-    setPhoto1: (photo1: string) => set({ photo1 }),
-    setPhoto2: (photo2: string) => set({ photo2 }),
-    setPhoto3: (photo3: string) => set({ photo3 }),
 }))
 
 const initialStore = {
@@ -74,6 +65,6 @@ const usePatientStore = create<PatientStore>()((set) => ({
 }))
 
 export {
+    useTextEditor, useDiagnosis,
     useAuthStore, usePatientStore,
-    useTextEditor, useDiagnosis, usePhoto,
 }
