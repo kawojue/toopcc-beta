@@ -65,23 +65,14 @@ interface TextEditorState {
 }
 
 interface DiagnosisState {
-    isLoading: boolean
-    photoArray: string[]
+    picture: any
+    loading: boolean
     currentDate: string
     nextAppDate: string
-    setIsLoading: (isLoading: boolean) => void
-    setPhotoArray: (photoArray: string[]) => void
+    setLoading: (loading: boolean) => void
+    setPicture: (picture: any) => void
     setCurrentDate: (currentDate: string) => void
     setNextAppDate: (nextAppDate: string) => void
-}
-
-interface PhotoState {
-    photo1: string
-    photo2: string
-    photo3: string
-    setPhoto1: (photo1: string) => void
-    setPhoto2: (photo2: string) => void
-    setPhoto3: (photo3: string) => void
 }
 
 interface AuthStore {
