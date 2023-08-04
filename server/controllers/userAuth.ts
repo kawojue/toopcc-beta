@@ -33,7 +33,7 @@ const USER_REGEX: RegExp = /^[a-zA-Z][a-zA-Z0-9-_]{2,23}$/
 // handle account creation
 const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
     let user: any
-    let result: any
+    let avatar_path: any
     let { email, pswd, pswd2, fullname } = req.body
 
     if (!email || !pswd || !pswd2 || !fullname) {
@@ -66,7 +66,7 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
         const rand: string = randomString.generate({
             length: parseInt('657'[Math.floor(Math.random() * 3)]),
             charset: 'alphabetic'
-        }) as string
+        })
         user = rand?.toLowerCase()?.trim()
     }
 
@@ -79,24 +79,29 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
         const image: Buffer = await sharp(file.buffer)
             .resize({ height: 600, width: 600, fit: "cover" })
             .toBuffer()
-        result = `Staffs/Avatar/${uuid()}.${file.extension}`
+        avatar_path = `Staffs/Avatar/${uuid()}.${file.extension}`
         // upload to s3 bucket
         const params: PutObjectCommandInput = {
-            Key: result,
+            Key: avatar_path,
             Bucket: process.env.BUCKET_NAME!,
             Body: image,
             ContentType: file.mimetype
         }
         const command: PutObjectCommand = new PutObjectCommand(params)
-        await s3.send(command)
+        const result = await s3.send(command)
+
+        if (!result) {
+            sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
+            // but proceed account creation
+        }
     }
 
     await User.create({
         user,
         email,
         fullname,
+        avatar_path,
         password: pswd,
-        avatar_path: result
     })
 
     sendSuccess(res, StatusCodes.Created, { msg: "Account creation was successful." })
@@ -416,23 +421,23 @@ const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
     const image: Buffer = await sharp(file.buffer)
         .resize({ height: 600, width: 600, fit: "cover" })
         .toBuffer()
-    const result = `Staffs/Avatar/${uuid()}.${file.extension}`
+    const avatar_path = `Staffs/Avatar/${uuid()}.${file.extension}`
     // upload to s3 bucket
     const params: PutObjectCommandInput = {
-        Key: result,
+        Key: avatar_path,
         Bucket: process.env.BUCKET_NAME!,
         Body: image,
         ContentType: file.mimetype
     }
     const command: PutObjectCommand = new PutObjectCommand(params)
-    await s3.send(command)
+    const result = await s3.send(command)
 
     if (!result) {
         sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
         return
     }
 
-    account.avatar_path = result
+    account.avatar_path = avatar_path
     await account.save()
 
     sendSuccess(res, StatusCodes.OK, { msg: "Successful." })
@@ -493,9 +498,11 @@ const resigned = expressAsyncHandler(async (req: Request, res: Response) => {
     sendSuccess(res, StatusCodes.OK, { msg: "Staff has been resigned." })
 })
 
-const changeRoles = expressAsyncHandler(async (req: Request, res: Response) => {
+const editRoles = expressAsyncHandler(async (req: Request, res: Response) => {
     const { role } = req.body
+    const { type } = req.query
     const { user } = req.params
+
     if (!role) {
         sendError(res, StatusCodes.BadRequest, CANCELED)
         return
@@ -508,55 +515,39 @@ const changeRoles = expressAsyncHandler(async (req: Request, res: Response) => {
     }
 
     const roles: string[] = account.roles
-    if (roles.includes(role)) {
-        sendSuccess(res, StatusCodes.OK, "Existing Role.")
-        return
+    if (type === "assign") {
+        if (roles.includes(role)) {
+            sendSuccess(res, StatusCodes.OK, "Existing Role.")
+            return
+        }
+
+        roles.push(role)
+        account.roles = roles
     }
 
-    roles.push(role)
+    if (type === "remove") {
+        if (!roles.includes(role)) {
+            sendError(res, StatusCodes.NotFound, "Role does not exist.")
+            return
+        }
+
+        const newRoles: string[] = roles.filter((authRole: string) => authRole !== role)
+        if (newRoles.length === 0) {
+            sendError(res, StatusCodes.BadRequest, "Empty role! Cannot remove role.")
+            return
+        }
+
+        account.roles = newRoles
+    }
+
     account.token = ""
-    account.roles = roles
     await account.save()
-
-    sendSuccess(res, StatusCodes.OK, { msg: ROLES_UPDATED })
-})
-
-const removeRole = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { role } = req.body
-    const { user } = req.params
-    if (!role) {
-        sendError(res, StatusCodes.BadRequest, CANCELED)
-        return
-    }
-
-    const account = await findByUser(user)
-    if (!account) {
-        sendError(res, StatusCodes.NotFound, ACCOUNT_NOT_FOUND)
-        return
-    }
-
-    const roles: string[] = account.roles
-    if (!roles.includes(role)) {
-        sendError(res, StatusCodes.NotFound, "Role does not exist.")
-        return
-    }
-
-    const newRoles: string[] = roles.filter((authRole: string) => authRole !== role)
-    if (newRoles.length === 0) {
-        sendError(res, StatusCodes.BadRequest, "Empty role! Cannot remove role.")
-        return
-    }
-
-    account.token = ""
-    account.roles = newRoles
 
     sendSuccess(res, StatusCodes.OK, { msg: ROLES_UPDATED })
 })
 
 
 export {
-    resetpswd, login, otpHandler, deleteAvatar,
-    createUser, logout, verifyOTP, changeAvatar,
-    editPassword, editUsername, editFullname,
-    resigned, changeRoles, removeRole
+    resetpswd, login, otpHandler, deleteAvatar, createUser, logout, verifyOTP,
+    changeAvatar, editPassword, editUsername, editFullname, resigned, editRoles
 }
