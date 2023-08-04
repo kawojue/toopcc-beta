@@ -21,9 +21,9 @@ import s3, {
 } from '../configs/s3'
 import { IMailer, IGenOTP, IRequest } from '../type'
 import {
-    CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
-    FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, CANCELED,
     PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ROLES_UPDATED,
+    FIELDS_REQUIRED, INVALID_EMAIL, ACCESS_DENIED, CANCELED,
+    CURRENT_PSWD, INCORRECT_PSWD, PSWD_CHANGED, SMTH_WENT_WRONG,
 } from '../utilities/modal'
 const expressAsyncHandler = require('express-async-handler')
 
