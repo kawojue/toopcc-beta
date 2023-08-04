@@ -23,13 +23,7 @@ interface ILimiter {
     msg?: string
 }
 
-interface Images {
-    secure_url?: string
-    public_id?: string
-}
-
 export {
     IMailer, IGenOTP,
     ILimiter, IRequest,
-    Images, ApiResponse,
 }
