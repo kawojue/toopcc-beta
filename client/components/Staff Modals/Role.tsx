@@ -21,10 +21,11 @@ const RoleModal: FC<IModal> = ({ state, dispatch, profile }) => {
         dispatch({ type: "ROLES" })
     }
 
-    const handler = async (url: string, setLoad: (load: boolean) => void): Promise<void> => {
+    const handler = async (type: string, setLoad: (load: boolean) => void): Promise<void> => {
         setLoad(true)
         await axios.post(
-            url, JSON.stringify({ role: role.toLowerCase() }),
+            `/auth/role/edit/${profile.user}?type=${type}`,
+            { role: role.toLowerCase() },
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -81,11 +82,11 @@ const RoleModal: FC<IModal> = ({ state, dispatch, profile }) => {
                                 </form>
                                 <div className="modal-btn-container">
                                     <button className="save-btn"
-                                        onClick={async () => await handler(`/auth/role/assign/${profile?.user}`, setAssLoading)}>
+                                        onClick={async () => await handler('assign', setAssLoading)}>
                                         {assLoading ? <SpinnerOne /> : 'Assign'}
                                     </button>
                                     <button className="del-btn"
-                                        onClick={async () => await handler(`/auth/role/remove/${profile?.user}`, setRemLoading)}>
+                                        onClick={async () => await handler('remove', setRemLoading)}>
                                         {remLoading ? <SpinnerOne /> : 'Remove'}
                                     </button>
                                     <button className="cancel-btn"
