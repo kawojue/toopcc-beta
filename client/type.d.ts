@@ -90,6 +90,7 @@ interface AuthStore {
     fullname: string
     verified: boolean
     currentPswd: string
+    avatarPreview: string
     resetStates: () => void
     setOTP: (otp: string) => void
     setUser: (user: string) => void
@@ -105,6 +106,7 @@ interface AuthStore {
     setFullname: (fullname: string) => void
     setVerified: (verified: boolean) => void
     setCurrentPswd: (currentPswd: string) => void
+    setAvatarPreview: (avatarPreview: string) => void
 }
 
 interface PatientStore {
