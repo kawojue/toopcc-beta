@@ -2,7 +2,7 @@ import { Response } from 'express'
 import StatusCodes from './StatusCodes'
 import { sendError } from './sendResponse'
 
-const handleFile = (res: Response, file: any) => {
+const handleFile = (res: Response, file: any): any => {
     const maxSize: number = 5242880
     const size: number = file.size
     if (size < maxSize) {
