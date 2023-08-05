@@ -5,28 +5,22 @@ import notify from '@/utils/notify'
 import { parseISO } from 'date-fns'
 import axios from '@/app/api/instance'
 import useToken from '@/hooks/useToken'
+import { FormEvent, useRef } from 'react'
 import throwError from '@/utils/throwError'
+import { useDiagnosis } from '@/utils/store'
 import TextEditor from '@/components/TextEditor'
 import { AxiosError, AxiosResponse } from 'axios'
 import PhotoUpload from '@/components/PhotoUpload'
-import { FormEvent, useRef, useEffect } from 'react'
-import { useDiagnosis, usePhoto } from '@/utils/store'
 
 const page = ({ params: { patientId } }: IPt) => {
     const token: string = useToken()
-    const { photo1, photo2, photo3 } = usePhoto()
     const {
-        isLoading, setIsLoading,
-        photoArray, setPhotoArray,
+        loading, setLoading,
+        picture,
         currentDate, setCurrentDate,
         nextAppDate, setNextAppDate,
     } = useDiagnosis()
     const textEditorRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        const array: string[] = [photo1, photo2, photo3].filter((arr: string) => arr !== '')
-        setPhotoArray(array)
-    }, [photo1, photo2, photo3])
 
     function formatDate(date: string): string {
         return date ? parseISO(date).toISOString() : ''
@@ -34,23 +28,33 @@ const page = ({ params: { patientId } }: IPt) => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
+        setLoading(true)
 
-        setIsLoading(true)
         if (!textEditorRef.current) return
 
+        const payload = {
+            picture,
+            texts: textEditorRef.current.innerHTML,
+            next_app: formatDate(nextAppDate),
+            date: formatDate(currentDate)
+        }
+
+        const formData: FormData = new FormData()
+        for (const key in payload) {
+            formData.append(key, payload[key as keyof typeof payload])
+        }
+
         await axios.post(
-            `/patients/diagnosis/${patientId}`,
-            JSON.stringify({
-                images: photoArray, texts: textEditorRef.current.innerHTML,
-                next_app: formatDate(nextAppDate), date: formatDate(currentDate)
-            }), {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
+            `/patients/diagnosis/${patientId}`, formData,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
             .then((res: AxiosResponse) => notify("success", res.data?.msg))
             .catch((err: AxiosError) => throwError(err))
-            .finally(() => setIsLoading(false))
+            .finally(() => setLoading(false))
     }
 
     return (
