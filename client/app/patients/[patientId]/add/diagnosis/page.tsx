@@ -15,10 +15,9 @@ import PhotoUpload from '@/components/PhotoUpload'
 const page = ({ params: { patientId } }: IPt) => {
     const token: string = useToken()
     const {
-        loading, setLoading,
-        picture,
         currentDate, setCurrentDate,
         nextAppDate, setNextAppDate,
+        loading, setLoading, pictures,
     } = useDiagnosis()
     const textEditorRef = useRef<HTMLDivElement>(null)
 
@@ -33,7 +32,7 @@ const page = ({ params: { patientId } }: IPt) => {
         if (!textEditorRef.current) return
 
         const payload = {
-            picture,
+            pictures,
             texts: textEditorRef.current.innerHTML,
             next_app: formatDate(nextAppDate),
             date: formatDate(currentDate)
@@ -41,7 +40,8 @@ const page = ({ params: { patientId } }: IPt) => {
 
         const formData: FormData = new FormData()
         for (const key in payload) {
-            formData.append(key, payload[key as keyof typeof payload])
+            const value = payload[key as keyof typeof payload]
+            formData.append(key, value as string | Blob);
         }
 
         await axios.post(
