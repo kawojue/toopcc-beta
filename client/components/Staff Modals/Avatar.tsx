@@ -6,18 +6,23 @@ import {
 } from '@/public/icons/ico'
 import Image from 'next/image'
 import blob from '@/utils/file'
-import useAuth from '@/hooks/useAuth'
+import notify from '@/utils/notify'
+import axios from '@/app/api/instance'
+import useToken from '@/hooks/useToken'
 import { SpinnerOne } from '../Spinner'
+import throwError from '@/utils/throwError'
 import { useAuthStore } from '@/utils/store'
 import { Fragment, FC, ChangeEvent } from 'react'
+import { AxiosResponse, AxiosError } from 'axios'
 import { Dialog, Transition } from '@headlessui/react'
 
 
 const AvatarModal: FC<IModal> = ({ state, dispatch, profile }) => {
-    const { changeAvatar, delAvatar }: any = useAuth()
+    const token: string = useToken()
     const {
         loading, avatar, setAvatarPreview,
-        avatarPreview, resetStates, setAvatar
+        avatarPreview, resetStates, setAvatar,
+        setLoading
     } = useAuthStore()
 
     const eligible: boolean = Boolean(avatar)
@@ -30,6 +35,44 @@ const AvatarModal: FC<IModal> = ({ state, dispatch, profile }) => {
     const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
         blob(e, setAvatarPreview)
         setAvatar(e.target.files![0])
+    }
+
+    const delAvatar = async (): Promise<void> => {
+        await axios.delete('/auth/avatar', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((res: AxiosResponse) => {
+            resetStates()
+            notify("success", res.data?.msg)
+            dispatch({ type: "AVATAR" })
+            setTimeout(() => {
+                document.location.reload()
+            }, 300)
+        }).catch((err: AxiosError) => throwError(err))
+    }
+
+    const changeAvatar = async (): Promise<void> => {
+        setLoading(true)
+        const formData: FormData = new FormData()
+        formData.append('avatar', avatar)
+        await axios.post(
+            '/auth/avatar',
+            formData,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+        ).then((res: AxiosResponse) => {
+            resetStates()
+            notify("success", res.data?.msg)
+            dispatch({ type: "AVATAR" })
+            setTimeout(() => {
+                document.location.reload()
+            }, 300)
+        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
     return (
