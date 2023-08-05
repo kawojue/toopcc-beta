@@ -28,10 +28,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const router: AppRouterInstance = useRouter()
 
     const {
-        resetStates, token, setLoading,
-        setAuth, fullname, avatar, email,
-        pswd, pswd2, otp, verified, currentPswd,
-        user, setOTP, setVerified,
+        resetStates, token, setLoading, setAuth,
+        fullname, email, pswd, pswd2, otp, verified,
+        currentPswd, user, setOTP, setVerified,
     } = useAuthStore()
 
     const [state, dispatch] = useReducer(modalReducer, initialStates)
@@ -136,46 +135,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
-    const delAvatar = async (): Promise<void> => {
-        await axios.delete('/auth/avatar', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }).then((res: AxiosResponse) => {
-            resetStates()
-            notify("success", res.data?.msg)
-            dispatch({ type: "AVATAR" })
-            setTimeout(() => {
-                document.location.reload()
-            }, 300)
-        }).catch((err: AxiosError) => throwError(err))
-    }
 
-    const changeAvatar = async (): Promise<void> => {
-        setLoading(true)
-        await axios.post(
-            '/auth/avatar',
-            JSON.stringify({ avatar }),
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
-        ).then((res: AxiosResponse) => {
-            resetStates()
-            notify("success", res.data?.msg)
-            dispatch({ type: "AVATAR" })
-            setTimeout(() => {
-                document.location.reload()
-            }, 300)
-        }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
-    }
 
     return (
         <Auth.Provider value={{
             state, dispatch, handleLogout, handleOTPRequest,
             handlePswdReset, handleIdVerification, handleUsername,
-            handleFullname, handleEditPswd, resetStates, delAvatar, changeAvatar
+            handleFullname, handleEditPswd, resetStates,
         }}>
             {children}
         </Auth.Provider>
