@@ -41,7 +41,7 @@ const page = ({ params: { patientId } }: IPt) => {
         const formData: FormData = new FormData()
         for (const key in payload) {
             const value = payload[key as keyof typeof payload]
-            formData.append(key, value as string | Blob);
+            formData.append(key, value as string | Blob)
         }
 
         await axios.post(
