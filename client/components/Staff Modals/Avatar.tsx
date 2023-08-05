@@ -5,23 +5,31 @@ import {
     FaTimes, RiDeleteBin6Line,
 } from '@/public/icons/ico'
 import Image from 'next/image'
-import { Fragment, FC } from 'react'
+import blob from '@/utils/file'
 import useAuth from '@/hooks/useAuth'
 import { SpinnerOne } from '../Spinner'
-import { handleFile } from '@/utils/file'
 import { useAuthStore } from '@/utils/store'
+import { Fragment, FC, ChangeEvent } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
 
 const AvatarModal: FC<IModal> = ({ state, dispatch, profile }) => {
     const { changeAvatar, delAvatar }: any = useAuth()
-    const { loading, avatar, setAvatar, resetStates } = useAuthStore()
+    const {
+        loading, avatar, setAvatarPreview,
+        avatarPreview, resetStates, setAvatar
+    } = useAuthStore()
 
     const eligible: boolean = Boolean(avatar)
 
     const cancel = () => {
         resetStates()
         dispatch({ type: "AVATAR" })
+    }
+
+    const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
+        blob(e, setAvatarPreview)
+        setAvatar(e.target.files![0])
     }
 
     return (
@@ -63,8 +71,8 @@ const AvatarModal: FC<IModal> = ({ state, dispatch, profile }) => {
                                 </article>
                                 <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
                                     <div className='profile-avatar md:w-[12rem] md:h-[12rem] mx-auto'>
-                                        {avatar ?
-                                            <img src={avatar} alt="avatar" /> :
+                                        {avatarPreview ?
+                                            <img src={avatarPreview} alt="avatar" /> :
                                             <>
                                                 {profile?.avatar?.secure_url ?
                                                     <Image src={profile?.avatar?.secure_url}
@@ -76,7 +84,7 @@ const AvatarModal: FC<IModal> = ({ state, dispatch, profile }) => {
                                         }
                                     </div>
                                     <input type="file" accept="image/*" id="avatar"
-                                        onChange={(e) => handleFile(e, setAvatar)} className="hidden" />
+                                        onChange={(e) => handleFile(e)} className="hidden" />
                                     <article className="profile-avatar-btn">
                                         <label htmlFor='avatar' className="change-avatar">
                                             <AiOutlineCloudUpload />
