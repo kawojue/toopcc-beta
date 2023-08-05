@@ -6,7 +6,11 @@ import {
     deletExtension, deleteRecommendation
 } from '../../controllers/patients'
 import jwtVerify from '../../middlewares/jwtVerify'
+import multer, { StorageEngine, Multer } from 'multer'
 import verifyRoles from '../../middlewares/verifyRoles'
+
+const storage: StorageEngine = multer.memoryStorage()
+const upload: Multer = multer({ storage })
 
 const patients: Router = Router()
 
@@ -20,7 +24,7 @@ patients.route('/patient/:card_no')
     .delete(remove)
 
 // add, edit, and delete patient diagnosis routes
-patients.post('/diagnosis/:card_no', addDiagnosis)
+patients.post('/diagnosis/:card_no', upload.array('diagnosis', 5), addDiagnosis)
 patients.route('/diagnosis/:card_no/:idx')
     .put(editDiagnosis)
     .delete(deleteDianosis)
