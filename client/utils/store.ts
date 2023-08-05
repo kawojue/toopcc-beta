@@ -30,7 +30,8 @@ const initialStore = {
     userId: '',
     fullname: '',
     currentPswd: '',
-    verified: false
+    verified: false,
+    avatarPreview: ''
 }
 
 const useAuthStore = create<AuthStore>()((set) => ({
@@ -55,6 +56,7 @@ const useAuthStore = create<AuthStore>()((set) => ({
     setFullname: (fullname: string) => set({ fullname }),
     setVerified: (verified: boolean) => set({ verified }),
     setCurrentPswd: (currentPswd: string) => set({ currentPswd }),
+    setAvatarPreview: (avatarPreview: string) => set({ avatarPreview }),
 }))
 
 const usePatientStore = create<PatientStore>()((set) => ({
