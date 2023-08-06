@@ -1,22 +1,27 @@
 "use client"
+import { ChangeEvent, FC } from 'react'
 import { useDiagnosis } from '@/utils/store'
-import { ChangeEvent, useState } from 'react'
 
-const PhotoUpload: React.FC = () => {
+const PhotoUpload: FC<any> = ({ onFileSelected }) => {
     const { pictures, setPictures } = useDiagnosis()
-    const [fileList, setFileList] = useState<any[]>([])
 
     const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
-        setPictures(e.target.files)
+        const fileList: File[] = []
+        const files = e.target.files
+        for (let i = 0; i < files!.length; i++) {
+            fileList.push(files![i])
+        }
+
+        setPictures(fileList)
     }
 
     return (
         <section>
             <article>
                 <div>
-                    <label htmlFor='Photos'>Photos <span>*</span></label>
-                    <input type="file" accept='image/*' id='Photos' className="hidden"
-                        onChange={(e) => handleFile(e)} multiple />
+                    <label htmlFor='pictures'>Photos <span>*</span></label>
+                    <input type="file" accept='image/*' id='pictures' className="hidden"
+                        name="pictures" onChange={(e) => handleFile(e)} multiple />
                 </div>
             </article>
         </section>
