@@ -13,10 +13,10 @@ const expressAsyncHandler = require('express-async-handler')
 import { sendError, sendSuccess } from '../utilities/sendResponse'
 import { addExtension, addMedic } from '../utilities/recommendation'
 import {
+    INVALID_PHONE_NO, INVALID_CARD_NO,
     FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
     PATIENT_NOT_EXIST, SMTH_WENT_WRONG, PATIENT_EXIST,
     SAVED, DELETION_FAILED, EXT_NOT_EXIST, DIAG_NOT_EXIST,
-    INVALID_PHONE_NO, INVALID_CARD_NO
 } from '../utilities/modal'
 
 const phoneRegex: RegExp = /^\d{11}$/
