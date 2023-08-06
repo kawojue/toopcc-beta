@@ -4,10 +4,7 @@ import handleFile from '../utilities/file'
 import { Request, Response } from 'express'
 import full_name from '../utilities/full_name'
 import StatusCodes from '../utilities/StatusCodes'
-import s3, {
-    DeleteObjectCommand, DeleteObjectCommandInput,
-    PutObjectCommand, PutObjectCommandInput,
-} from '../utilities/s3'
+import { uploadS3, deleteS3 } from '../utilities/s3'
 import { Patient, findByCardNo } from '../utilities/model'
 const expressAsyncHandler = require('express-async-handler')
 import { sendError, sendSuccess } from '../utilities/sendResponse'
@@ -179,12 +176,7 @@ const remove = expressAsyncHandler(async (req: Request, res: Response) => {
             const images = body.diagnosis.images
             if (images.length > 0) {
                 images.forEach(async (imagePath: string) => {
-                    const params: DeleteObjectCommandInput = {
-                        Key: imagePath,
-                        Bucket: process.env.BUCKET_NAME!
-                    }
-                    const command: DeleteObjectCommand = new DeleteObjectCommand(params)
-                    await s3.send(command)
+                    await deleteS3(imagePath)
                 })
             }
         })
@@ -230,14 +222,7 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
                     .toBuffer()
                 const path = `TOOPCC/${patient.id}/${uuid()}.${tempFile.extension}`
 
-                const params: PutObjectCommandInput = {
-                    Bucket: process.env.BUCKET_NAME!,
-                    Key: path,
-                    Body: buffer,
-                    ContentType: tempFile.mimetype
-                }
-                const command: PutObjectCommand = new PutObjectCommand(params)
-                await s3.send(command)
+                await uploadS3(buffer, path, tempFile.mimetype)
 
                 imageArr.push(path)
             })
@@ -246,14 +231,10 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
         try {
             if (imageArr.length > 0) {
                 for (const imagePath of imageArr) {
-                    const params: DeleteObjectCommandInput = {
-                        Key: imagePath,
-                        Bucket: process.env.BUCKET_NAME!,
-                    }
-                    const command: DeleteObjectCommand = new DeleteObjectCommand(params)
-                    await s3.send(command)
+                    await deleteS3(imagePath)
                 }
             }
+            imageArr = []
         } catch {
             sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
             return
@@ -461,12 +442,7 @@ const deleteDianosis = expressAsyncHandler(async (req: Request, res: Response) =
         const images = body.diagnosis.images
         if (images.length > 0) {
             images.forEach(async (imagePath: string) => {
-                const params: DeleteObjectCommandInput = {
-                    Key: imagePath,
-                    Bucket: process.env.BUCKET_NAME!
-                }
-                const command: DeleteObjectCommand = new DeleteObjectCommand(params)
-                await s3.send(command)
+                await deleteS3(imagePath)
             })
         }
     } catch {
