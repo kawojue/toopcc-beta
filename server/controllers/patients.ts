@@ -1,10 +1,14 @@
-import { Images } from '../type'
+import sharp from 'sharp'
 import { v4 as uuid } from 'uuid'
 import delDiag from '../utilities/delDiag'
+import handleFile from '../utilities/file'
 import { Request, Response } from 'express'
 import full_name from '../utilities/full_name'
-import cloudinary from '../configs/cloudinary'
 import StatusCodes from '../utilities/StatusCodes'
+import s3, {
+    DeleteObjectCommand, DeleteObjectCommandInput,
+    PutObjectCommand, PutObjectCommandInput,
+} from '../configs/s3'
 import { Patient, findByCardNo } from '../utilities/model'
 const expressAsyncHandler = require('express-async-handler')
 import { sendError, sendSuccess } from '../utilities/sendResponse'
@@ -176,11 +180,11 @@ const remove = expressAsyncHandler(async (req: Request, res: Response) => {
 })
 
 const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => {
-    let imageRes: any
-    const imageArr: Images[] = []
+    const files = req.files as any[]
+    let imageArr: string[] = []
     const { card_no } = req.params
     let {
-        date, images, texts, next_app
+        date, texts, next_app
     } = req.body
 
     const patient = await findByCardNo(card_no)
@@ -198,23 +202,43 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
         texts = texts.trim()
     }
 
-    if (images.length > 0 && images.length <= 3) {
-        images.forEach(async (image: string) => {
-            imageRes = await cloudinary.uploader.upload(image, {
-                folder: `TOOPCC/${patient.id}`,
-                resource_type: 'image'
-            })
+    try {
+        if (files.length > 0) {
+            files.forEach(async (file: File) => {
+                const tempFile = handleFile(res, file)
+                const buffer: Buffer = await sharp(tempFile.buffer)
+                    .resize({ fit: "contain" })
+                    .toBuffer()
+                const path = `TOOPCC/${patient.id}/${uuid()}.${tempFile.extension}`
 
-            if (!imageRes) {
-                sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
-                return
+                const params: PutObjectCommandInput = {
+                    Bucket: process.env.BUCKET_NAME!,
+                    Key: path,
+                    Body: buffer,
+                    ContentType: tempFile.mimetype
+                }
+                const command: PutObjectCommand = new PutObjectCommand(params)
+                await s3.send(command)
+
+                imageArr.push(path)
+            })
+        }
+    } catch {
+        try {
+            if (imageArr.length > 0) {
+                for (const imagePath of imageArr) {
+                    const params: DeleteObjectCommandInput = {
+                        Key: imagePath,
+                        Bucket: process.env.BUCKET_NAME!,
+                    }
+                    const command: DeleteObjectCommand = new DeleteObjectCommand(params)
+                    await s3.send(command)
+                }
             }
-
-            imageArr.push({
-                secure_url: imageRes.secure_url,
-                public_id: imageRes.public_id
-            })
-        })
+        } catch {
+            sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
+            return
+        }
     }
 
     const patientBody = patient.body
@@ -414,17 +438,17 @@ const deleteDianosis = expressAsyncHandler(async (req: Request, res: Response) =
         return
     }
 
-    const images: Images[] = body.diagnosis.images
-    if (images.length > 0) {
-        images.forEach(async (image: Images) => {
-            const result: any = await cloudinary.uploader.destroy(image.public_id as string)
-            if (!result) {
-                sendError(res, StatusCodes.BadRequest, DELETION_FAILED)
-            }
-        })
-    }
-    patient.body = bodies.filter((body: any) => body.idx !== idx)
-    await patient.save()
+    // const images: Images[] = body.diagnosis.images
+    // if (images.length > 0) {
+    //     images.forEach(async (image: Images) => {
+    //         const result: any = await cloudinary.uploader.destroy(image.public_id as string)
+    //         if (!result) {
+    //             sendError(res, StatusCodes.BadRequest, DELETION_FAILED)
+    //         }
+    //     })
+    // }
+    // patient.body = bodies.filter((body: any) => body.idx !== idx)
+    // await patient.save()
 
     sendSuccess(res, StatusCodes.OK, { msg: "Deleted successfully" })
 })
