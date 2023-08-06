@@ -35,7 +35,7 @@ const page = () => {
             }
         ).then((res: AxiosResponse) => {
             dispatch({ type: 'RESET' })
-            notify(res.data?.action, res.data?.msg)
+            notify("success", res.data?.msg)
         }).catch((err: AxiosError) => throwError(err)).finally(() => setLoading(false))
     }
 
