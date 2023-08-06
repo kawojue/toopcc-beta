@@ -25,23 +25,26 @@ const page = ({ params: { patientId } }: IPt) => {
         return date ? parseISO(date).toISOString() : ''
     }
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent): Promise<void> => {
         e.preventDefault()
         setLoading(true)
 
         if (!textEditorRef.current) return
 
         const payload = {
-            pictures,
-            texts: textEditorRef.current.innerHTML,
+            date: formatDate(currentDate),
             next_app: formatDate(nextAppDate),
-            date: formatDate(currentDate)
+            texts: textEditorRef.current.innerHTML,
         }
 
         const formData: FormData = new FormData()
+
+        for (let i = 0; i < pictures!.length; i++) {
+            formData.append('pictures', pictures![i], pictures![i].name)
+        }
+
         for (const key in payload) {
-            const value = payload[key as keyof typeof payload]
-            formData.append(key, value as string | Blob)
+            formData.append(key, payload[key as keyof typeof payload])
         }
 
         await axios.post(
