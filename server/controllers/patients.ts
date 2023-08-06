@@ -14,11 +14,13 @@ import { sendError, sendSuccess } from '../utilities/sendResponse'
 import { addExtension, addMedic } from '../utilities/recommendation'
 import {
     FIELDS_REQUIRED, CARD_NO_REQUIRED, INVALID_AGE,
-    PATIENT_NOT_EXIST, SMTH_WENT_WRONG, PATIENT_EXIST, SAVED,
-    DELETION_FAILED, EXT_NOT_EXIST, DIAG_NOT_EXIST, INVALID_PHONE_NO,
+    PATIENT_NOT_EXIST, SMTH_WENT_WRONG, PATIENT_EXIST,
+    SAVED, DELETION_FAILED, EXT_NOT_EXIST, DIAG_NOT_EXIST,
+    INVALID_PHONE_NO, INVALID_CARD_NO
 } from '../utilities/modal'
 
 const phoneRegex: RegExp = /^\d{11}$/
+const cardNoRegex: RegExp = /^[a-zA-Z0-9]+$/
 
 // add patient data
 const add = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -41,8 +43,8 @@ const add = expressAsyncHandler(async (req: Request, res: Response) => {
         return
     }
 
-    if (!/^[a-zA-Z0-9]+$/.test(card_no)) {
-        sendError(res, StatusCodes.BadRequest, "Invalid card number.")
+    if (!cardNoRegex.test(card_no)) {
+        sendError(res, StatusCodes.BadRequest, INVALID_CARD_NO)
         return
     }
 
@@ -84,6 +86,11 @@ const edit = expressAsyncHandler(async (req: Request, res: Response) => {
 
     if (cardNo || cardNo?.trim()) {
         cardNo = cardNo.trim().toUpperCase()
+
+        if (!cardNoRegex.test(cardNo)) {
+            sendError(res, StatusCodes.BadRequest, INVALID_CARD_NO)
+            return
+        }
 
         const cardNoExists = await findByCardNo(cardNo)
         if (cardNoExists) {
