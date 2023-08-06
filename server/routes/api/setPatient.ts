@@ -1,16 +1,12 @@
 import { Router } from 'express'
 import {
-    add, edit, addDiagnosis, remove,
-    deleteDianosis, editDiagnosis,
-    addRecommendation, editExtension,
-    deletExtension, deleteRecommendation
+    deletExtension, deleteRecommendation,
+    add, edit, addDiagnosis, remove, deleteDianosis,
+    editDiagnosis, addRecommendation, editExtension,
 } from '../../controllers/patients'
+import upload from '../../middlewares/upload'
 import jwtVerify from '../../middlewares/jwtVerify'
-import multer, { StorageEngine, Multer } from 'multer'
 import verifyRoles from '../../middlewares/verifyRoles'
-
-const storage: StorageEngine = multer.memoryStorage()
-const upload: Multer = multer({ storage })
 
 const patients: Router = Router()
 
