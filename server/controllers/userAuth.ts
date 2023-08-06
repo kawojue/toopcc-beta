@@ -15,10 +15,7 @@ import {
     findByEmail, findByToken, findByUser, User
 } from '../utilities/model'
 import StatusCodes from '../utilities/StatusCodes'
-import s3, {
-    DeleteObjectCommand, DeleteObjectCommandInput,
-    PutObjectCommand, PutObjectCommandInput,
-} from '../utilities/s3'
+import { uploadS3, deleteS3 } from '../utilities/s3'
 import { IMailer, IGenOTP, IRequest } from '../type'
 import {
     PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ROLES_UPDATED,
@@ -81,18 +78,11 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
             .toBuffer()
         avatar_path = `Staffs/Avatar/${uuid()}.${file.extension}`
         // upload to s3 bucket
-        const params: PutObjectCommandInput = {
-            Key: avatar_path,
-            Bucket: process.env.BUCKET_NAME!,
-            Body: image,
-            ContentType: file.mimetype
-        }
-        const command: PutObjectCommand = new PutObjectCommand(params)
-        const result = await s3.send(command)
-
-        if (!result) {
+        try {
+            await uploadS3(image, avatar_path, file.mimetype)
+        } catch {
             sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
-            // but proceed account creation
+            // but proceed with account creation
         }
     }
 
@@ -405,14 +395,10 @@ const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
     }
 
     if (account.avatar_path) {
-        const params: DeleteObjectCommandInput = {
-            Key: account.avatar_path,
-            Bucket: process.env.BUCKET_NAME!
-        }
-        const command: DeleteObjectCommand = new DeleteObjectCommand(params)
-        const res = await s3.send(command)
-
-        if (!res) {
+        try {
+            await deleteS3(account.avatar_path)
+            account.avatar_path = ""
+        } catch {
             sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
             return
         }
@@ -423,21 +409,14 @@ const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
         .toBuffer()
     const avatar_path = `Staffs/Avatar/${uuid()}.${file.extension}`
     // upload to s3 bucket
-    const params: PutObjectCommandInput = {
-        Key: avatar_path,
-        Bucket: process.env.BUCKET_NAME!,
-        Body: image,
-        ContentType: file.mimetype
-    }
-    const command: PutObjectCommand = new PutObjectCommand(params)
-    const result = await s3.send(command)
-
-    if (!result) {
+    try {
+        await uploadS3(image, avatar_path, file.mimetype)
+        account.avatar_path = avatar_path
+    } catch {
         sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
         return
     }
 
-    account.avatar_path = avatar_path
     await account.save()
 
     sendSuccess(res, StatusCodes.OK, { msg: "Successful." })
@@ -450,14 +429,9 @@ const deleteAvatar = expressAsyncHandler(async (req: IRequest, res: Response) =>
         return
     }
 
-    const params: DeleteObjectCommandInput = {
-        Key: account.avatar_path,
-        Bucket: process.env.BUCKET_NAME!
-    }
-    const command: DeleteObjectCommand = new DeleteObjectCommand(params)
-    const result = await s3.send(command)
-
-    if (!result) {
+    try {
+        await deleteS3(account.avatar_path)
+    } catch {
         sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
         return
     }
