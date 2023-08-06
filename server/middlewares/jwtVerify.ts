@@ -15,7 +15,7 @@ const jwtVerify = expressAsyncHandler(async (req: IRequest, res: Response, next:
     const token: string = authHeader?.split(' ')[1]
     jwt.verify(
         token,
-        process.env.JWT_SECRET as string,
+        process.env.JWT_SECRET!,
         async (err: any, decoded: any) => {
             if (err) {
                 return res.status(StatusCodes.Forbidden).json(ACCESS_DENIED)
