@@ -18,7 +18,7 @@ import StatusCodes from '../utilities/StatusCodes'
 import s3, {
     DeleteObjectCommand, DeleteObjectCommandInput,
     PutObjectCommand, PutObjectCommandInput,
-} from '../configs/s3'
+} from '../utilities/s3'
 import { IMailer, IGenOTP, IRequest } from '../type'
 import {
     PSWD_NOT_MATCH, ACCOUNT_NOT_FOUND, ROLES_UPDATED,
