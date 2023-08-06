@@ -77,7 +77,7 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
         const file = handleFile(res, req.file)
         // format image
         const image: Buffer = await sharp(file.buffer)
-            .resize({ height: 600, width: 600, fit: "cover" })
+            .resize({ height: 600, width: 600, fit: "contain" })
             .toBuffer()
         avatar_path = `Staffs/Avatar/${uuid()}.${file.extension}`
         // upload to s3 bucket
@@ -419,7 +419,7 @@ const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
     }
 
     const image: Buffer = await sharp(file.buffer)
-        .resize({ height: 600, width: 600, fit: "cover" })
+        .resize({ height: 600, width: 600, fit: "contain" })
         .toBuffer()
     const avatar_path = `Staffs/Avatar/${uuid()}.${file.extension}`
     // upload to s3 bucket
