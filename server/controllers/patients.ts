@@ -192,7 +192,7 @@ const remove = expressAsyncHandler(async (req: Request, res: Response) => {
 
 const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => {
     const files = req.files as any[]
-    let imageArr: string[] = []
+    let imageArr: any[] = []
     const { card_no } = req.params
     let {
         date, texts, next_app
@@ -220,11 +220,10 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
                 const buffer: Buffer = await sharp(tempFile.buffer)
                     .resize({ fit: "contain" })
                     .toBuffer()
-                const path = `TOOPCC/${patient.id}/${uuid()}.${tempFile.extension}`
+                const path = `Diagnosis/${patient.id}/${uuid()}.${tempFile.extension}`
 
                 await uploadS3(buffer, path, tempFile.mimetype)
-
-                imageArr.push(path)
+                imageArr = [...path]
             })
         }
     } catch {
@@ -240,6 +239,8 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
             return
         }
     }
+
+    console.log(imageArr)
 
     const patientBody = patient.body
     patient.body = (imageArr.length > 0 || texts) ? [
