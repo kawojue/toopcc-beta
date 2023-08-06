@@ -215,7 +215,7 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
 
     try {
         if (files.length > 0) {
-            files.forEach(async (file: File) => {
+            const uploadPromises = files.map(async (file: File) => {
                 const tempFile = handleFile(res, file)
                 const buffer: Buffer = await sharp(tempFile.buffer)
                     .resize({ fit: "contain" })
@@ -223,8 +223,9 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
                 const path = `Diagnosis/${patient.id}/${uuid()}.${tempFile.extension}`
 
                 await uploadS3(buffer, path, tempFile.mimetype)
-                imageArr = [...path]
+                return path
             })
+            imageArr = await Promise.all(uploadPromises)
         }
     } catch {
         try {
@@ -239,8 +240,6 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
             return
         }
     }
-
-    console.log(imageArr)
 
     const patientBody = patient.body
     patient.body = (imageArr.length > 0 || texts) ? [
