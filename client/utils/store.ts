@@ -14,7 +14,7 @@ const useDiagnosis = create<DiagnosisState>()((set) => ({
     loading: false,
     currentDate: '',
     nextAppDate: '',
-    setPictures: (pictures: null | FileList) => set({ pictures }),
+    setPictures: (pictures: null | File[]) => set({ pictures }),
     setLoading: (loading: boolean) => set({ loading }),
     setCurrentDate: (currentDate: string) => set({ currentDate }),
     setNextAppDate: (nextAppDate: string) => set({ nextAppDate })
