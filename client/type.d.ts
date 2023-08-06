@@ -65,14 +65,14 @@ interface TextEditorState {
 }
 
 interface DiagnosisState {
-    pictures: null | FileList
+    pictures: null | File[]
     loading: boolean
     currentDate: string
     nextAppDate: string
     setLoading: (loading: boolean) => void
     setCurrentDate: (currentDate: string) => void
     setNextAppDate: (nextAppDate: string) => void
-    setPictures: (pictures: null | FileList) => void
+    setPictures: (pictures: null | File[]) => void
 }
 
 interface AuthStore {
