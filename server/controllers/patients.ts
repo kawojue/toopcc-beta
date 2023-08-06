@@ -450,17 +450,24 @@ const deleteDianosis = expressAsyncHandler(async (req: Request, res: Response) =
         return
     }
 
-    // const images: Images[] = body.diagnosis.images
-    // if (images.length > 0) {
-    //     images.forEach(async (image: Images) => {
-    //         const result: any = await cloudinary.uploader.destroy(image.public_id as string)
-    //         if (!result) {
-    //             sendError(res, StatusCodes.BadRequest, DELETION_FAILED)
-    //         }
-    //     })
-    // }
-    // patient.body = bodies.filter((body: any) => body.idx !== idx)
-    // await patient.save()
+    try {
+        const images = body.diagnosis.images
+        if (images.length > 0) {
+            images.forEach(async (imagePath: string) => {
+                const params: DeleteObjectCommandInput = {
+                    Key: imagePath,
+                    Bucket: process.env.BUCKET_NAME!
+                }
+                const command: DeleteObjectCommand = new DeleteObjectCommand(params)
+                await s3.send(command)
+            })
+        }
+    } catch {
+        sendError(res, StatusCodes.BadRequest, DELETION_FAILED)
+        return
+    }
+    patient.body = bodies.filter((body: any) => body.idx !== idx)
+    await patient.save()
 
     sendSuccess(res, StatusCodes.OK, { msg: "Deleted successfully" })
 })
