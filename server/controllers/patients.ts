@@ -1,6 +1,5 @@
 import sharp from 'sharp'
 import { v4 as uuid } from 'uuid'
-import delDiag from '../utilities/delDiag'
 import handleFile from '../utilities/file'
 import { Request, Response } from 'express'
 import full_name from '../utilities/full_name'
@@ -168,8 +167,21 @@ const remove = expressAsyncHandler(async (req: Request, res: Response) => {
     }
 
     const bodies = patient.body
-    const del: boolean = await delDiag(bodies)
-    if (!del) {
+    try {
+        bodies.forEach(async (body: any) => {
+            const images = body.diagnosis.images
+            if (images.length > 0) {
+                images.forEach(async (imagePath: string) => {
+                    const params: DeleteObjectCommandInput = {
+                        Key: imagePath,
+                        Bucket: process.env.BUCKET_NAME!
+                    }
+                    const command: DeleteObjectCommand = new DeleteObjectCommand(params)
+                    await s3.send(command)
+                })
+            }
+        })
+    } catch {
         sendError(res, StatusCodes.BadRequest, DELETION_FAILED)
         return
     }
