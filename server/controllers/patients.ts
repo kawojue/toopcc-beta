@@ -7,7 +7,7 @@ import StatusCodes from '../utilities/StatusCodes'
 import s3, {
     DeleteObjectCommand, DeleteObjectCommandInput,
     PutObjectCommand, PutObjectCommandInput,
-} from '../configs/s3'
+} from '../utilities/s3'
 import { Patient, findByCardNo } from '../utilities/model'
 const expressAsyncHandler = require('express-async-handler')
 import { sendError, sendSuccess } from '../utilities/sendResponse'
