@@ -36,7 +36,10 @@ const PatientModel: Schema = new Schema({
         type: [{
             idx: String,
             diagnosis: {
-                images: [],
+                images: {
+                    type: Array,
+                    default: []
+                },
                 texts: String
             },
             date: {
