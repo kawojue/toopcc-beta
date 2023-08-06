@@ -7,14 +7,10 @@ import {
     login, logout, createUser, resetpswd,
 } from '../../controllers/userAuth'
 import { ILimiter } from '../../type'
+import upload from '../../middlewares/upload'
 import limiter from '../../middlewares/limiter'
-import multer, { StorageEngine, Multer } from 'multer'
-
 
 const auth: Router = Router()
-
-const storage: StorageEngine = multer.memoryStorage()
-const upload: Multer = multer({ storage })
 
 auth.use('/otp', otp)
 auth.use('/edit', edit)
