@@ -1,13 +1,14 @@
 import awsCredentials from '../configs/aws'
 import {
-    ListObjectsCommand, ListObjectsCommandInput,
+    GetObjectCommandInput, GetObjectCommand,
     DeleteObjectCommand, DeleteObjectCommandInput,
     S3Client, PutObjectCommand, PutObjectCommandInput,
 } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
-const s3 = new S3Client(awsCredentials)
+const s3: S3Client = new S3Client(awsCredentials)
 
-const uploadS3 = async (buffer: Buffer, path: string, type?: string) => {
+const uploadS3 = async (buffer: Buffer, path: string, type?: string): Promise<void> => {
     const params: PutObjectCommandInput = {
         Bucket: process.env.BUCKET_NAME!,
         Key: path,
@@ -18,7 +19,7 @@ const uploadS3 = async (buffer: Buffer, path: string, type?: string) => {
     await s3.send(command)
 }
 
-const deleteS3 = async (path: string) => {
+const deleteS3 = async (path: string): Promise<void> => {
     const params: DeleteObjectCommandInput = {
         Key: path,
         Bucket: process.env.BUCKET_NAME!,
@@ -27,14 +28,16 @@ const deleteS3 = async (path: string) => {
     await s3.send(command)
 }
 
-const getS3 = async () => {
+const getS3 = async (path: string): Promise<string> => {
+    const params: GetObjectCommandInput = {
+        Key: path,
+        Bucket: process.env.BUCKET_NAME!,
+    }
+    const command: GetObjectCommand = new GetObjectCommand(params)
+    const url = await getSignedUrl(s3, command, { expiresIn: 8640000000 }) // expires in 100days
 
+    return url
 }
 
 export default s3
-export {
-    uploadS3, deleteS3, getS3,
-    PutObjectCommand, PutObjectCommandInput,
-    ListObjectsCommand, ListObjectsCommandInput,
-    DeleteObjectCommand, DeleteObjectCommandInput
-}
+export { uploadS3, deleteS3, getS3 }
