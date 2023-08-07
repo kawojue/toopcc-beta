@@ -10,9 +10,11 @@ import {
 import {
     PATIENT_NOT_EXIST, DIAG_NOT_EXIST,
 } from '../utilities/modal'
+import { getS3 } from '../utilities/s3'
 import { Request, Response } from 'express'
 import StatusCodes from '../utilities/StatusCodes'
 const asyncHandler = require('express-async-handler')
+
 
 const allPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients = await fetchPatients('-body -recommendation')
@@ -41,9 +43,16 @@ const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         return
     }
 
+    const bodies = patient.body.map((body: any) => ({
+        ...body,
+        diagnosis: body.diagnosis.images.length > 0 ?
+            body.diagnosis.images.map(async (image: any) => await getS3(image)) :
+            body.diagnosis.images
+    }))
+
     sendSuccess(res, StatusCodes.OK, {
         length: patient.body.length,
-        diagnosis: sortByDates(patient.body)
+        diagnosis: sortByDates(bodies)
     })
 })
 
@@ -56,14 +65,18 @@ const getDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         return
     }
 
-    const bodies = patient.body
-    const diagnosis = bodies.find((body: any) => body.idx === idx)
-    if (!diagnosis) {
+    const body = patient.body.find((body: any) => body.idx === idx)
+    if (!body) {
         sendError(res, StatusCodes.NotFound, DIAG_NOT_EXIST)
         return
     }
 
-    sendSuccess(res, StatusCodes.OK, { diagnosis: sortByDates(diagnosis) })
+    const updatedBody = {
+        ...body,
+        diagnosis: body.diagnosis.images.map(async (image: any) => await getS3(image))
+    }
+
+    sendSuccess(res, StatusCodes.OK, { diagnosis: sortByDates(updatedBody) })
 })
 
 const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) => {
