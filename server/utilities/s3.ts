@@ -34,7 +34,7 @@ const getS3 = async (path: string): Promise<string> => {
         Bucket: process.env.BUCKET_NAME!,
     }
     const command: GetObjectCommand = new GetObjectCommand(params)
-    const url = await getSignedUrl(s3, command, { expiresIn: 8640000000 }) // expires in 100days
+    const url = await getSignedUrl(s3, command, { expiresIn: 432000 }) // expires in 5 days
 
     return url
 }
