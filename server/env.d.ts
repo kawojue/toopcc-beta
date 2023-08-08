@@ -10,6 +10,6 @@ declare namespace NodeJS {
         BUCKET_REGION: string
         AWS_ACCESS_KEY: string
         AWS_SECRET_KEY: string
-        AWS_DIST_CLOUDFRONT_ID: string
+        AWS_CLOUDFRONT_DIST_ID: string
     }
 }
