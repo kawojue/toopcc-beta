@@ -1,21 +1,16 @@
 import { IRequest } from '../type'
 import { Response } from 'express'
-import { getS3 } from '../utilities/s3'
 import StatusCodes from '../utilities/StatusCodes'
-import { sendSuccess } from '../utilities/sendResponse'
+import { ACCOUNT_NOT_FOUND } from '../utilities/modal'
 import { findByUser, fetchUsers } from '../utilities/model'
 const expressAsyncHandler = require('express-async-handler')
+import { sendError, sendSuccess } from '../utilities/sendResponse'
 
 
 const omit: string = '-totp -email_verified -totp_date -token -password'
 
 const getProfile = expressAsyncHandler(async (req: IRequest, res: Response) => {
-    const getProfile = await findByUser(req.user, omit)
-
-    const profile = {
-        ...getProfile,
-        avatarUrl: getProfile?.avatar_path ? await getS3(getProfile?.avatar_path) : ""
-    }
+    const profile = await findByUser(req.user, omit)
 
     sendSuccess(res, StatusCodes.OK, { profile })
 })
@@ -31,12 +26,11 @@ const getUsers = expressAsyncHandler(async (req: IRequest, res: Response) => {
 })
 
 const getUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
-    const { user: userParam }: any = req.params
+    const { user: userParam } = req.params
 
-    const getUser: any = await findByUser(userParam, omit)
-    const user = {
-        ...getUser,
-        avatarUrl: getUser?.avatar_path ? await getS3(getUser?.avatar_path) : ""
+    const user = await findByUser(userParam, omit)
+    if (!user) {
+        sendError(res, StatusCodes.NotFound, ACCOUNT_NOT_FOUND)
     }
 
     sendSuccess(res, StatusCodes.OK, { user })
