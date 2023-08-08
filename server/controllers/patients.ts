@@ -4,8 +4,8 @@ import handleFile from '../utilities/file'
 import { Request, Response } from 'express'
 import full_name from '../utilities/full_name'
 import StatusCodes from '../utilities/StatusCodes'
-import { uploadS3, deleteS3 } from '../utilities/s3'
 import { Patient, findByCardNo } from '../utilities/model'
+import { uploadS3, deleteS3, getS3 } from '../utilities/s3'
 const expressAsyncHandler = require('express-async-handler')
 import { sendError, sendSuccess } from '../utilities/sendResponse'
 import { addExtension, addMedic } from '../utilities/recommendation'
@@ -175,8 +175,8 @@ const remove = expressAsyncHandler(async (req: Request, res: Response) => {
         bodies.forEach(async (body: any) => {
             const images = body.diagnosis.images
             if (images.length > 0) {
-                images.forEach(async (imagePath: string) => {
-                    await deleteS3(imagePath)
+                images.forEach(async (image: any) => {
+                    await deleteS3(image.path)
                 })
             }
         })
@@ -220,18 +220,20 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
                 const buffer: Buffer = await sharp(tempFile.buffer)
                     .resize({ fit: "contain" })
                     .toBuffer()
-                const path = `Diagnosis/${patient.id}/${uuid()}.${tempFile.extension}`
 
+                const path = `Diagnosis/${patient.id}/${uuid()}.${tempFile.extension}`
                 await uploadS3(buffer, path, tempFile.mimetype)
-                return path
+                const url = await getS3(path)
+
+                return { url, path }
             })
             imageArr = await Promise.all(uploadPromises)
         }
     } catch {
         try {
             if (imageArr.length > 0) {
-                for (const imagePath of imageArr) {
-                    await deleteS3(imagePath)
+                for (const image of imageArr) {
+                    await deleteS3(image?.path)
                 }
             }
             imageArr = []
@@ -441,8 +443,8 @@ const deleteDianosis = expressAsyncHandler(async (req: Request, res: Response) =
     try {
         const images = body.diagnosis.images
         if (images.length > 0) {
-            images.forEach(async (imagePath: string) => {
-                await deleteS3(imagePath)
+            images.forEach(async (image: any) => {
+                await deleteS3(image.path)
             })
         }
     } catch {
