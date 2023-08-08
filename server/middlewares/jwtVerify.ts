@@ -4,12 +4,14 @@ import { Response, NextFunction } from 'express'
 import { findByToken } from '../utilities/model'
 import StatusCodes from '../utilities/StatusCodes'
 import { ACCESS_DENIED } from '../utilities/modal'
+import { sendError } from '../utilities/sendResponse'
 const expressAsyncHandler = require('express-async-handler')
 
 const jwtVerify = expressAsyncHandler(async (req: IRequest, res: Response, next: NextFunction) => {
     const authHeader = req.headers?.authorization
     if (!authHeader || !authHeader?.startsWith('Bearer')) {
-        return res.status(StatusCodes.Unauthorized).json(ACCESS_DENIED)
+        sendError(res, StatusCodes.Unauthorized, ACCESS_DENIED)
+        return
     }
 
     const token: string = authHeader?.split(' ')[1]
@@ -18,12 +20,14 @@ const jwtVerify = expressAsyncHandler(async (req: IRequest, res: Response, next:
         process.env.JWT_SECRET!,
         async (err: any, decoded: any) => {
             if (err) {
-                return res.status(StatusCodes.Forbidden).json(ACCESS_DENIED)
+                sendError(res, StatusCodes.Forbidden, ACCESS_DENIED)
+                return
             }
 
             const account = await findByToken(token)
             if (!account) {
-                return res.status(StatusCodes.Forbidden).json(ACCESS_DENIED)
+                sendError(res, StatusCodes.Forbidden, ACCESS_DENIED)
+                return
             }
 
             const user: string = decoded.user
@@ -34,7 +38,9 @@ const jwtVerify = expressAsyncHandler(async (req: IRequest, res: Response, next:
                 account.user = decoded.user
                 account.token = ""
                 await account.save()
-                return res.status(StatusCodes.Forbidden).json(ACCESS_DENIED)
+
+                sendError(res, StatusCodes.Forbidden, ACCESS_DENIED)
+                return
             }
 
             req.user = user
