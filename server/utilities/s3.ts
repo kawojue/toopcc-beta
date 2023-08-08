@@ -1,6 +1,5 @@
 import awsCredentials from '../configs/aws'
 import {
-    GetObjectCommandInput, GetObjectCommand,
     DeleteObjectCommand, DeleteObjectCommandInput,
     S3Client, PutObjectCommand, PutObjectCommandInput,
 } from '@aws-sdk/client-s3'
@@ -28,16 +27,7 @@ const deleteS3 = async (path: string): Promise<void> => {
     await s3.send(command)
 }
 
-const getS3 = async (path: string): Promise<string> => {
-    const params: GetObjectCommandInput = {
-        Key: path,
-        Bucket: process.env.BUCKET_NAME!,
-    }
-    const command: GetObjectCommand = new GetObjectCommand(params)
-    const url = await getSignedUrl(s3, command, { expiresIn: 432000 }) // expires in 5 days
-
-    return url
-}
+const getS3 = async (path: string): Promise<string> => `${process.env.DIST_DOMAIN!}/${path}`
 
 export default s3
 export { uploadS3, deleteS3, getS3 }
