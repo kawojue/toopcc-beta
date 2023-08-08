@@ -10,7 +10,6 @@ import {
 import {
     PATIENT_NOT_EXIST, DIAG_NOT_EXIST,
 } from '../utilities/modal'
-import { getS3 } from '../utilities/s3'
 import { Request, Response } from 'express'
 import StatusCodes from '../utilities/StatusCodes'
 const asyncHandler = require('express-async-handler')
@@ -23,7 +22,7 @@ const allPatients = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const getPatient = asyncHandler(async (req: Request, res: Response) => {
-    const { card_no }: any = req.params
+    const { card_no } = req.params
 
     const patient = await findByCardNo(card_no, '-body -recommendation')
     if (!patient) {
@@ -35,7 +34,7 @@ const getPatient = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
-    const { card_no }: any = req.params
+    const { card_no } = req.params
 
     const patient = await findByCardNo(card_no, '-recommendation')
     if (!patient) {
@@ -43,21 +42,14 @@ const getAllDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         return
     }
 
-    const bodies = patient.body.map((body: any) => ({
-        ...body,
-        diagnosis: body.diagnosis.images.length > 0 ?
-            body.diagnosis.images.map(async (image: any) => await getS3(image)) :
-            body.diagnosis.images
-    }))
-
     sendSuccess(res, StatusCodes.OK, {
         length: patient.body.length,
-        diagnosis: sortByDates(bodies)
+        diagnosis: sortByDates(patient.body)
     })
 })
 
 const getDiagnosis = asyncHandler(async (req: Request, res: Response) => {
-    const { card_no, idx }: any = req.params
+    const { card_no, idx } = req.params
 
     const patient = await findByCardNo(card_no, '-recommendation')
     if (!patient) {
@@ -71,12 +63,7 @@ const getDiagnosis = asyncHandler(async (req: Request, res: Response) => {
         return
     }
 
-    const updatedBody = {
-        ...body,
-        diagnosis: body.diagnosis.images.map(async (image: any) => await getS3(image))
-    }
-
-    sendSuccess(res, StatusCodes.OK, { diagnosis: sortByDates(updatedBody) })
+    sendSuccess(res, StatusCodes.OK, { diagnosis: sortByDates(body) })
 })
 
 const getAllOpthalPatients = asyncHandler(async (req: Request, res: Response) => {
@@ -103,7 +90,7 @@ const getAllExtensions = asyncHandler(async (req: Request, res: Response) => {
     const patients = await fetchPatients('-body')
 
     const all = patients.map((ext) => {
-        let obj: any
+        let obj
         const extensions = ext.recommendation?.extensions
         if (extensions!.length > 0) {
             obj = {
@@ -127,7 +114,7 @@ const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
     const patients = await fetchPatients('-body -recommendation')
 
     const deads = patients.filter((dead) => {
-        let obj: any
+        let obj
         if (dead.death?.dead === true) {
             const { fullname, age, card_no, address, phone_no } = dead
             obj = {
@@ -147,7 +134,7 @@ const getDeadPatients = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const getExtension = asyncHandler(async (req: Request, res: Response) => {
-    const { card_no }: any = req.params
+    const { card_no } = req.params
 
     const patient = await findByCardNo(card_no, '-body')
     if (!patient) {
@@ -170,7 +157,7 @@ const getExtension = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => {
-    const { card_no }: any = req.params
+    const { card_no } = req.params
 
     const patient = await findByCardNo(card_no, '-body')
     if (!patient) {
@@ -187,7 +174,7 @@ const getPhysioMedication = asyncHandler(async (req: Request, res: Response) => 
 })
 
 const getOpthalMedication = asyncHandler(async (req: Request, res: Response) => {
-    const { card_no }: any = req.params
+    const { card_no } = req.params
 
     const patient = await findByCardNo(card_no, '-body')
     if (!patient) {
