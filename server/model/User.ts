@@ -28,7 +28,10 @@ const UserModel: Schema = new Schema({
     token: String,
     totp_date: Number,
     lastLogin: String,
-    avatar_path: String,
+    avatar: {
+        url: String,
+        path: String,
+    },
     resigned: {
         date: String,
         resign: {
