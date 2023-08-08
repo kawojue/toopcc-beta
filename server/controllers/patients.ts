@@ -444,7 +444,7 @@ const deleteDianosis = expressAsyncHandler(async (req: Request, res: Response) =
         const images = body.diagnosis.images
         if (images.length > 0) {
             images.forEach(async (image: any) => {
-                await deleteS3(image.path)
+                await deleteS3(image?.path)
             })
         }
     } catch {
