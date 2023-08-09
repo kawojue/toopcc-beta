@@ -1,4 +1,3 @@
-import sharp from 'sharp'
 import bcrypt from 'bcrypt'
 import { v4 as uuid } from 'uuid'
 import {
@@ -73,14 +72,9 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
 
     if (req.file) {
         const file = handleFile(res, req.file)
-        // format image
-        const image: Buffer = await sharp(file.buffer)
-            .resize({ height: 600, width: 600, fit: "contain" })
-            .toBuffer()
         path = `Staffs/Avatar/${uuid()}.${file.extension}`
-        // upload to s3 bucket
         try {
-            await uploadS3(image, path, file.mimetype)
+            await uploadS3(file.buffer, path, file.mimetype)
             url = await getS3(path)
         } catch {
             sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
@@ -406,13 +400,9 @@ const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
         }
     }
 
-    const image: Buffer = await sharp(file.buffer)
-        .resize({ height: 600, width: 600, fit: "contain" })
-        .toBuffer()
     const path = `Staffs/Avatar/${uuid()}.${file.extension}`
-    // upload to s3 bucket
     try {
-        await uploadS3(image, path, file.mimetype)
+        await uploadS3(file.buffer, path, file.mimetype)
         account.avatar = {
             path,
             url: await getS3(path)
