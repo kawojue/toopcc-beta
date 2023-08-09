@@ -67,8 +67,8 @@ const Profile: FC<{ profile: any }> = ({ profile }) => {
                                 className={`profile-avatar md:w-[12rem] md:h-[12rem]`}>
                                 {profile?.avatar?.url ?
                                     <Image src={profile?.avatar?.url} alt="avatar"
-                                        title="change your avatar" width={300} height={300} priority /> :
-                                    <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="change your avatar" width={300} height={300} priority />}
+                                        title="change your avatar" width={300} height={300} loading='lazy' /> :
+                                    <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="change your avatar" width={300} height={300} loading='lazy' />}
                             </div> :
                             <div onMouseLeave={() => setOnMouse(false)}
                                 onMouseEnter={() => setOnMouse(true)}
@@ -76,8 +76,8 @@ const Profile: FC<{ profile: any }> = ({ profile }) => {
                                 className={`${onMouse && 'before:content-[""] before:bg-clr-10 before:absolute before:top-0 before:right-0 before:w-full before:h-full before:z-[999] cursor-pointer'} profile-avatar md:w-[12rem] md:h-[12rem]`}>
                                 {profile?.avatar?.url ?
                                     <Image src={profile?.avatar?.url} alt="avatar"
-                                        title="change your avatar" width={300} height={300} priority /> :
-                                    <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="avatar" width={300} height={300} priority />}
+                                        title="change your avatar" width={300} height={300} loading='lazy' /> :
+                                    <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="avatar" width={300} height={300} loading='lazy' />}
                                 <div className={`${onMouse && 'cam-ico'}`}>
                                     <AiOutlineCamera className="text-clr-0 text-4xl md:text-5xl lg:text-6xl" />
                                 </div>
