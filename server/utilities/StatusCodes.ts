@@ -11,7 +11,7 @@ enum StatusCodes {
     MethodNotAllowed = 405,
     Conflict = 409,
     PayloadTooLarge = 413,
-    TooManyRequest = 429,
+    TooManyRequests = 429,
 }
 
 export default StatusCodes
