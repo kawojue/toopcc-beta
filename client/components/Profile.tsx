@@ -65,8 +65,8 @@ const Profile: FC<{ profile: any }> = ({ profile }) => {
                             <div onMouseLeave={() => setOnMouse(false)}
                                 onMouseEnter={() => setOnMouse(true)}
                                 className={`profile-avatar md:w-[12rem] md:h-[12rem]`}>
-                                {profile?.avatar?.secure_url ?
-                                    <Image src={profile?.avatar?.secure_url} alt="avatar"
+                                {profile?.avatar?.url ?
+                                    <Image src={profile?.avatar?.url} alt="avatar"
                                         title="change your avatar" width={300} height={300} priority /> :
                                     <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="change your avatar" width={300} height={300} priority />}
                             </div> :
@@ -74,8 +74,8 @@ const Profile: FC<{ profile: any }> = ({ profile }) => {
                                 onMouseEnter={() => setOnMouse(true)}
                                 onClick={() => dispatch({ type: "AVATAR" })}
                                 className={`${onMouse && 'before:content-[""] before:bg-clr-10 before:absolute before:top-0 before:right-0 before:w-full before:h-full before:z-[999] cursor-pointer'} profile-avatar md:w-[12rem] md:h-[12rem]`}>
-                                {profile?.avatar?.secure_url ?
-                                    <Image src={profile?.avatar?.secure_url} alt="avatar"
+                                {profile?.avatar?.url ?
+                                    <Image src={profile?.avatar?.url} alt="avatar"
                                         title="change your avatar" width={300} height={300} priority /> :
                                     <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp" alt="avatar" title="avatar" width={300} height={300} priority />}
                                 <div className={`${onMouse && 'cam-ico'}`}>
