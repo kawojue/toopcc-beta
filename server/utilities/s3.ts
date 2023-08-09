@@ -3,7 +3,6 @@ import {
     DeleteObjectCommand, DeleteObjectCommandInput,
     S3Client, PutObjectCommand, PutObjectCommandInput,
 } from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 const s3: S3Client = new S3Client(awsCredentials)
 
