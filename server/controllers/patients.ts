@@ -1,4 +1,3 @@
-import sharp from 'sharp'
 import { v4 as uuid } from 'uuid'
 import handleFile from '../utilities/file'
 import { Request, Response } from 'express'
@@ -217,12 +216,8 @@ const addDiagnosis = expressAsyncHandler(async (req: Request, res: Response) => 
         if (files.length > 0) {
             const uploadPromises = files.map(async (file: File) => {
                 const tempFile = handleFile(res, file)
-                const buffer: Buffer = await sharp(tempFile.buffer)
-                    .resize({ fit: "contain" })
-                    .toBuffer()
-
                 const path = `Diagnosis/${patient.id}/${uuid()}.${tempFile.extension}`
-                await uploadS3(buffer, path, tempFile.mimetype)
+                await uploadS3(tempFile.buffer, path, tempFile.mimetype)
                 const url = await getS3(path)
 
                 return { url, path }
