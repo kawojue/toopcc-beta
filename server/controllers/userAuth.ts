@@ -1,3 +1,4 @@
+import sharp from 'sharp'
 import bcrypt from 'bcrypt'
 import { v4 as uuid } from 'uuid'
 import {
@@ -72,9 +73,12 @@ const createUser = expressAsyncHandler(async (req: IRequest, res: Response) => {
 
     if (req.file) {
         const file = handleFile(res, req.file)
+        const buffer = await sharp(file.buffer)
+            .resize({ height: 600, width: 600, fit: 'cover' })
+            .toBuffer()
         path = `Staffs/Avatar/${uuid()}.${file.extension}`
         try {
-            await uploadS3(file.buffer, path, file.mimetype)
+            await uploadS3(buffer, path, file.mimetype)
             url = await getS3(path)
         } catch {
             sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
@@ -390,9 +394,9 @@ const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
         return
     }
 
-    if (account.avatar_path) {
+    if (account.avatar?.path) {
         try {
-            await deleteS3(account.avatar_path)
+            await deleteS3(account.avatar?.path)
             account.avatar_path = ""
         } catch {
             sendError(res, StatusCodes.BadRequest, SMTH_WENT_WRONG)
@@ -400,9 +404,12 @@ const changeAvatar = expressAsyncHandler(async (req: IRequest, res: any) => {
         }
     }
 
+    const buffer = await sharp(file.buffer)
+        .resize({ fit: 'cover' })
+        .toBuffer()
     const path = `Staffs/Avatar/${uuid()}.${file.extension}`
     try {
-        await uploadS3(file.buffer, path, file.mimetype)
+        await uploadS3(buffer, path, file.mimetype)
         account.avatar = {
             path,
             url: await getS3(path)
