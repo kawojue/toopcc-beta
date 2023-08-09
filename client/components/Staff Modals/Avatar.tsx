@@ -117,11 +117,11 @@ const AvatarModal: FC<IModal> = ({ state, dispatch, profile }) => {
                                         {avatarPreview ?
                                             <img src={avatarPreview} alt="avatar" /> :
                                             <>
-                                                {profile?.avatar?.secure_url ?
-                                                    <Image src={profile?.avatar?.secure_url}
-                                                        width={300} height={300} alt="avatar" priority /> :
+                                                {profile?.avatar?.url ?
+                                                    <Image src={profile?.avatar?.url}
+                                                        width={300} height={300} alt="avatar" loading='lazy' /> :
                                                     <Image src="https://res.cloudinary.com/kawojue/image/upload/v1685607626/TOOPCC/Staffs/avatar_ndluis.webp"
-                                                        width={300} height={300} alt="avatar" priority />
+                                                        width={300} height={300} alt="avatar" loading='lazy' />
                                                 }
                                             </>
                                         }
