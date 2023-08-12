@@ -47,8 +47,6 @@ const page = () => {
 
     if (isLoading) return <SpinnerTwo />
 
-    console.log(data) // hehe
-
     return <Profile profile={data?.profile || {}} />
 }
 
